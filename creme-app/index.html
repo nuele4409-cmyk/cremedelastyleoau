@@ -1294,6 +1294,44 @@ html, body {
     color: #fff; text-decoration: none; border-radius: 10px; font-size: 0.82rem; font-weight: 700;
 }
 
+/* ══ LIVE RANKINGS — Ranking row cards ══ */
+.ranking-row {
+    display: flex; align-items: center; gap: 0.85rem;
+    padding: 0.65rem 0.5rem; border-bottom: 1px solid rgba(255,248,220,0.07);
+    transition: background 0.15s;
+}
+.ranking-row:last-child { border-bottom: none; }
+.ranking-row:hover { background: rgba(255,255,255,0.04); border-radius: 10px; }
+.ranking-pos {
+    width: 28px; flex-shrink: 0; text-align: center;
+    font-size: 0.8rem; font-weight: 900; color: rgba(255,248,220,0.45);
+}
+.ranking-row:nth-child(1) .ranking-pos { color: #FFD700; font-size: 1rem; }
+.ranking-row:nth-child(2) .ranking-pos { color: #C0C0C0; }
+.ranking-row:nth-child(3) .ranking-pos { color: #CD7F32; }
+.ranking-img {
+    width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+    object-fit: cover; border: 2px solid rgba(255,248,220,0.15);
+    background: var(--rose-dark);
+}
+.ranking-avatar-fallback {
+    width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+    background: var(--rose-dark); border: 2px solid rgba(255,248,220,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+}
+.ranking-name {
+    flex: 1; font-size: 0.88rem; font-weight: 700; color: var(--cream);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ranking-score {
+    flex-shrink: 0; font-size: 0.85rem; font-weight: 800;
+    color: var(--gold); white-space: nowrap;
+    background: rgba(212,175,55,0.12); border-radius: 999px;
+    padding: 0.2rem 0.7rem;
+}
+.ranking-row:nth-child(1) { background: rgba(212,175,55,0.07); border-radius: 10px; }
+
 /* ══ LIVE RANKINGS LEADERBOARD — Feature 18 ══ */
 /* Dark-theme overrides: leaderboard inside Judging Panel */
 #judge-rankings-view .lb-table-wrap { border-color: rgba(255,248,220,0.1); }
@@ -3660,12 +3698,15 @@ window.loadLiveRankings = async function() {
     }).sort(function(a, b) { return b.grand - a.grand; });
     container.innerHTML = '';
     ranked.forEach(function(r, i) {
+        var medals = ['🥇','🥈','🥉'];
+        var posLabel = i < 3 ? medals[i] : (i + 1);
         var row = document.createElement('div');
         row.className = 'ranking-row';
         row.innerHTML =
-            '<span class="ranking-pos">' + (i + 1) + '</span>' +
-            (r.img ? '<img src="' + r.img + '" class="ranking-img">' :
-                '<div class="ranking-img" style="background:var(--rose-dark);display:flex;align-items:center;justify-content:center;">👤</div>') +
+            '<span class="ranking-pos">' + posLabel + '</span>' +
+            (r.img
+                ? '<img src="' + r.img + '" class="ranking-img" onerror="this.outerHTML=\'<div class=\\\"ranking-avatar-fallback\\\">👤</div>\'">'
+                : '<div class="ranking-avatar-fallback">👤</div>') +
             '<span class="ranking-name">' + r.name + '</span>' +
             '<span class="ranking-score">' + r.grand + ' pts</span>';
         container.appendChild(row);
@@ -3880,31 +3921,4 @@ window.onContestantPaymentSuccess = async function(payRef) {
         }]);
         if (res.error) throw new Error(res.error.message);
         var bEl = document.getElementById('reg-spot-banner'), wEl = document.getElementById('reg-form-wrap');
-        if (bEl) bEl.style.display = 'none'; if (wEl) wEl.style.display = 'none';
-        var sEl = document.getElementById('reg-success-screen'); if (sEl) sEl.style.display = 'flex';
-    } catch(e) {
-        if (err) { err.textContent = 'Submission error: ' + e.message; err.style.display = 'block'; }
-        if (btn) { btn.textContent = '🔐 Proceed to Payment — ₦3,000'; btn.disabled = false; window.checkRegForm(); }
-    }
-};
-
-async function _uploadToStorage(file, bucket, path, token) {
-    var fd = new FormData(); fd.append('', file, file.name);
-    var res = await fetch(SUPABASE_URL + '/storage/v1/object/' + bucket + '/' + path,
-        { method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'x-upsert': 'true' }, body: fd });
-    if (!res.ok) throw new Error('Upload failed: ' + await res.text());
-    return SUPABASE_URL + '/storage/v1/object/public/' + bucket + '/' + path;
-}
-
-function _uploadVideoTUS(file, bucket, objectPath, token) {
-    return new Promise(function(resolve, reject) {
-        var bar = document.getElementById('video-progress-bar'), wrap = document.getElementById('video-progress-wrap');
-        if (wrap) wrap.style.display = 'block';
-        new tus.Upload(file, {
-            endpoint: SUPABASE_URL + '/storage/v1/upload/resumable',
-            retryDelays: [0, 3000, 5000, 10000, 20000],
-            headers: { authorization: 'Bearer ' + token, 'x-upsert': 'true' },
-            metadata: { bucketName: bucket, objectName: objectPath, contentType: file.type, cacheControl: '3600' },
-            chunkSize: 6 * 1024 * 1024,
-            onProgress: function(up, tot) { if (bar) bar.style.width = Math.round(up / tot * 100) + '%'; },
-            onSuccess:  function() { if (wrap) wra
+        if (bE
