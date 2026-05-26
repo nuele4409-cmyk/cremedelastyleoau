@@ -307,3 +307,75 @@ create policy if not exists "Judges and admins read all scores"
 -- Ensure authenticated users still have the GRANT (idempotent)
 grant select on scores to authenticated;
 -- ══════════════════════════════════════════════════════
+
+
+-- ══════════════════════════════════════════════════════
+--  MIGRATION — Features 22–25
+--  Paste this block into the Supabase SQL Editor and RUN.
+--  Safe to run on an already-populated database.
+-- ══════════════════════════════════════════════════════
+
+-- ── Feature 22: Extra columns on contestants ──────────
+alter table contestants add column if not exists age           int;
+alter table contestants add column if not exists gender        text;
+alter table contestants add column if not exists level         text;
+alter table contestants add column if not exists clothing_size text;
+alter table contestants add column if not exists shoe_size     numeric;
+alter table contestants add column if not exists experience    text;
+alter table contestants add column if not exists video_url     text;
+alter table contestants add column if not exists payment_ref   text;
+
+-- 30-contestant hard cap (fires BEFORE INSERT)
+create or replace function enforce_contestant_cap()
+returns trigger language plpgsql security definer as $$
+begin
+    if (select count(*) from contestants where payment_ref is not null) >= 30 then
+        raise exception 'REGISTRATION_FULL';
+    end if;
+    return new;
+end;
+$$;
+
+drop trigger if exists contestant_cap_trigger on contestants;
+create trigger contestant_cap_trigger
+    before insert on contestants
+    for each row execute function enforce_contestant_cap();
+
+-- Storage buckets (run in Supabase Dashboard → Storage if not yet created):
+--   Name: contestant-videos   ✓ Public bucket
+--   Allow authenticated uploads (INSERT policy)
+
+
+-- ── Feature 23: Votes table + live results toggle ─────
+create table if not exists votes (
+    id          uuid primary key default gen_random_uuid(),
+    user_id     uuid references auth.users(id) on delete cascade,
+    category_id text not null,
+    nominee_id  text not null,
+    created_at  timestamptz default now(),
+    unique (user_id, category_id)
+);
+
+alter table votes enable row level security;
+
+create policy if not exists "votes_insert"
+    on votes for insert with check (auth.uid() = user_id);
+
+create policy if not exists "votes_select"
+    on votes for select using (true);
+
+create policy if not exists "votes_update"
+    on votes for update using (auth.uid() = user_id);
+
+grant select, insert, update on votes to authenticated, anon;
+
+-- Toggle columns on system_settings
+alter table system_settings add column if not exists show_live_results boolean default false;
+alter table system_settings add column if not exists lineup_revealed   boolean default false;
+
+-- Allow admins to UPDATE system_settings
+create policy if not exists "Admin update system_settings"
+    on system_settings for update
+    using (get_my_role() = 'admin');
+
+-- ══════════════════════════════════════════════════════

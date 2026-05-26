@@ -1068,6 +1068,165 @@ html, body {
 .score-submit-btn:hover:not(:disabled) { opacity: 0.88; }
 .score-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 
+/* ══════════════════════════════════════════════
+   FEATURE 22: CONTESTANT REGISTRATION GATEWAY
+══════════════════════════════════════════════ */
+.reg-spot-banner {
+    background: linear-gradient(135deg, var(--rose), var(--crimson));
+    border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.reg-spot-count { font-size: 1.6rem; font-weight: 900; color: #fff; }
+.reg-spot-label { font-size: 0.65rem; color: rgba(255,255,255,0.75); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
+.reg-spot-remaining { font-size: 0.78rem; color: rgba(255,255,255,0.9); text-align: right; line-height: 1.5; }
+.reg-closed-screen, .reg-success-screen {
+    text-align: center; padding: 3rem 1rem;
+    background: rgba(255,255,255,0.04); border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08); margin-bottom: 1.5rem;
+}
+.reg-closed-icon, .reg-success-icon { font-size: 3rem; margin-bottom: 1rem; }
+.reg-closed-title, .reg-success-title { font-size: 1.3rem; font-weight: 800; color: var(--gold); margin-bottom: 0.6rem; }
+.reg-closed-sub, .reg-success-text { color: var(--cream-60); font-size: 0.86rem; line-height: 1.7; }
+.reg-section {
+    background: rgba(255,255,255,0.04); border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.08); padding: 1.25rem; margin-bottom: 1.1rem;
+}
+.reg-section-header {
+    display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.1rem;
+    padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.reg-section-num {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--rose);
+    color: #fff; font-size: 0.7rem; font-weight: 900;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.reg-section-title { font-size: 0.82rem; font-weight: 800; color: var(--cream); text-transform: uppercase; letter-spacing: 0.08em; }
+.reg-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.exp-toggle-wrap { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+.exp-toggle-btn {
+    flex: 1; padding: 0.65rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+    background: transparent; color: var(--cream-60); font-size: 0.82rem; font-weight: 700;
+    font-family: inherit; cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.exp-toggle-btn.active { background: var(--rose); border-color: var(--rose); color: #fff; }
+.reg-file-zone {
+    border: 2px dashed rgba(255,255,255,0.15); border-radius: 12px; padding: 1.25rem;
+    text-align: center; cursor: pointer; transition: border-color 0.2s;
+}
+.reg-file-zone:hover { border-color: var(--gold); }
+.reg-file-zone.has-file { border-color: var(--rose); border-style: solid; }
+.reg-file-icon { font-size: 1.6rem; margin-bottom: 0.3rem; }
+.reg-file-label { font-size: 0.75rem; font-weight: 700; color: var(--cream); }
+.reg-file-sub { font-size: 0.65rem; color: var(--cream-60); margin-top: 0.2rem; }
+.reg-file-name { font-size: 0.7rem; color: var(--gold); margin-top: 0.3rem; word-break: break-all; font-weight: 600; }
+.reg-file-input { display: none; }
+.reg-upload-progress { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 0.75rem; overflow: hidden; display: none; }
+.reg-upload-progress-bar { height: 100%; background: var(--gold); border-radius: 2px; width: 0%; transition: width 0.3s; }
+.reg-checkout-block {
+    background: linear-gradient(135deg, rgba(154,26,69,0.15), rgba(26,26,26,0.3));
+    border: 1px solid var(--rose); border-radius: 14px; padding: 1.5rem; text-align: center; margin-bottom: 1.25rem;
+}
+.reg-checkout-title { font-size: 0.7rem; color: var(--cream-60); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.4rem; }
+.reg-checkout-amount { font-size: 2.4rem; font-weight: 900; color: var(--gold); }
+.reg-checkout-desc { font-size: 0.76rem; color: var(--cream-60); margin-top: 0.5rem; line-height: 1.6; }
+.reg-proceed-btn {
+    width: 100%; padding: 1.1rem; border-radius: 14px; border: none;
+    background: linear-gradient(135deg, var(--rose), var(--crimson));
+    color: #fff; font-size: 0.88rem; font-weight: 800; letter-spacing: 0.05em;
+    font-family: inherit; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+}
+.reg-proceed-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(154,26,69,0.45); }
+.reg-proceed-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+/* ══════════════════════════════════════════════
+   FEATURE 23: LIVE VOTING
+══════════════════════════════════════════════ */
+.vote-live-banner {
+    background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 10px; padding: 0.6rem 1rem; margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; color: var(--gold);
+}
+.vote-live-dot { width: 8px; height: 8px; background: var(--gold); border-radius: 50%; animation: pulse 1.5s infinite; flex-shrink: 0; }
+.vote-bar-wrap { margin-top: 0.5rem; padding: 0 0.1rem; }
+.vote-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+.vote-bar-name { font-size: 0.7rem; color: var(--cream-60); width: 80px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vote-bar { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+.vote-bar-fill { height: 100%; background: var(--rose); border-radius: 3px; transition: width 0.6s ease; }
+.vote-bar-pct { font-size: 0.65rem; color: var(--cream-60); width: 28px; text-align: right; flex-shrink: 0; }
+/* ══════════════════════════════════════════════
+   FEATURE 24: EVENT INFO TAB
+══════════════════════════════════════════════ */
+.event-hero-card {
+    background: linear-gradient(135deg, rgba(154,26,69,0.2), rgba(26,26,26,0.4));
+    border: 1px solid rgba(154,26,69,0.3); border-radius: 16px; padding: 1.75rem 1.25rem;
+    text-align: center; margin-bottom: 1.5rem;
+}
+.event-hero-tag { font-size: 0.62rem; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+.event-hero-title { font-size: 1.5rem; font-weight: 900; color: var(--cream); line-height: 1.2; margin-bottom: 0.75rem; }
+.event-hero-desc { font-size: 0.83rem; color: var(--cream-60); line-height: 1.7; }
+.event-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem; }
+.event-info-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem; text-align: center; }
+.event-info-icon { font-size: 1.4rem; margin-bottom: 0.35rem; }
+.event-info-label { font-size: 0.6rem; color: var(--cream-60); text-transform: uppercase; letter-spacing: 0.1em; }
+.event-info-val { font-size: 0.84rem; font-weight: 700; color: var(--cream); margin-top: 0.2rem; line-height: 1.3; }
+.event-section-label { font-size: 0.68rem; color: var(--gold); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1rem; font-weight: 800; }
+.event-timeline { margin-bottom: 1.5rem; }
+.event-timeline-item { display: flex; gap: 0.9rem; margin-bottom: 0.85rem; align-items: flex-start; }
+.event-timeline-time { font-size: 0.7rem; color: var(--gold); font-weight: 700; width: 52px; flex-shrink: 0; padding-top: 2px; }
+.event-timeline-line { display: flex; flex-direction: column; align-items: center; width: 12px; flex-shrink: 0; }
+.event-timeline-dot-circle { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); flex-shrink: 0; margin-top: 3px; }
+.event-timeline-vert { flex: 1; width: 1px; background: rgba(212,175,55,0.2); min-height: 18px; margin-top: 3px; }
+.event-timeline-text { font-size: 0.82rem; color: var(--cream); line-height: 1.5; }
+/* event-info-value */
+.event-info-value { font-size: 0.82rem; font-weight: 700; color: var(--cream); margin-top: 0.2rem; }
+/* event-info-card */
+.event-info-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+/* Shorthand timeline aliases */
+.event-tl-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+.event-tl-item { display: flex; gap: 0.75rem; margin-bottom: 0.85rem; align-items: flex-start; }
+.event-tl-time { font-size: 0.7rem; color: var(--gold); font-weight: 700; width: 52px; flex-shrink: 0; padding-top: 3px; }
+.event-tl-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); flex-shrink: 0; margin-top: 5px; }
+.event-tl-desc { font-size: 0.82rem; color: var(--cream); line-height: 1.5; }
+/* sponsors label */
+.sponsors-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.85rem; }
+.event-nav-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem; }
+.event-nav-btn {
+    padding: 0.9rem 0.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05); color: var(--cream); font-size: 0.75rem;
+    font-weight: 700; font-family: inherit; cursor: pointer; text-align: center; transition: all 0.2s;
+}
+.event-nav-btn:hover:not(.locked) { border-color: var(--gold); color: var(--gold); }
+.event-nav-btn.primary { background: var(--rose); border-color: var(--rose); color: #fff; }
+.event-nav-btn.primary:hover { background: var(--crimson); border-color: var(--crimson); color: #fff; }
+.event-nav-btn.locked { opacity: 0.4; cursor: not-allowed; }
+.sponsors-section { margin-bottom: 1.5rem; }
+.sponsors-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+.sponsor-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; padding: 1rem 0.5rem; text-align: center; text-decoration: none; transition: all 0.2s; display: block;
+}
+.sponsor-card:hover { border-color: var(--gold); background: rgba(212,175,55,0.05); }
+.sponsor-card-name { font-size: 0.72rem; font-weight: 700; color: var(--gold); }
+.sponsor-card-sub { font-size: 0.6rem; color: var(--cream-60); margin-top: 0.2rem; }
+/* ══════════════════════════════════════════════
+   FEATURE 25: GALLERY FILTERS
+══════════════════════════════════════════════ */
+.gallery-filter-bar { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
+.gallery-filter-btn {
+    flex: 1; padding: 0.6rem 0.4rem; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15); background: transparent;
+    color: rgba(255,248,220,0.5); font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase; font-family: inherit; cursor: pointer; transition: all 0.2s;
+}
+.gallery-filter-btn.active { background: var(--rose); border-color: var(--rose); color: #fff; }
+.gallery-filter-pane { display: none; }
+.gallery-filter-pane.active { display: block; }
+.gallery-ig-wrap { text-align: center; padding: 2.5rem 1rem; background: rgba(255,255,255,0.03); border-radius: 14px; border: 1px solid rgba(255,255,255,0.08); }
+.gallery-ig-link {
+    display: inline-block; margin-top: 0.75rem; padding: 0.7rem 1.5rem;
+    background: linear-gradient(135deg, var(--rose), var(--crimson));
+    color: #fff; text-decoration: none; border-radius: 10px; font-size: 0.82rem; font-weight: 700;
+}
+
 /* ══ LIVE RANKINGS LEADERBOARD — Feature 18 ══ */
 /* Dark-theme overrides: leaderboard inside Judging Panel */
 #judge-rankings-view .lb-table-wrap { border-color: rgba(255,248,220,0.1); }
@@ -1214,6 +1373,10 @@ html, body {
 
         <!-- VOTE -->
         <div id="tab-vote" class="tab-screen">
+            <!-- Live Results Banner (hidden until admin enables) -->
+            <div class="vote-live-banner" id="vote-live-banner" style="display:none;">
+                <span class="vote-live-dot"></span> Live results are being updated in real time
+            </div>
             <div class="page-header">
                 <h2 class="page-title">Cast Your Vote</h2>
                 <p class="page-sub">One vote per category. Choose the faces that move you.</p>
@@ -1283,6 +1446,7 @@ html, body {
                 <button class="explore-card" onclick="switchTab('journal')"><span class="explore-icon">📓</span><span class="explore-label">Journal</span></button>
                 <button class="explore-card" onclick="switchTab('lineup')"><span class="explore-icon">👗</span><span class="explore-label">The Lineup</span></button>
                 <button class="explore-card" onclick="switchTab('contact')"><span class="explore-icon">✉️</span><span class="explore-label">Contact</span></button>
+                <button class="explore-card" onclick="switchTab('event')"><span class="explore-icon">🎪</span><span class="explore-label">The Event</span></button>
             </div>
         </div>
 
@@ -1332,107 +1496,221 @@ html, body {
             <p class="tickets-note">⚠️ Seats are strictly limited. All sales are final. Tickets must be presented at entry.</p>
         </div>
 
-        <!-- REGISTER -->
+        <!-- REGISTER — Feature 22: Exclusive Contestant Gateway -->
         <div id="tab-register" class="tab-screen">
             <div class="page-header">
-                <h2 class="page-title">Register</h2>
-                <p class="page-sub">Sign up to compete or attend Crème De La Style.</p>
+                <h2 class="page-title">Contestant Registration</h2>
+                <p class="page-sub">30 spots. One runway. Secure your place.</p>
             </div>
-            <div class="nominate-form-card">
-                <p class="nominate-form-intro">Want to be part of the runway? Register your interest and the team will be in touch.</p>
-                <div id="register-success" class="nominate-success" style="display:none;"><span>✨</span><p>Registration received! We'll reach out soon.</p></div>
-                <div id="register-error" class="nominate-error" style="display:none;"></div>
-                <div class="nominate-field">
-                    <label>Full Name</label>
-                    <input type="text" id="reg-name" class="nominate-input" placeholder="e.g. Oluwanifemi Akangbe">
-                </div>
-                <div class="nominate-field">
-                    <label>Email Address</label>
-                    <input type="email" id="reg-email" class="nominate-input" placeholder="you@example.com">
-                </div>
-                <div class="nominate-field">
-                    <label>Phone Number</label>
-                    <input type="tel" id="reg-phone" class="nominate-input" placeholder="080XXXXXXXX">
-                </div>
-                <div class="nominate-field">
-                    <label>Department / Faculty</label>
-                    <input type="text" id="reg-dept" class="nominate-input" placeholder="e.g. Faculty of Arts">
-                </div>
-                <div class="nominate-field">
-                    <label>I am registering as</label>
-                    <select id="reg-type" class="nominate-input nominate-select" onchange="toggleContestantFields(this.value)">
-                        <option value="">— Select one —</option>
-                        <option value="contestant">A Contestant</option>
-                        <option value="attendee">An Attendee</option>
-                        <option value="volunteer">A Volunteer</option>
-                    </select>
-                </div>
 
-                <!-- DYNAMIC CONTESTANT FIELDS -->
-                <div id="contestant-fields" class="contestant-fields">
-                    <p class="nominate-form-intro" style="margin-bottom:1.25rem;">We need a few more details for your contestant profile.</p>
-
-                    <div class="nominate-field">
-                        <label>Physical Stats</label>
-                        <div class="stats-row">
-                            <div>
-                                <input type="number" id="reg-height" class="nominate-input" placeholder="Height">
-                            </div>
-                            <div>
-                                <input type="number" id="reg-waist" class="nominate-input" placeholder="Waist">
-                            </div>
-                            <div>
-                                <input type="number" id="reg-hips" class="nominate-input" placeholder="Hips">
-                            </div>
-                        </div>
-                        <div class="unit-toggle" style="margin-top:0.5rem;">
-                            <button id="unit-cm" class="active" onclick="setUnit('cm')">cm</button>
-                            <button id="unit-in" onclick="setUnit('in')">inches</button>
-                        </div>
-                    </div>
-
-                    <div class="nominate-field">
-                        <label>Instagram Handle <span class="optional">(optional)</span></label>
-                        <input type="text" id="reg-instagram" class="nominate-input" placeholder="@yourhandle">
-                    </div>
-                    <div class="nominate-field">
-                        <label>TikTok Handle <span class="optional">(optional)</span></label>
-                        <input type="text" id="reg-tiktok" class="nominate-input" placeholder="@yourhandle">
-                    </div>
-
-                    <div class="nominate-field">
-                        <label>Photos</label>
-                        <div class="upload-grid">
-                            <div class="upload-zone" onclick="document.getElementById('upload-headshot').click()">
-                                <input type="file" id="upload-headshot" accept="image/*" onchange="previewUpload(this,'prev-headshot')">
-                                <span class="upload-zone-icon">🤳</span>
-                                <p class="upload-zone-label">Headshot</p>
-                                <p class="upload-zone-sub">Portrait / face photo · max 5MB</p>
-                                <img id="prev-headshot" class="upload-preview" alt="">
-                            </div>
-                            <div class="upload-zone" onclick="document.getElementById('upload-fullbody').click()">
-                                <input type="file" id="upload-fullbody" accept="image/*" onchange="previewUpload(this,'prev-fullbody')">
-                                <span class="upload-zone-icon">🧍</span>
-                                <p class="upload-zone-label">Full Body</p>
-                                <p class="upload-zone-sub">Head-to-toe shot · max 5MB</p>
-                                <img id="prev-fullbody" class="upload-preview" alt="">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="nominate-field">
-                        <label>About Me</label>
-                        <textarea id="reg-about" class="nominate-input nominate-textarea" rows="3" placeholder="Tell us who you are..."></textarea>
-                    </div>
-                    <div class="nominate-field">
-                        <label>Why Should You Be Picked?</label>
-                        <textarea id="reg-why" class="nominate-input nominate-textarea" rows="3" placeholder="Make your case..."></textarea>
-                    </div>
+            <!-- Spot counter banner -->
+            <div class="reg-spot-banner" id="reg-spot-banner">
+                <div>
+                    <div class="reg-spot-count" id="reg-spot-count">— / 30</div>
+                    <div class="reg-spot-label">Spots Claimed</div>
                 </div>
-
-                <button class="nominate-submit-btn" onclick="submitRegistration()">Submit Registration ✦</button>
-                <p style="font-size:0.75rem;font-style:italic;color:var(--cream-40);text-align:center;margin-top:0.9rem;line-height:1.6;">Please note: All submissions will be reviewed carefully by the casting panel. Only shortlisted candidates will be contacted.</p>
+                <div class="reg-spot-remaining" id="reg-spot-remaining">Loading...</div>
             </div>
+
+            <!-- Registration closed screen -->
+            <div id="reg-closed-screen" class="reg-closed-screen" style="display:none;">
+                <div class="reg-closed-icon">🔒</div>
+                <h3 class="reg-closed-title">Registration is Now Officially Closed</h3>
+                <p class="reg-closed-sub">All 30 spots have been filled. The casting panel is reviewing applications. Stay tuned for the lineup reveal.</p>
+            </div>
+
+            <!-- Success screen -->
+            <div id="reg-success-screen" class="reg-success-screen" style="display:none;">
+                <div class="reg-success-icon">🏆</div>
+                <h3 class="reg-success-title">Registration Secured.</h3>
+                <p class="reg-success-text">The casting panel has received your dossier. You will be contacted via email and WhatsApp with your next steps. Welcome to Crème De La Style.</p>
+            </div>
+
+            <!-- Main form wrap -->
+            <div id="reg-form-wrap">
+
+                <!-- Sign-in gate -->
+                <div id="reg-signin-gate" style="display:none;text-align:center;padding:2rem 0;">
+                    <p style="color:var(--cream-60);margin-bottom:1rem;font-size:0.88rem;">You must be signed in to register as a contestant.</p>
+                    <button class="nominate-submit-btn" onclick="openAuthModal()">Sign In to Continue ✦</button>
+                </div>
+
+                <!-- Form content (hidden until signed in + spots available) -->
+                <div id="reg-form-content" style="display:none;">
+
+                    <!-- Section 1: Personal -->
+                    <div class="reg-section">
+                        <div class="reg-section-header">
+                            <div class="reg-section-num">1</div>
+                            <div class="reg-section-title">Personal Information</div>
+                        </div>
+                        <div class="nominate-field">
+                            <label>Full Name *</label>
+                            <input type="text" id="rf-name" class="nominate-input" placeholder="e.g. Oluwanifemi Akangbe" oninput="checkRegForm()">
+                        </div>
+                        <div class="reg-two-col">
+                            <div class="nominate-field">
+                                <label>Age *</label>
+                                <input type="number" id="rf-age" class="nominate-input" placeholder="e.g. 21" min="16" max="35" oninput="checkRegForm()">
+                            </div>
+                            <div class="nominate-field">
+                                <label>Gender *</label>
+                                <select id="rf-gender" class="nominate-input nominate-select" onchange="checkRegForm()">
+                                    <option value="">— Select —</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="non-binary">Non-binary</option>
+                                    <option value="prefer-not-to-say">Prefer not to say</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="reg-two-col">
+                            <div class="nominate-field">
+                                <label>Phone Number *</label>
+                                <input type="tel" id="rf-phone" class="nominate-input" placeholder="080XXXXXXXX" oninput="checkRegForm()">
+                            </div>
+                            <div class="nominate-field">
+                                <label>Email Address *</label>
+                                <input type="email" id="rf-email" class="nominate-input" placeholder="you@example.com" oninput="checkRegForm()">
+                            </div>
+                        </div>
+                        <div class="reg-two-col">
+                            <div class="nominate-field">
+                                <label>Department *</label>
+                                <input type="text" id="rf-dept" class="nominate-input" placeholder="e.g. Computer Science" oninput="checkRegForm()">
+                            </div>
+                            <div class="nominate-field">
+                                <label>Faculty *</label>
+                                <input type="text" id="rf-faculty" class="nominate-input" placeholder="e.g. Science" oninput="checkRegForm()">
+                            </div>
+                        </div>
+                        <div class="nominate-field">
+                            <label>Level *</label>
+                            <select id="rf-level" class="nominate-input nominate-select" onchange="checkRegForm()">
+                                <option value="">— Select Level —</option>
+                                <option value="100">100 Level</option>
+                                <option value="200">200 Level</option>
+                                <option value="300">300 Level</option>
+                                <option value="400">400 Level</option>
+                                <option value="500">500 Level</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Physical -->
+                    <div class="reg-section">
+                        <div class="reg-section-header">
+                            <div class="reg-section-num">2</div>
+                            <div class="reg-section-title">Physical Details</div>
+                        </div>
+                        <div class="nominate-field">
+                            <label>Height * <span style="color:var(--cream-60);font-weight:400;">(cm)</span></label>
+                            <input type="number" id="rf-height" class="nominate-input" placeholder="e.g. 175" oninput="checkRegForm()">
+                        </div>
+                        <div class="reg-two-col">
+                            <div class="nominate-field">
+                                <label>Clothing Size *</label>
+                                <select id="rf-clothing" class="nominate-input nominate-select" onchange="checkRegForm()">
+                                    <option value="">— Size —</option>
+                                    <option value="XS">XS</option>
+                                    <option value="S">S</option>
+                                    <option value="M">M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                    <option value="XXL">XXL</option>
+                                </select>
+                            </div>
+                            <div class="nominate-field">
+                                <label>Shoe Size *</label>
+                                <input type="number" id="rf-shoe" class="nominate-input" placeholder="e.g. 42" oninput="checkRegForm()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Background -->
+                    <div class="reg-section">
+                        <div class="reg-section-header">
+                            <div class="reg-section-num">3</div>
+                            <div class="reg-section-title">Background</div>
+                        </div>
+                        <div class="nominate-field">
+                            <label>Prior Modelling / Runway Experience? *</label>
+                            <div class="exp-toggle-wrap">
+                                <button class="exp-toggle-btn" id="exp-btn-yes" onclick="setExperience('yes')">✓ Yes</button>
+                                <button class="exp-toggle-btn" id="exp-btn-no" onclick="setExperience('no')">✗ No</button>
+                            </div>
+                            <textarea id="rf-experience-detail" class="nominate-input nominate-textarea" rows="3" placeholder="Briefly describe your prior experience..." style="display:none;" oninput="checkRegForm()"></textarea>
+                        </div>
+                        <div class="nominate-field">
+                            <label>Instagram Handle *</label>
+                            <input type="text" id="rf-instagram" class="nominate-input" placeholder="@yourhandle" oninput="checkRegForm()">
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Media -->
+                    <div class="reg-section">
+                        <div class="reg-section-header">
+                            <div class="reg-section-num">4</div>
+                            <div class="reg-section-title">Media Upload</div>
+                        </div>
+                        <p style="font-size:0.75rem;color:var(--cream-60);margin-bottom:1.1rem;line-height:1.6;">Your media is your first impression. Upload high-quality files only.</p>
+
+                        <div class="nominate-field">
+                            <label>Headshot * <span style="color:var(--cream-60);font-weight:400;">Portrait / face photo — max 5MB</span></label>
+                            <div class="reg-file-zone" id="fz-headshot" onclick="document.getElementById('rf-headshot').click()">
+                                <input type="file" id="rf-headshot" class="reg-file-input" accept="image/*" onchange="handleFileSelect(this,'fz-headshot','fn-headshot',5)">
+                                <div class="reg-file-icon">🤳</div>
+                                <div class="reg-file-label">Tap to upload headshot</div>
+                                <div id="fn-headshot" class="reg-file-name"></div>
+                            </div>
+                        </div>
+
+                        <div class="nominate-field">
+                            <label>Full Length Photo * <span style="color:var(--cream-60);font-weight:400;">Head-to-toe — max 5MB</span></label>
+                            <div class="reg-file-zone" id="fz-fullbody" onclick="document.getElementById('rf-fullbody').click()">
+                                <input type="file" id="rf-fullbody" class="reg-file-input" accept="image/*" onchange="handleFileSelect(this,'fz-fullbody','fn-fullbody',5)">
+                                <div class="reg-file-icon">🧍</div>
+                                <div class="reg-file-label">Tap to upload full body photo</div>
+                                <div id="fn-fullbody" class="reg-file-name"></div>
+                            </div>
+                        </div>
+
+                        <div class="nominate-field">
+                            <label>60-Second Intro Video * <span style="color:var(--cream-60);font-weight:400;">Walk, pose, introduce yourself — max 50MB</span></label>
+                            <div class="reg-file-zone" id="fz-video" onclick="document.getElementById('rf-video').click()">
+                                <input type="file" id="rf-video" class="reg-file-input" accept="video/mp4,video/quicktime" onchange="handleFileSelect(this,'fz-video','fn-video',50)">
+                                <div class="reg-file-icon">🎬</div>
+                                <div class="reg-file-label">Tap to upload intro video</div>
+                                <div class="reg-file-sub">MP4 or MOV · max 50MB</div>
+                                <div id="fn-video" class="reg-file-name"></div>
+                            </div>
+                            <div class="reg-upload-progress" id="video-progress-wrap">
+                                <div class="reg-upload-progress-bar" id="video-progress-bar"></div>
+                            </div>
+                            <p style="font-size:0.68rem;color:var(--cream-60);margin-top:0.5rem;line-height:1.5;">📶 Network drops? Your video upload will automatically pause and resume — you won't lose progress.</p>
+                        </div>
+                    </div>
+
+                    <!-- Section 5: Checkout -->
+                    <div class="reg-section">
+                        <div class="reg-section-header">
+                            <div class="reg-section-num">5</div>
+                            <div class="reg-section-title">Checkout</div>
+                        </div>
+                        <div class="reg-checkout-block">
+                            <div class="reg-checkout-title">Application Fee</div>
+                            <div class="reg-checkout-amount">₦3,000</div>
+                            <div class="reg-checkout-desc">One-time non-refundable fee. Your payment secures your application slot and triggers the submission of your dossier to the casting panel.</div>
+                        </div>
+                        <div id="reg-error" class="nominate-error" style="display:none;"></div>
+                        <button class="reg-proceed-btn" id="reg-proceed-btn" onclick="proceedToContestantPayment()" disabled>
+                            🔐 Proceed to Payment — ₦3,000
+                        </button>
+                        <p style="font-size:0.72rem;color:var(--cream-60);text-align:center;margin-top:0.75rem;line-height:1.6;">Secured by Paystack · All required fields must be completed before proceeding.</p>
+                    </div>
+
+                </div><!-- end reg-form-content -->
+            </div><!-- end reg-form-wrap -->
         </div>
 
         <!-- JUDGES -->
@@ -1450,15 +1728,134 @@ html, body {
                 <h2 class="page-title">Gallery</h2>
                 <p class="page-sub">Frames from the runway. Moments that move.</p>
             </div>
-            <div class="gallery-grid">
-                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
-                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
-                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
-                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
-                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
-                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+            <!-- Filter bar -->
+            <div class="gallery-filter-bar">
+                <button class="gallery-filter-btn active" onclick="switchGalleryFilter('photos', this)">📸 Photos</button>
+                <button class="gallery-filter-btn" onclick="switchGalleryFilter('bts', this)">🎬 BTS</button>
+                <button class="gallery-filter-btn" onclick="switchGalleryFilter('livefeed', this)">📡 Live Feed</button>
             </div>
-            <p class="tickets-note" style="margin-top:1.5rem;">Editorial photos will be posted here as the event approaches.</p>
+
+            <!-- Photos pane -->
+            <div class="gallery-filter-pane active" id="gallery-pane-photos">
+                <div class="gallery-grid">
+                    <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+                    <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+                    <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+                    <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+                </div>
+                <p class="tickets-note" style="margin-top:1.5rem;">Editorial photos will be posted here as the event approaches.</p>
+            </div>
+
+            <!-- BTS Videos pane -->
+            <div class="gallery-filter-pane" id="gallery-pane-bts">
+                <div class="gallery-grid">
+                    <div class="gallery-placeholder"><span>🎬</span><p>Coming Soon</p></div>
+                    <div class="gallery-placeholder"><span>🎬</span><p>Coming Soon</p></div>
+                </div>
+                <p class="tickets-note" style="margin-top:1.5rem;">Behind-the-scenes footage drops soon.</p>
+            </div>
+
+            <!-- Live Feed pane -->
+            <div class="gallery-filter-pane" id="gallery-pane-livefeed">
+                <div class="gallery-ig-wrap" id="gallery-ig-feed">
+                    <p class="tickets-note">Live feed goes active on event night. Check back on 26 November 2026.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVENT INFO -->
+        <div id="tab-event" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">The Event</h2>
+                <p class="page-sub">Everything you need to know about the night.</p>
+            </div>
+
+            <!-- Hero card -->
+            <div class="event-hero-card">
+                <div class="event-hero-tag">✦ OAU's Premier Fashion Night</div>
+                <h3 class="event-hero-title">Crème De La Style<br>2026</h3>
+                <p class="event-hero-desc">The most anticipated fashion showcase in Obafemi Awolowo University history. One night. Thirty contestants. One crown.</p>
+            </div>
+
+            <!-- Info grid -->
+            <div class="event-info-grid">
+                <div class="event-info-card">
+                    <div class="event-info-icon">📅</div>
+                    <div class="event-info-label">Date</div>
+                    <div class="event-info-value">Thursday, 26 November 2026</div>
+                </div>
+                <div class="event-info-card">
+                    <div class="event-info-icon">🕖</div>
+                    <div class="event-info-label">Time</div>
+                    <div class="event-info-value">7:00 PM WAT</div>
+                </div>
+                <div class="event-info-card">
+                    <div class="event-info-icon">📍</div>
+                    <div class="event-info-label">Venue</div>
+                    <div class="event-info-value">TBA — OAU Main Campus</div>
+                </div>
+                <div class="event-info-card">
+                    <div class="event-info-icon">🎟️</div>
+                    <div class="event-info-label">Tickets</div>
+                    <div class="event-info-value">Regular · VIP · Table</div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="event-timeline">
+                <div class="event-tl-label">Event Timeline</div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">7:00 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Doors Open &amp; Red Carpet</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">7:45 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Opening Ceremony</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">8:00 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Runway Show — Look 1</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">8:45 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Runway Show — Look 2</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">9:30 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Live Voting &amp; Interval</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">10:00 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Awards &amp; Crowning</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">10:45 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">After-party</div>
+                </div>
+            </div>
+
+            <!-- Nav buttons -->
+            <div class="event-nav-btns">
+                <button class="event-nav-btn primary" onclick="switchTab('tickets')">🎟️ Get Tickets</button>
+                <button class="event-nav-btn" onclick="switchTab('register')">📝 Register as Contestant</button>
+            </div>
+
+            <!-- Sponsors -->
+            <div class="sponsors-section">
+                <div class="sponsors-label">Sponsors &amp; Partners</div>
+                <div class="sponsors-grid" id="sponsors-grid">
+                    <div class="sponsor-card">Coming Soon</div>
+                    <div class="sponsor-card">Coming Soon</div>
+                    <div class="sponsor-card">Coming Soon</div>
+                </div>
+            </div>
         </div>
 
         <!-- TEAM -->
@@ -1781,6 +2178,7 @@ html, body {
         </div>
     </main>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@3.1.0/dist/tus.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://js.paystack.co/v1/inline.js"></script>
@@ -2041,7 +2439,9 @@ window.switchTab = function(tab) {
         backBtn.onclick = function() { window.switchTab('explore'); };
         screen.insertBefore(backBtn, screen.firstChild);
     }
-    if (tab === 'judging') { window.loadJudgingRoster(); }
+    if (tab === 'judging')  { window.loadJudgingRoster(); }
+    if (tab === 'register') { window.initRegisterTab(); }
+    if (tab === 'vote')     { window.initVoteTab(); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -3101,36 +3501,4 @@ window.loadLiveRankings = async function() {
     table.className = 'lb-table';
 
     /* Header */
-    var thead = '<thead><tr><th>#</th><th>Contestant</th>';
-    lookLabels.forEach(function(lbl, i) {
-        thead += '<th>Look ' + (i + 1) + '<br><span style="font-weight:500;font-size:0.58rem;text-transform:none;letter-spacing:0;">' + lbl + '</span></th>';
-    });
-    thead += '<th>GRAND TOTAL<br><span style="font-weight:500;font-size:0.58rem;text-transform:none;letter-spacing:0;">/200 avg</span></th></tr></thead>';
-    table.innerHTML = thead;
-
-    var tbody = document.createElement('tbody');
-    ranked.forEach(function(entry, i) {
-        var sym = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-        var tr  = document.createElement('tr');
-        var cells = '<td>' + sym + '</td><td>' + entry.name + '</td>';
-        lookKeys.forEach(function(lk) {
-            var v = entry.avgs[lk];
-            cells += '<td class="' + (v !== null ? 'lb-look-score' : 'lb-look-empty') + '">' + (v !== null ? v : '—') + '</td>';
-        });
-        cells += '<td class="lb-grand-total">' + (entry.grand || '—') + '</td>';
-        tr.innerHTML = cells;
-        tbody.appendChild(tr);
-    });
-
-    table.appendChild(tbody);
-    wrap.appendChild(table);
-    container.appendChild(wrap);
-};
-
-/* ── RUN ── */
-boot();
-
-})();
-</script>
-</body>
-</html>
+    var thead = '<thead><tr><th>#</th><th>
