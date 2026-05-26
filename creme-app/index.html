@@ -373,12 +373,14 @@ html, body {
 .admin-back-btn:hover { background: rgba(255,255,255,0.18); }
 .admin-tabs-bar {
     background: #fff; border-bottom: 1px solid #e5e7eb;
-    display: flex; overflow-x: auto; padding: 0 1rem; position: sticky; top: 72px; z-index: 9;
+    display: flex; overflow-x: auto; padding: 0 0.5rem; position: sticky; top: 72px; z-index: 9;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
 }
+.admin-tabs-bar::-webkit-scrollbar { display: none; }
 .admin-tab {
-    padding: 1rem 1.2rem; border: none; border-bottom: 2px solid transparent;
-    background: transparent; color: #6b7280; font-size: 0.82rem; font-weight: 700;
-    font-family: inherit; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    padding: 0.85rem 0.75rem; border: none; border-bottom: 2px solid transparent;
+    background: transparent; color: #6b7280; font-size: 0.72rem; font-weight: 700;
+    font-family: inherit; cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
 }
 .admin-tab:hover { color: #374151; background: #f9fafb; }
 .admin-tab.active { border-bottom-color: #9A1A45; color: #9A1A45; }
@@ -1713,10 +1715,10 @@ html, body {
         <button class="admin-back-btn" onclick="closeAdminPanel()">← Back to App</button>
     </header>
     <nav class="admin-tabs-bar">
-        <button class="admin-tab active" onclick="switchAdminTab('dispatches', this)">📢 Live Dispatches</button>
+        <button class="admin-tab active" onclick="switchAdminTab('dispatches', this)">📢 Dispatches</button>
         <button class="admin-tab" onclick="switchAdminTab('analytics', this)">📊 Analytics</button>
-        <button class="admin-tab" onclick="switchAdminTab('gallery', this)">📸 Gallery Upload</button>
-        <button class="admin-tab" onclick="switchAdminTab('scan', this)">📷 Scan Tickets</button>
+        <button class="admin-tab" onclick="switchAdminTab('gallery', this)">📸 Gallery</button>
+        <button class="admin-tab" onclick="switchAdminTab('scan', this)">📷 Scan</button>
     </nav>
     <main class="admin-body">
         <div id="adm-tab-dispatches" class="admin-tab-pane active">
