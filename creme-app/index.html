@@ -257,6 +257,21 @@ html, body {
     border: 1px solid var(--border); border-radius: 24px; padding: 2rem 1.75rem;
 }
 .nominate-form-intro { font-size: 0.9rem; color: var(--cream-60); line-height: 1.65; margin-bottom: 1.75rem; font-style: italic; }
+.nominate-warning-banner {
+    display: flex; gap: 0.75rem; align-items: flex-start;
+    background: rgba(154,26,69,0.18); border: 1px solid rgba(227,0,79,0.45);
+    border-radius: 12px; padding: 1rem 1.1rem; margin-bottom: 1.25rem;
+    line-height: 1.6;
+}
+.nominate-warning-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.nominate-warning-banner p { font-size: 0.82rem; color: var(--cream); margin: 0; }
+.nominate-warning-banner strong { color: var(--crimson); }
+.nominate-warning-link {
+    background: none; border: none; padding: 0;
+    color: var(--gold); font-weight: 700; font-size: 0.82rem;
+    font-family: inherit; cursor: pointer; text-decoration: underline;
+    text-underline-offset: 3px;
+}
 .nominate-success {
     display: flex; align-items: center; gap: 0.75rem;
     background: rgba(22,163,74,0.12); border: 1px solid rgba(22,163,74,0.35);
@@ -1176,8 +1191,9 @@ html, body {
 .event-timeline-dot-circle { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); flex-shrink: 0; margin-top: 3px; }
 .event-timeline-vert { flex: 1; width: 1px; background: rgba(212,175,55,0.2); min-height: 18px; margin-top: 3px; }
 .event-timeline-text { font-size: 0.82rem; color: var(--cream); line-height: 1.5; }
-/* event-info-value */
+/* event-info-value / sub */
 .event-info-value { font-size: 0.82rem; font-weight: 700; color: var(--cream); margin-top: 0.2rem; }
+.event-info-sub   { font-size: 0.72rem; color: var(--gold); margin-top: 0.15rem; font-weight: 600; }
 /* event-info-card */
 .event-info-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
 /* Shorthand timeline aliases */
@@ -1348,6 +1364,12 @@ html, body {
                 </div>
             </div>
 
+            <!-- Quick-nav shortcuts -->
+            <div class="event-nav-btns" style="margin-top:1rem;">
+                <button class="event-nav-btn" onclick="switchTab('judges')">⚖️ Meet the Judges</button>
+                <button class="event-nav-btn" onclick="switchTab('lineup')">👗 Meet the Contestants</button>
+            </div>
+
             <div class="home-grid">
                 <div class="ticket-card">
                     <div class="ticket-glow"></div>
@@ -1387,11 +1409,16 @@ html, body {
         <!-- NOMINATE -->
         <div id="tab-nominate" class="tab-screen">
             <div class="page-header">
-                <h2 class="page-title">Nominate</h2>
-                <p class="page-sub">Champion the most stylish faces on campus.</p>
+                <h2 class="page-title">Honorary Awards</h2>
+                <p class="page-sub">Nominate outstanding campus personalities for special recognition.</p>
+            </div>
+            <!-- Warning banner: Honorary-only clarification -->
+            <div class="nominate-warning-banner">
+                <span class="nominate-warning-icon">⚠️</span>
+                <p><strong>Note:</strong> This section is strictly for the Honorary Categories (Artist, Creator, Entrepreneur, etc.). Contestants competing for the main Crème De La Style crown must apply directly through the <button class="nominate-warning-link" onclick="switchTab('register')">Registration Gateway</button>.</p>
             </div>
             <div class="nominate-form-card">
-                <p class="nominate-form-intro">Know someone who deserves a crown? Put their name forward. One nomination can change everything.</p>
+                <p class="nominate-form-intro">Know someone who deserves recognition? Put their name forward. One nomination can change everything.</p>
                 <div id="nominate-success" class="nominate-success" style="display:none;"><span>✨</span><p>Nomination submitted! The panel will take it from here.</p></div>
                 <div id="nominate-error" class="nominate-error" style="display:none;"></div>
                 <div class="nominate-field">
@@ -1780,14 +1807,16 @@ html, body {
             <!-- Info grid -->
             <div class="event-info-grid">
                 <div class="event-info-card">
-                    <div class="event-info-icon">📅</div>
-                    <div class="event-info-label">Date</div>
-                    <div class="event-info-value">Thursday, 26 November 2026</div>
+                    <div class="event-info-icon">🎪</div>
+                    <div class="event-info-label">Main Event</div>
+                    <div class="event-info-value">Thurs, 26 Nov 2026</div>
+                    <div class="event-info-sub">7:00 PM WAT</div>
                 </div>
                 <div class="event-info-card">
-                    <div class="event-info-icon">🕖</div>
-                    <div class="event-info-label">Time</div>
-                    <div class="event-info-value">7:00 PM WAT</div>
+                    <div class="event-info-icon">🥂</div>
+                    <div class="event-info-label">Pre-Event Mixer</div>
+                    <div class="event-info-value">Tues, 24 Nov 2026</div>
+                    <div class="event-info-sub">5:00 PM WAT</div>
                 </div>
                 <div class="event-info-card">
                     <div class="event-info-icon">📍</div>
@@ -1796,8 +1825,8 @@ html, body {
                 </div>
                 <div class="event-info-card">
                     <div class="event-info-icon">🎟️</div>
-                    <div class="event-info-label">Tickets</div>
-                    <div class="event-info-value">Regular · VIP · Table</div>
+                    <div class="event-info-label">Access</div>
+                    <div class="event-info-value">Tickets strictly required</div>
                 </div>
             </div>
 
@@ -1841,10 +1870,12 @@ html, body {
                 </div>
             </div>
 
-            <!-- Nav buttons -->
+            <!-- Nav buttons (4-up grid) -->
             <div class="event-nav-btns">
                 <button class="event-nav-btn primary" onclick="switchTab('tickets')">🎟️ Get Tickets</button>
                 <button class="event-nav-btn" onclick="switchTab('register')">📝 Register as Contestant</button>
+                <button class="event-nav-btn" onclick="switchTab('judges')">⚖️ Meet the Judges</button>
+                <button class="event-nav-btn" onclick="switchTab('lineup')">👗 Meet the Contestants</button>
             </div>
 
             <!-- Sponsors -->
@@ -3045,10 +3076,12 @@ function renderContestantCards(data, grid) {
 window.loadLineup = async function() {
     var grid = document.getElementById('lineup-grid');
     if (!grid) return;
+    // No Supabase connection — show mock data for local dev only
     if (!_sb) { renderContestantCards(mockContestants, grid); return; }
     var res = await _sb.from('contestants').select('*').eq('is_approved', true).order('created_at', { ascending: true });
-    if (res.error || !res.data || res.data.length === 0) { renderContestantCards(mockContestants, grid); return; }
-    renderContestantCards(res.data, grid);
+    if (res.error) { renderContestantCards([], grid); return; } // show locked state on error
+    // Strictly show only approved contestants — zero = locked state, never fall back to mock
+    renderContestantCards(res.data || [], grid);
 };
 
 window.openContestantModal = function(c) {
@@ -3449,56 +3482,4 @@ window.submitScore = async function() {
 
 /* ── Feature 18 / Feature 21: Grand Total leaderboard table (lives in Judging Panel) ── */
 window.loadLiveRankings = async function() {
-    var container = document.getElementById('judge-rankings-list');
-    if (!container) return;
-    container.innerHTML = '<p class="adm-empty">Loading rankings...</p>';
-    if (!_sb) { container.innerHTML = '<p class="adm-empty">No database connection.</p>'; return; }
-
-    var res = await _sb.from('scores').select('contestant_id, look_category, look_total');
-    if (res.error || !res.data || res.data.length === 0) {
-        container.innerHTML = '<p class="adm-empty">No scores yet — rankings will appear here as judges score each Look.</p>';
-        return;
-    }
-
-    /* Aggregate: { contestantId: { professional: [totals], y2k: [...], ... } } */
-    var lookKeys = ['professional', 'y2k', 'trad', 'met_gala'];
-    var lookLabels = ['Professional', 'Y2K', 'Costume Trad', 'OAU Met Gala'];
-    var agg = {};
-    res.data.forEach(function(s) {
-        if (!agg[s.contestant_id]) {
-            agg[s.contestant_id] = { professional: [], y2k: [], trad: [], met_gala: [] };
-        }
-        if (agg[s.contestant_id][s.look_category] !== undefined) {
-            agg[s.contestant_id][s.look_category].push(s.look_total);
-        }
-    });
-
-    /* Fetch names */
-    var ids  = Object.keys(agg);
-    var cRes = await _sb.from('contestants').select('id, full_name').in('id', ids);
-    var names = {};
-    if (cRes.data) { cRes.data.forEach(function(c) { names[c.id] = c.full_name; }); }
-
-    /* Calculate per-look averages and grand total */
-    var ranked = ids.map(function(id) {
-        var avgs = {}; var grand = 0;
-        lookKeys.forEach(function(lk) {
-            var arr = agg[id][lk];
-            if (arr && arr.length > 0) {
-                var avg = arr.reduce(function(a, b) { return a + b; }, 0) / arr.length;
-                avgs[lk] = Math.round(avg * 10) / 10;
-                grand    += avg;
-            } else { avgs[lk] = null; }
-        });
-        return { id: id, name: names[id] || 'Unknown', avgs: avgs, grand: Math.round(grand * 10) / 10 };
-    }).sort(function(a, b) { return b.grand - a.grand; });
-
-    /* Build table */
-    container.innerHTML = '';
-    var wrap  = document.createElement('div');
-    wrap.className = 'lb-table-wrap';
-    var table = document.createElement('table');
-    table.className = 'lb-table';
-
-    /* Header */
-    var thead = '<thead><tr><th>#</th><th>
+    var container = document.getElementById('
