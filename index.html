@@ -1,4 +1,18 @@
 <!DOCTYPE html>
-<html><head><meta http-equiv="refresh" content="0; url=creme-app/"></head>
-<body><a href="creme-app/">Click here if not redirected</a></body>
+<html>
+<head>
+<meta charset="UTF-8">
+<script>
+  // If Supabase lands here with an auth token, forward it to the real app
+  var hash = window.location.hash;
+  var search = window.location.search;
+  var base = 'cremedelastyleoau/creme-app/';
+  if (hash || search) {
+    window.location.replace(base + search + hash);
+  } else {
+    window.location.replace(base);
+  }
+</script>
+</head>
+<body></body>
 </html>
