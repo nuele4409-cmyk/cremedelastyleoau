@@ -216,6 +216,24 @@ html, body {
 .vote-progress-track { background: rgba(255,255,255,0.08); border-radius: 999px; height: 6px; overflow: hidden; margin-top: 0.25rem; }
 .vote-progress-fill  { height: 100%; background: linear-gradient(90deg, var(--crimson), var(--gold)); border-radius: 999px; transition: width 0.5s ease; }
 .vote-progress-pct   { font-size: 0.65rem; font-weight: 700; color: var(--gold); white-space: nowrap; flex-shrink: 0; min-width: 2.4rem; text-align: right; }
+/* Contestant vote row */
+.contestant-vote-row { display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.65rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.contestant-vote-row:last-child { border-bottom: none; }
+.cvr-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+    border: 2px solid rgba(212,175,55,0.3); }
+.cvr-avatar { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+    background: var(--crimson); color: var(--gold); display: flex; align-items: center;
+    justify-content: center; font-weight: 800; font-size: 1rem; border: 2px solid rgba(212,175,55,0.3); }
+.cvr-name { flex: 1; font-size: 0.88rem; font-weight: 700; color: var(--cream); }
+.cvr-name.voted { color: var(--gold); }
+/* Apply for runway button */
+.apply-runway-btn { display: block; width: 100%; margin-top: 0.85rem;
+    background: linear-gradient(135deg, #6B1232, #9A1A45);
+    color: var(--gold); border: 1px solid rgba(212,175,55,0.35);
+    border-radius: 999px; padding: 0.7rem 1.2rem; font-size: 0.88rem;
+    font-weight: 700; letter-spacing: 0.04em; cursor: pointer; text-align: center; }
+.apply-runway-btn:hover { background: linear-gradient(135deg, #9A1A45, #c0235a); }
 
 /* PAGE HEADER */
 .page-header { margin-bottom: 1.75rem; }
@@ -1514,6 +1532,7 @@ html, body {
                     <h2 class="ticket-title">The Runway Awakens</h2>
                     <p class="ticket-desc">Where the most stylish students of OAU compete for the ultimate crown. Seats are limited and the doors will not stay open forever.</p>
                     <button class="ticket-btn" onclick="switchTab('tickets')">SECURE YOUR SEAT →</button>
+                    <button class="apply-runway-btn" onclick="switchTab('register')">📝 Apply for the Runway</button>
                 </div>
                 <div class="dispatch-card">
                     <h3 class="dispatch-header"><span class="live-dot"></span> Live Dispatches</h3>
@@ -1533,22 +1552,45 @@ html, body {
                 <span class="vote-live-dot"></span> Live results are being updated in real time
             </div>
             <div class="page-header">
-                <h2 class="page-title">Cast Your Vote</h2>
-                <p class="page-sub">One vote per category. Choose the faces that move you.</p>
+                <h2 class="page-title">Fan Favourite Vote</h2>
+                <p class="page-sub">Cast your vote for the People's Choice. One vote per contestant.</p>
             </div>
-            <!-- Sign-in gate (shown when not authenticated) -->
+            <!-- Sign-in gate -->
             <div id="vote-signin-gate" class="tab-signin-gate">
                 <div class="tab-gate-icon">🔒</div>
                 <p class="tab-gate-msg">You must be signed in to access the voting portal.</p>
                 <button class="nominate-submit-btn" onclick="openAuthModal()">Sign In to Access ✦</button>
             </div>
-            <!-- Lock banner (shown when admin has closed voting) -->
+            <!-- Lock banner -->
             <div id="vote-lock-banner" class="tab-lock-banner" style="display:none;">
                 <span class="tab-lock-banner-icon">🔐</span>
                 <p><strong>Voting is currently locked.</strong> The voting portal will open during the live event. Check back on 26 November 2026.</p>
             </div>
-            <!-- Main voting content (hidden until signed in + voting open) -->
+            <!-- Main content -->
             <div id="vote-content" style="display:none;">
+                <div id="contestant-vote-list"></div>
+            </div>
+        </div>
+
+        <!-- HONORARY VOTE -->
+        <div id="tab-honorary-vote" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Honorary Awards Vote</h2>
+                <p class="page-sub">Vote for outstanding campus personalities across all categories.</p>
+            </div>
+            <!-- Sign-in gate -->
+            <div id="honorary-vote-signin-gate" class="tab-signin-gate">
+                <div class="tab-gate-icon">🔒</div>
+                <p class="tab-gate-msg">You must be signed in to cast your honorary vote.</p>
+                <button class="nominate-submit-btn" onclick="openAuthModal()">Sign In to Access ✦</button>
+            </div>
+            <!-- Lock banner -->
+            <div id="honorary-vote-lock-banner" class="tab-lock-banner" style="display:none;">
+                <span class="tab-lock-banner-icon">🔐</span>
+                <p><strong>Honorary Awards Voting is currently closed.</strong> The Administrator has not yet opened this section. Check back for updates.</p>
+            </div>
+            <!-- Content -->
+            <div id="honorary-vote-content" style="display:none;">
                 <div id="vote-list"></div>
             </div>
         </div>
@@ -1628,6 +1670,7 @@ html, body {
                 <button class="explore-card" onclick="switchTab('register')"><span class="explore-icon">📝</span><span class="explore-label">Register</span></button>
                 <button class="explore-card" onclick="switchTab('nominate')"><span class="explore-icon">✨</span><span class="explore-label">Nominate</span></button>
                 <button class="explore-card" onclick="switchTab('vote')"><span class="explore-icon">🗳️</span><span class="explore-label">Vote</span></button>
+                <button class="explore-card" onclick="switchTab('honorary-vote')"><span class="explore-icon">🏅</span><span class="explore-label">Honorary Vote</span></button>
                 <button class="explore-card" onclick="switchTab('judges')"><span class="explore-icon">⚖️</span><span class="explore-label">Judges</span></button>
                 <button class="explore-card" onclick="switchTab('gallery')"><span class="explore-icon">📸</span><span class="explore-label">Gallery</span></button>
                 <button class="explore-card" onclick="switchTab('team')"><span class="explore-icon">👥</span><span class="explore-label">Team</span></button>
@@ -2268,6 +2311,10 @@ html, body {
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             <span>NOMINATE</span>
         </button>
+        <button class="nav-btn" data-tab="honorary-vote" onclick="switchTab('honorary-vote')">
+            <span style="font-size:1.3rem;line-height:1;">🏅</span>
+            <span>HONORARY</span>
+        </button>
         <button class="nav-btn" data-tab="lineup" onclick="switchTab('lineup')">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             <span>LINEUP</span>
@@ -2461,10 +2508,21 @@ html, body {
                 <div class="ctrl-row">
                     <div class="ctrl-info">
                         <div class="ctrl-label">Main Event Voting</div>
-                        <div class="ctrl-desc">Open or close the public voting portal.</div>
+                        <div class="ctrl-desc">Open or close the Fan Favourite contestant vote.</div>
                     </div>
                     <label class="ctrl-toggle">
                         <input type="checkbox" id="ctrl-voting" onchange="saveAppControl('is_voting_open', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Honorary Awards Voting</div>
+                        <div class="ctrl-desc">Open or close the Honorary campus categories vote.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-honorary-voting" onchange="saveAppControl('is_honorary_voting_open', this.checked)">
                         <span class="ctrl-slider"></span>
                     </label>
                 </div>
@@ -2776,6 +2834,7 @@ window.loadAdminControls = async function() {
         'ctrl-registration': 'is_registration_open',
         'ctrl-nominations':  'is_nomination_open',
         'ctrl-voting':       'is_voting_open',
+        'ctrl-honorary-voting': 'is_honorary_voting_open',
         'ctrl-liveresults':  'show_live_results',
         'ctrl-tickets':      'show_tickets',
         'ctrl-judges':       'show_judges',
@@ -2868,8 +2927,9 @@ window.switchTab = function(tab) {
     }
     if (tab === 'judging')  { window.loadJudgingRoster(); }
     if (tab === 'register') { window.initRegisterTab(); }
-    if (tab === 'vote')     { window.initVoteTab(); }
-    if (tab === 'home')     { window.loadDispatches(); }
+    if (tab === 'vote')          { window.initVoteTab(); }
+    if (tab === 'honorary-vote') { window.initHonoraryVoteTab(); }
+    if (tab === 'home')          { window.loadDispatches(); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -3794,6 +3854,25 @@ function applyTabGates(loggedIn) {
         if (nomContent) nomContent.style.display  = 'block';
     }
 
+    // ── Honorary Vote: sign-in + admin lock ──
+    var honGate    = document.getElementById('honorary-vote-signin-gate');
+    var honLock    = document.getElementById('honorary-vote-lock-banner');
+    var honContent = document.getElementById('honorary-vote-content');
+    var honOpen    = settings.is_honorary_voting_open === true; // default CLOSED
+    if (!loggedIn) {
+        if (honGate)    honGate.style.display    = 'flex';
+        if (honLock)    honLock.style.display     = 'none';
+        if (honContent) honContent.style.display  = 'none';
+    } else if (!honOpen) {
+        if (honGate)    honGate.style.display    = 'none';
+        if (honLock)    honLock.style.display     = 'flex';
+        if (honContent) honContent.style.display  = 'none';
+    } else {
+        if (honGate)    honGate.style.display    = 'none';
+        if (honLock)    honLock.style.display     = 'none';
+        if (honContent) honContent.style.display  = 'block';
+    }
+
     // ── Simple on/off tabs: Tickets, Judges, Team, Lineup ──
     // No sign-in required — just show lock banner when admin disables
     [
@@ -4035,6 +4114,8 @@ window.switchGalleryFilter = function(filter, btn) {
 ════════════════════════════════════ */
 var _voteChannel = null;
 
+window._approvedContestants = [];
+
 window.initVoteTab = async function() {
     if (!_sb) return;
     try {
@@ -4050,10 +4131,95 @@ window.initVoteTab = async function() {
             if (vRes.data) vRes.data.forEach(function(r) { window.votes[r.category_id] = r.nominee_id; });
         } catch(e) {}
     }
-    // Fetch live vote counts (shown when show_live_results is true)
+    // Fetch approved contestants for the fan favourite vote
+    try {
+        var cRes = await _sb.from('contestants').select('id,full_name,headshot_url').eq('is_approved', true).order('full_name');
+        window._approvedContestants = cRes.data || [];
+    } catch(e) { window._approvedContestants = []; }
     await window.fetchVoteCounts();
     if (!_voteChannel && _sb) {
         _voteChannel = _sb.channel('votes-realtime')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' },
+                async function() {
+                    await window.fetchVoteCounts();
+                    window.renderContestantVoteList();
+                    window.renderVoteList();
+                })
+            .subscribe();
+    }
+    window.renderContestantVoteList();
+};
+
+window.renderContestantVoteList = function() {
+    var container = document.getElementById('contestant-vote-list');
+    if (!container) return;
+    var contestants = window._approvedContestants || [];
+    if (!contestants.length) {
+        container.innerHTML = '<p style="text-align:center;color:var(--cream-60);font-size:0.88rem;padding:2rem 1rem;">The contestant lineup has not been revealed yet. Check back closer to the event.</p>';
+        return;
+    }
+    var showCounts = window.appSettings && window.appSettings.show_live_results;
+    var catId = 'fan_favourite';
+    var hasVoted = window.votes[catId] !== undefined;
+    var catTotal = 0;
+    if (showCounts && window.voteCounts[catId]) {
+        Object.values(window.voteCounts[catId]).forEach(function(v) { catTotal += v; });
+    }
+    container.innerHTML = '';
+    contestants.forEach(function(c) {
+        var sel   = window.votes[catId] === c.id;
+        var dis   = hasVoted && !sel;
+        var pct   = 0;
+        if (showCounts && catTotal > 0) {
+            var cnt = (window.voteCounts[catId] && window.voteCounts[catId][c.id]) ? window.voteCounts[catId][c.id] : 0;
+            pct = Math.round(cnt / catTotal * 100);
+        }
+        var avatarHtml = c.headshot_url
+            ? '<img class="cvr-img" src="' + c.headshot_url + '" alt="' + _esc(c.full_name) + '">'
+            : '<div class="cvr-avatar">' + _esc((c.full_name || '?')[0].toUpperCase()) + '</div>';
+        var barHtml = showCounts
+            ? '<div class="vote-progress-wrap"><div class="vote-progress-track"><div class="vote-progress-fill" style="width:' + pct + '%"></div></div></div><span class="vote-progress-pct">' + pct + '%</span>'
+            : '';
+        var safeId = c.id.replace(/'/g, "\'");
+        var row = document.createElement('div');
+        row.className = 'contestant-vote-row';
+        row.innerHTML = avatarHtml +
+            '<span class="cvr-name' + (sel ? ' voted' : '') + '">' + _esc(c.full_name) + '</span>' +
+            barHtml +
+            '<button class="vote-btn' + (sel ? ' voted-btn' : '') + '" onclick="window.castContestantVote(\'' + safeId + '\')"' + (dis ? ' disabled' : '') + '>' +
+            (sel ? '&#10003; VOTED' : 'VOTE') + '</button>';
+        container.appendChild(row);
+    });
+};
+
+window.castContestantVote = async function(contestantId) {
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    var catId = 'fan_favourite';
+    window.votes[catId] = contestantId;
+    window.renderContestantVoteList();
+    if (_sb) {
+        try {
+            await _sb.from('votes').upsert(
+                { user_id: window.currentUser.id, category_id: catId, nominee_id: contestantId },
+                { onConflict: 'user_id,category_id' }
+            );
+        } catch(e) {}
+    }
+};
+
+/* ── Honorary vote tab ── */
+var _honoraryChannel = null;
+window.initHonoraryVoteTab = async function() {
+    if (!_sb) return;
+    if (window.currentUser) {
+        try {
+            var vRes = await _sb.from('votes').select('category_id,nominee_id').eq('user_id', window.currentUser.id);
+            if (vRes.data) vRes.data.forEach(function(r) { window.votes[r.category_id] = r.nominee_id; });
+        } catch(e) {}
+    }
+    await window.fetchVoteCounts();
+    if (!_honoraryChannel && _sb) {
+        _honoraryChannel = _sb.channel('honorary-votes-realtime')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' },
                 async function() {
                     await window.fetchVoteCounts();
@@ -4081,6 +4247,8 @@ window.castVote = async function(categoryId, nomineeId) {
         window.renderVoteList();
     }, 700);
 };
+
+/* renderVoteList targets #vote-list which now lives in tab-honorary-vote */
 
 /* ════════════════════════════════════
    FEATURE 22 - Contestant Registration Gateway
@@ -4433,4 +4601,4 @@ boot();
 })();
 </script>
 </body>
-</html>
+</htm
