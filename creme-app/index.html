@@ -2831,8 +2831,9 @@ async function fetchUserRole() {
         return;
     }
     try {
-        var res = await _sb.from('user_roles').select('role').eq('user_id', window.currentUser.id).maybeSingle();
-        window.currentUserRole = (res.data && res.data.role) ? res.data.role : 'student';
+        /* Use RPC function to avoid RLS infinite recursion on user_roles */
+        var res = await _sb.rpc('get_my_role');
+        window.currentUserRole = (res.data) ? res.data : 'student';
     } catch(e) {
         window.currentUserRole = 'student';
     }
