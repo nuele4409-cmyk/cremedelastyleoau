@@ -499,4 +499,26 @@ drop policy if exists "Judges update own scores" on scores;
 create policy "Judges update own scores"
     on scores for update
     using (
-        auth.ui
+        auth.uid() = judge_id
+        and exists (
+            select 1 from user_roles
+            where user_id = auth.uid()
+            and   role    = 'judge'
+        )
+    );
+
+-- ══════════════════════════════════════════════════════
+
+
+-- ══════════════════════════════════════════════════════
+--  MIGRATION — Phase 4: Scores table restructure
+--  Replaces individual score columns (catwalk_score etc.)
+--  with criteria_breakdown JSONB + look_total integer.
+--  Also adds judge_comment for judge notes.
+--  Run this in the Supabase SQL Editor.
+-- ══════════════════════════════════════════════════════
+
+-- 1. Drop the old individual criteria columns (safe — data loss only if
+--    scores were already entered with the old schema)
+alter table scores drop column if exists catwalk_score;
+alter table scores drop column if exists originalit

@@ -1600,6 +1600,11 @@ html, body {
                 <h2 class="page-title">Tickets</h2>
                 <p class="page-sub">Secure your seat at the most stylish night of the year.</p>
             </div>
+            <div id="tickets-lock-banner" class="tab-lock-banner" style="display:none;">
+                <span class="tab-lock-banner-icon">🔐</span>
+                <p><strong>Tickets are not yet on sale.</strong> Check back soon — sales will open before the event.</p>
+            </div>
+            <div id="tickets-content">
             <div class="ticket-tiers-3">
                 <div class="tier-card tier-satins">
                     <div class="tier-badge">EARLY BIRD</div>
@@ -1638,6 +1643,7 @@ html, body {
                 </div>
             </div>
             <p class="tickets-note">⚠️ Seats are strictly limited. All sales are final. Tickets must be presented at entry.</p>
+            </div><!-- /tickets-content -->
         </div>
 
         <!-- REGISTER — Feature 22: Exclusive Contestant Gateway -->
@@ -1863,7 +1869,13 @@ html, body {
                 <h2 class="page-title">The Judges</h2>
                 <p class="page-sub">Meet the arbiters of taste. The panel that decides the crown.</p>
             </div>
-            <div id="judges-grid" class="judges-grid"></div>
+            <div id="judges-lock-banner" class="tab-lock-banner" style="display:none;">
+                <span class="tab-lock-banner-icon">🔐</span>
+                <p><strong>Judge profiles have not yet been revealed.</strong> Check back closer to the event.</p>
+            </div>
+            <div id="judges-content">
+                <div id="judges-grid" class="judges-grid"></div>
+            </div>
         </div>
 
         <!-- GALLERY -->
@@ -2012,7 +2024,13 @@ html, body {
                 <h2 class="page-title">The Team</h2>
                 <p class="page-sub">The people making the magic happen behind the scenes.</p>
             </div>
-            <div id="team-grid" class="judges-grid"></div>
+            <div id="team-lock-banner" class="tab-lock-banner" style="display:none;">
+                <span class="tab-lock-banner-icon">🔐</span>
+                <p><strong>Team profiles have not yet been revealed.</strong> Check back closer to the event.</p>
+            </div>
+            <div id="team-content">
+                <div id="team-grid" class="judges-grid"></div>
+            </div>
         </div>
 
         <!-- JOURNAL -->
@@ -2049,8 +2067,14 @@ html, body {
                 <h2 class="page-title">The Lineup</h2>
                 <p class="page-sub">Meet the faces competing for the crown.</p>
             </div>
-            <div id="lineup-grid" class="lineup-grid">
-                <p style="color:var(--cream-60);font-size:0.88rem;grid-column:1/-1;">Loading contestants...</p>
+            <div id="lineup-lock-banner" class="tab-lock-banner" style="display:none;">
+                <span class="tab-lock-banner-icon">🔐</span>
+                <p><strong>The lineup has not yet been revealed.</strong> Stay tuned — contestants will be announced soon.</p>
+            </div>
+            <div id="lineup-content">
+                <div id="lineup-grid" class="lineup-grid">
+                    <p style="color:var(--cream-60);font-size:0.88rem;grid-column:1/-1;">Loading contestants...</p>
+                </div>
             </div>
         </div>
 
@@ -2375,6 +2399,50 @@ html, body {
                     </label>
                 </div>
 
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Ticket Sales</div>
+                        <div class="ctrl-desc">Show or hide the Tickets tab and purchase options.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-tickets" onchange="saveAppControl('show_tickets', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Judges Reveal</div>
+                        <div class="ctrl-desc">Show or hide the Judges profiles tab.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-judges" onchange="saveAppControl('show_judges', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Team Reveal</div>
+                        <div class="ctrl-desc">Show or hide the Team behind-the-scenes tab.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-team" onchange="saveAppControl('show_team', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Lineup Reveal</div>
+                        <div class="ctrl-desc">Show or hide the contestant lineup tab.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-lineup" onchange="saveAppControl('show_lineup', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
                 <div id="ctrl-status" style="margin-top:1rem;font-size:0.8rem;color:#6b7280;min-height:1.2rem;"></div>
             </div>
         </div>
@@ -2607,16 +2675,20 @@ window.saveAppControl = async function(column, value) {
 /* ── Load toggles to match DB state when Controls tab is opened ── */
 window.loadAdminControls = async function() {
     await fetchAppSettings();
-    var s = window.appSettings;
+    var s = window.appSettings || {};
     var map = {
         'ctrl-registration': 'is_registration_open',
         'ctrl-nominations':  'is_nomination_open',
         'ctrl-voting':       'is_voting_open',
-        'ctrl-liveresults':  'show_live_results'
+        'ctrl-liveresults':  'show_live_results',
+        'ctrl-tickets':      'show_tickets',
+        'ctrl-judges':       'show_judges',
+        'ctrl-team':         'show_team',
+        'ctrl-lineup':       'show_lineup'
     };
     Object.keys(map).forEach(function(elId) {
         var el = document.getElementById(elId);
-        if (el) el.checked = s[map[elId]] !== false; // default true if column doesn't exist yet
+        if (el) el.checked = s[map[elId]] !== false; // default true if column missing
     });
 };
 
@@ -3535,6 +3607,21 @@ function applyTabGates(loggedIn) {
         if (nomLock)    nomLock.style.display     = 'none';
         if (nomContent) nomContent.style.display  = 'block';
     }
+
+    // ── Simple on/off tabs: Tickets, Judges, Team, Lineup ──
+    // No sign-in required — just show lock banner when admin disables
+    [
+        { lock: 'tickets-lock-banner', content: 'tickets-content', key: 'show_tickets'  },
+        { lock: 'judges-lock-banner',  content: 'judges-content',  key: 'show_judges'   },
+        { lock: 'team-lock-banner',    content: 'team-content',    key: 'show_team'      },
+        { lock: 'lineup-lock-banner',  content: 'lineup-content',  key: 'show_lineup'    }
+    ].forEach(function(cfg) {
+        var lockEl    = document.getElementById(cfg.lock);
+        var contentEl = document.getElementById(cfg.content);
+        var isOpen    = settings[cfg.key] !== false; // default ON if column missing
+        if (lockEl)    lockEl.style.display    = isOpen ? 'none' : 'flex';
+        if (contentEl) contentEl.style.display = isOpen ? ''     : 'none';
+    });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -3864,82 +3951,4 @@ window.setExperience = function(val) {
 };
 
 window.handleFileSelect = function(input, zoneId, nameId, maxMB) {
-    var zone = document.getElementById(zoneId), nameEl = document.getElementById(nameId);
-    var field = input.id.replace('rf-', '');
-    _regFilesOk[field] = false;
-    if (!input.files || !input.files[0]) {
-        if (zone) zone.classList.remove('has-file', 'file-error');
-        if (nameEl) nameEl.textContent = '';
-        window.checkRegForm(); return;
-    }
-    var file = input.files[0], sizeMB = file.size / (1024 * 1024);
-    if (sizeMB > maxMB) {
-        if (zone) { zone.classList.remove('has-file'); zone.classList.add('file-error'); }
-        if (nameEl) nameEl.textContent = '✗ Too large (' + sizeMB.toFixed(1) + 'MB — max ' + maxMB + 'MB)';
-        input.value = ''; window.checkRegForm(); return;
-    }
-    _regFilesOk[field] = true;
-    if (zone) { zone.classList.add('has-file'); zone.classList.remove('file-error'); }
-    if (nameEl) nameEl.textContent = '✓ ' + file.name + ' (' + sizeMB.toFixed(1) + 'MB)';
-    window.checkRegForm();
-};
-
-window.checkRegForm = function() {
-    var btn = document.getElementById('reg-proceed-btn'); if (!btn) return;
-    var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
-    var ok = get('rf-name').trim() && get('rf-age') && get('rf-gender') && get('rf-phone').trim() &&
-             get('rf-email').trim() && get('rf-dept').trim() && get('rf-faculty').trim() &&
-             get('rf-level') && get('rf-height') && get('rf-clothing') && get('rf-shoe') &&
-             get('rf-instagram').trim() && _regExperience !== null &&
-             _regFilesOk.headshot && _regFilesOk.fullbody && _regFilesOk.video;
-    btn.disabled = !ok;
-};
-
-window.proceedToContestantPayment = async function() {
-    if (!window.currentUser) { window.openAuthModal(); return; }
-    var err = document.getElementById('reg-error'); if (err) err.style.display = 'none';
-    var currentCount = await window.fetchContestantCount();
-    if (currentCount >= REG_CAP) {
-        if (err) { err.textContent = 'Sorry — all 30 spots have just been filled.'; err.style.display = 'block'; }
-        window.initRegisterTab(); return;
-    }
-    var btn = document.getElementById('reg-proceed-btn');
-    if (btn) { btn.textContent = 'Opening payment…'; btn.disabled = true; }
-    var handler = PaystackPop.setup({
-        key: PAYSTACK_KEY, email: window.currentUser.email, amount: 300000, currency: 'NGN',
-        ref: 'CDLS_REG_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8).toUpperCase(),
-        metadata: { user_id: window.currentUser.id, type: 'contestant_registration' },
-        callback: function(r) { window.onContestantPaymentSuccess(r.reference); },
-        onClose: function() {
-            if (btn) { btn.textContent = '🔐 Proceed to Payment — ₦3,000'; btn.disabled = false; window.checkRegForm(); }
-        }
-    });
-    handler.openIframe();
-};
-
-window.onContestantPaymentSuccess = async function(payRef) {
-    var btn = document.getElementById('reg-proceed-btn');
-    if (btn) { btn.textContent = 'Uploading your media…'; btn.disabled = true; }
-    var err = document.getElementById('reg-error'); if (err) err.style.display = 'none';
-    try {
-        var session = await _sb.auth.getSession();
-        var token   = session.data.session ? session.data.session.access_token : null;
-        var uid     = window.currentUser.id;
-        if (btn) btn.textContent = 'Uploading headshot…';
-        var hsFile = document.getElementById('rf-headshot').files[0];
-        var hsUrl  = await _uploadToStorage(hsFile, 'contestant-headshots', uid + '/headshot_' + Date.now() + '.' + hsFile.name.split('.').pop(), token);
-        if (btn) btn.textContent = 'Uploading full body photo…';
-        var fbFile = document.getElementById('rf-fullbody').files[0];
-        var fbUrl  = await _uploadToStorage(fbFile, 'contestant-fullbody', uid + '/fullbody_' + Date.now() + '.' + fbFile.name.split('.').pop(), token);
-        if (btn) btn.textContent = 'Uploading video (resumable)…';
-        var vidFile = document.getElementById('rf-video').files[0];
-        var vidUrl  = await _uploadVideoTUS(vidFile, 'contestant-videos', uid + '/video_' + Date.now() + '.' + vidFile.name.split('.').pop(), token);
-        if (btn) btn.textContent = 'Saving application…';
-        var res = await _sb.from('contestants').insert([{
-            user_id: uid,
-            full_name: document.getElementById('rf-name').value.trim(),
-            email: document.getElementById('rf-email').value.trim(),
-            phone: document.getElementById('rf-phone').value.trim(),
-            department: document.getElementById('rf-dept').value.trim(),
-            instagram: document.getElementById('rf-instagram').value.trim(),
-            headshot_url: hsUrl, fullbody
+    var zone = doc
