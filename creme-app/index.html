@@ -257,6 +257,22 @@ html, body {
     border: 1px solid var(--border); border-radius: 24px; padding: 2rem 1.75rem;
 }
 .nominate-form-intro { font-size: 0.9rem; color: var(--cream-60); line-height: 1.65; margin-bottom: 1.75rem; font-style: italic; }
+/* ── Tab sign-in gate & lock banner ── */
+.tab-signin-gate {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 3rem 1rem; text-align: center; gap: 1rem;
+}
+.tab-gate-icon { font-size: 2.5rem; }
+.tab-gate-msg  { font-size: 0.9rem; color: var(--cream-60); max-width: 280px; line-height: 1.6; }
+.tab-lock-banner {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    background: rgba(42,0,16,0.6); border: 1px solid rgba(154,26,69,0.4);
+    border-radius: 12px; padding: 1.1rem 1.25rem; margin-bottom: 1.25rem;
+    line-height: 1.6;
+}
+.tab-lock-banner-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+.tab-lock-banner p    { font-size: 0.85rem; color: var(--cream-60); margin: 0; }
+.tab-lock-banner strong { color: var(--cream); }
 .nominate-warning-banner {
     display: flex; gap: 0.75rem; align-items: flex-start;
     background: rgba(154,26,69,0.18); border: 1px solid rgba(227,0,79,0.45);
@@ -388,7 +404,7 @@ html, body {
 .admin-back-btn:hover { background: rgba(255,255,255,0.18); }
 .admin-tabs-bar {
     background: #fff; border-bottom: 1px solid #e5e7eb;
-    display: grid; grid-template-columns: repeat(4, 1fr);
+    display: grid; grid-template-columns: repeat(5, 1fr);
     position: sticky; top: 72px; z-index: 9;
 }
 .admin-tab {
@@ -401,6 +417,41 @@ html, body {
 .admin-tab.active { border-bottom-color: #9A1A45; color: #9A1A45; }
 .admin-tab-pane { display: none; }
 .admin-tab-pane.active { display: block; }
+
+/* ── Master Controls toggle rows ── */
+.ctrl-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 0; border-bottom: 1px solid rgba(154,26,69,0.15);
+    gap: 1rem;
+}
+.ctrl-row:last-child { border-bottom: none; }
+.ctrl-info { flex: 1; }
+.ctrl-label { font-size: 0.88rem; font-weight: 700; color: #111; margin-bottom: 0.2rem; }
+.ctrl-desc  { font-size: 0.72rem; color: #6b7280; line-height: 1.4; }
+.ctrl-toggle {
+    position: relative; flex-shrink: 0;
+    width: 52px; height: 28px;
+}
+.ctrl-toggle input { opacity: 0; width: 0; height: 0; }
+.ctrl-slider {
+    position: absolute; inset: 0; border-radius: 999px;
+    background: #d1d5db; cursor: pointer; transition: background 0.2s;
+}
+.ctrl-slider::before {
+    content: ''; position: absolute;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; left: 3px; top: 3px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+.ctrl-toggle input:checked + .ctrl-slider { background: #E3004F; }
+.ctrl-toggle input:checked + .ctrl-slider::before { transform: translateX(24px); }
+.ctrl-toast {
+    display: none; position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+    background: #111; color: #fff; border-radius: 999px;
+    padding: 0.5rem 1.25rem; font-size: 0.82rem; font-weight: 600;
+    z-index: 9999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
 .admin-body { padding: 1.5rem 1rem 3rem; max-width: 800px; margin: 0 auto; width: 100%; }
 .admin-section {
     background: #fff; border-radius: 12px; padding: 1.4rem; margin-bottom: 1rem;
@@ -1395,7 +1446,7 @@ html, body {
 
         <!-- VOTE -->
         <div id="tab-vote" class="tab-screen">
-            <!-- Live Results Banner (hidden until admin enables) -->
+            <!-- Live Results Banner (admin-controlled) -->
             <div class="vote-live-banner" id="vote-live-banner" style="display:none;">
                 <span class="vote-live-dot"></span> Live results are being updated in real time
             </div>
@@ -1403,7 +1454,21 @@ html, body {
                 <h2 class="page-title">Cast Your Vote</h2>
                 <p class="page-sub">One vote per category. Choose the faces that move you.</p>
             </div>
-            <div id="vote-list"></div>
+            <!-- Sign-in gate (shown when not authenticated) -->
+            <div id="vote-signin-gate" class="tab-signin-gate">
+                <div class="tab-gate-icon">🔒</div>
+                <p class="tab-gate-msg">You must be signed in to access the voting portal.</p>
+                <button class="nominate-submit-btn" onclick="openAuthModal()">Sign In to Access ✦</button>
+            </div>
+            <!-- Lock banner (shown when admin has closed voting) -->
+            <div id="vote-lock-banner" class="tab-lock-banner" style="display:none;">
+                <span class="tab-lock-banner-icon">🔐</span>
+                <p><strong>Voting is currently locked.</strong> The voting portal will open during the live event. Check back on 26 November 2026.</p>
+            </div>
+            <!-- Main voting content (hidden until signed in + voting open) -->
+            <div id="vote-content" style="display:none;">
+                <div id="vote-list"></div>
+            </div>
         </div>
 
         <!-- NOMINATE -->
@@ -1412,6 +1477,19 @@ html, body {
                 <h2 class="page-title">Honorary Awards</h2>
                 <p class="page-sub">Nominate outstanding campus personalities for special recognition.</p>
             </div>
+            <!-- Sign-in gate (shown when not authenticated) -->
+            <div id="nominate-signin-gate" class="tab-signin-gate">
+                <div class="tab-gate-icon">🔒</div>
+                <p class="tab-gate-msg">You must be signed in to submit a nomination.</p>
+                <button class="nominate-submit-btn" onclick="openAuthModal()">Sign In to Access ✦</button>
+            </div>
+            <!-- Lock banner (shown when admin has closed nominations) -->
+            <div id="nominate-lock-banner" class="tab-lock-banner" style="display:none;">
+                <span class="tab-lock-banner-icon">🔐</span>
+                <p><strong>Nominations are currently closed.</strong> The nomination portal has been closed by the Administrator. Check back for updates.</p>
+            </div>
+            <!-- Main nominate content (hidden until signed in + nominations open) -->
+            <div id="nominate-content" style="display:none;">
             <!-- Warning banner: Honorary-only clarification -->
             <div class="nominate-warning-banner">
                 <span class="nominate-warning-icon">⚠️</span>
@@ -1453,6 +1531,7 @@ html, body {
                 </div>
                 <button class="nominate-submit-btn" onclick="submitNomination()">Submit Nomination ✦</button>
             </div>
+            </div><!-- end nominate-content -->
         </div>
 
         <!-- EXPLORE -->
@@ -2147,6 +2226,7 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('analytics', this)">📊 Analytics</button>
         <button class="admin-tab" onclick="switchAdminTab('gallery', this)">📸 Gallery</button>
         <button class="admin-tab" onclick="switchAdminTab('scan', this)">📷 Scan</button>
+        <button class="admin-tab" onclick="switchAdminTab('controls', this)">🎛️ Controls</button>
     </nav>
     <main class="admin-body">
         <div id="adm-tab-dispatches" class="admin-tab-pane active">
@@ -2206,9 +2286,64 @@ html, body {
                     <div id="scan-log"><p class="adm-empty">No scans yet.</p></div>
                 </div>
             </div>
+        <!-- CONTROLS PANE -->
+        <div id="adm-tab-controls" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2>🎛️ Master App Controls</h2>
+                <p style="font-size:0.8rem;color:#6b7280;margin-bottom:1.5rem;line-height:1.5;">Flip any switch to instantly lock or unlock that section of the app for all users. Changes take effect in real time.</p>
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Registration Gateway</div>
+                        <div class="ctrl-desc">Allow or block new contestant registrations.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-registration" onchange="saveAppControl('is_registration_open', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Honorary Nominations</div>
+                        <div class="ctrl-desc">Allow or block public award nominations.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-nominations" onchange="saveAppControl('is_nomination_open', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Main Event Voting</div>
+                        <div class="ctrl-desc">Open or close the public voting portal.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-voting" onchange="saveAppControl('is_voting_open', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Public Live Results</div>
+                        <div class="ctrl-desc">Show or hide the live vote tally on the voting page.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-liveresults" onchange="saveAppControl('show_live_results', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div id="ctrl-status" style="margin-top:1rem;font-size:0.8rem;color:#6b7280;min-height:1.2rem;"></div>
+            </div>
+        </div>
         </div>
     </main>
 </div>
+<!-- Toast notification -->
+<div id="ctrl-toast" class="ctrl-toast">✓ Saved</div>
 <script src="https://cdn.jsdelivr.net/npm/tus-js-client@3.1.0/dist/tus.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2395,6 +2530,58 @@ var mockContestants = [
     }
 ];
 
+/* ── Feature 36: Global app settings ── */
+window.appSettings = {}; // populated from system_settings on boot
+
+async function fetchAppSettings() {
+    if (!_sb) return;
+    try {
+        var res = await _sb.from('system_settings').select('*').limit(1).single();
+        if (res.data) {
+            window.appSettings = res.data;
+            applyTabGates(!!window.currentUser); // re-fence tabs with fresh data
+        }
+    } catch(e) { /* use defaults */ }
+}
+
+/* ── Feature 35: Save a single toggle to system_settings ── */
+window.saveAppControl = async function(column, value) {
+    if (!_sb) return;
+    var statusEl = document.getElementById('ctrl-status');
+    if (statusEl) statusEl.textContent = 'Saving…';
+    try {
+        var res = await _sb.from('system_settings').update({ [column]: value }).eq('id', 1);
+        if (res.error) throw new Error(res.error.message);
+        window.appSettings[column] = value;
+        applyTabGates(!!window.currentUser); // re-fence the app immediately
+        // Toast
+        var toast = document.getElementById('ctrl-toast');
+        if (toast) {
+            toast.style.display = 'block';
+            setTimeout(function() { toast.style.display = 'none'; }, 2000);
+        }
+        if (statusEl) statusEl.textContent = '';
+    } catch(e) {
+        if (statusEl) statusEl.textContent = 'Error: ' + e.message;
+    }
+};
+
+/* ── Load toggles to match DB state when Controls tab is opened ── */
+window.loadAdminControls = async function() {
+    await fetchAppSettings();
+    var s = window.appSettings;
+    var map = {
+        'ctrl-registration': 'is_registration_open',
+        'ctrl-nominations':  'is_nomination_open',
+        'ctrl-voting':       'is_voting_open',
+        'ctrl-liveresults':  'show_live_results'
+    };
+    Object.keys(map).forEach(function(elId) {
+        var el = document.getElementById(elId);
+        if (el) el.checked = s[map[elId]] !== false; // default true if column doesn't exist yet
+    });
+};
+
 function boot() {
     if (window.supabase) {
         try {
@@ -2410,6 +2597,7 @@ function boot() {
         } catch(e) { console.warn('Supabase init error:', e); }
     }
     window.updateTopBar();
+    fetchAppSettings(); // Feature 36 — load master switches early
     window.renderVoteList();
     fetchEventDate();
     window.loadLineup();
@@ -2700,6 +2888,7 @@ window.switchAdminTab  = function(tab, btn) {
     if (pane) pane.classList.add('active');
     if (btn)  btn.classList.add('active');
     if (tab !== 'scan') stopScanner(); // stop camera when leaving scan tab
+    if (tab === 'controls') window.loadAdminControls(); // sync toggles with DB
 };
 
 /* ── QR TICKET SCANNER ── */
@@ -3251,33 +3440,73 @@ async function fetchUserRole() {
 }
 
 /* ── Feature 20: UI fencing — 3 tiers ── */
+
+/* ── Feature 20: UI fencing — 3 tiers ── */
 function applyRoleBasedUI() {
     var role     = window.currentUserRole;
+    var loggedIn = !!window.currentUser;
     var fab      = document.getElementById('admin-fab') || document.querySelector('.admin-fab');
     var judgeBtn = document.getElementById('judge-nav-btn');
 
     if (role === 'admin') {
-        /* Admin: sees FAB AND judge nav */
         if (fab)      fab.style.display      = 'flex';
         if (judgeBtn) judgeBtn.style.display = 'flex';
     } else if (role === 'judge') {
-        /* Judge: judge nav only — NO admin FAB */
         if (fab)      fab.style.display      = 'none';
         if (judgeBtn) judgeBtn.style.display = 'flex';
     } else {
-        /* Student/public: neither */
         if (fab)      fab.style.display      = 'none';
         if (judgeBtn) judgeBtn.style.display = 'none';
     }
+    applyTabGates(loggedIn);
 }
 
-/* ── Feature 21: Judging Panel internal view toggle ── */
+function applyTabGates(loggedIn) {
+    var settings = window.appSettings || {};
+    var voteGate    = document.getElementById('vote-signin-gate');
+    var voteLock    = document.getElementById('vote-lock-banner');
+    var voteContent = document.getElementById('vote-content');
+    var votingOpen  = settings.is_voting_open !== false;
+    if (!loggedIn) {
+        if (voteGate)    voteGate.style.display    = 'flex';
+        if (voteLock)    voteLock.style.display     = 'none';
+        if (voteContent) voteContent.style.display  = 'none';
+    } else if (!votingOpen) {
+        if (voteGate)    voteGate.style.display    = 'none';
+        if (voteLock)    voteLock.style.display     = 'flex';
+        if (voteContent) voteContent.style.display  = 'none';
+    } else {
+        if (voteGate)    voteGate.style.display    = 'none';
+        if (voteLock)    voteLock.style.display     = 'none';
+        if (voteContent) voteContent.style.display  = 'block';
+    }
+    var nomGate    = document.getElementById('nominate-signin-gate');
+    var nomLock    = document.getElementById('nominate-lock-banner');
+    var nomContent = document.getElementById('nominate-content');
+    var nomOpen    = settings.is_nomination_open !== false;
+    if (!loggedIn) {
+        if (nomGate)    nomGate.style.display    = 'flex';
+        if (nomLock)    nomLock.style.display     = 'none';
+        if (nomContent) nomContent.style.display  = 'none';
+    } else if (!nomOpen) {
+        if (nomGate)    nomGate.style.display    = 'none';
+        if (nomLock)    nomLock.style.display     = 'flex';
+        if (nomContent) nomContent.style.display  = 'none';
+    } else {
+        if (nomGate)    nomGate.style.display    = 'none';
+        if (nomLock)    nomLock.style.display     = 'none';
+        if (nomContent) nomContent.style.display  = 'block';
+    }
+}
+
+/* ══════════════════════════════════════════════════════
+   FEATURES 15-21: JUDGING PANEL
+══════════════════════════════════════════════════════ */
 window.switchJudgingView = function(view) {
     var scoreView    = document.getElementById('judge-score-view');
     var rankingsView = document.getElementById('judge-rankings-view');
     var scoreBtn     = document.getElementById('judge-view-btn-score');
     var rankingsBtn  = document.getElementById('judge-view-btn-rankings');
-
     if (view === 'score') {
         if (scoreView)    scoreView.style.display    = '';
         if (rankingsView) rankingsView.style.display = 'none';
@@ -3292,7 +3521,6 @@ window.switchJudgingView = function(view) {
     }
 };
 
-/* ── Feature 15: Look selector ── */
 window.selectLook = function(look, btn) {
     _currentLook = look;
     document.querySelectorAll('.look-tab').forEach(function(b) { b.classList.remove('active'); });
@@ -3300,186 +3528,387 @@ window.selectLook = function(look, btn) {
     window.loadJudgingRoster();
 };
 
-/* ── Feature 15: Contestant roster (filtered by current look) ── */
 window.loadJudgingRoster = async function() {
-    var roster = document.getElementById('judging-roster');
+    var roster = document.getElementById('judge-roster');
     if (!roster) return;
-
-    if (!window.currentUser) {
-        roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Please sign in to access the judging panel.</p>';
-        return;
-    }
-    if (window.currentUserRole !== 'judge' && window.currentUserRole !== 'admin') {
-        roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Access restricted to authorised judges and admins.</p>';
-        return;
-    }
-
-    roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Loading contestants...</p>';
-    if (!_sb) { roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">No database connection.</p>'; return; }
-
-    /* Approved contestants */
+    roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;padding:1rem 0;">Loading contestants…</p>';
+    if (!_sb || !window.currentUser) { roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Please sign in.</p>'; return; }
     var cRes = await _sb.from('contestants').select('*').eq('is_approved', true).order('full_name', { ascending: true });
     if (cRes.error || !cRes.data || cRes.data.length === 0) {
-        roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">No approved contestants available yet.</p>';
+        roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;padding:1rem 0;">No approved contestants yet.</p>';
         return;
     }
-
-    /* This judge\'s scores for the selected look */
-    var sRes = await _sb.from('scores')
-        .select('contestant_id, look_total')
-        .eq('judge_id', window.currentUser.id)
-        .eq('look_category', _currentLook);
-    var scoredMap = {};
-    if (sRes.data) { sRes.data.forEach(function(s) { scoredMap[s.contestant_id] = s.look_total; }); }
-
+    var scored = {};
+    var sRes = await _sb.from('scores').select('contestant_id').eq('judge_id', window.currentUser.id).eq('look_category', _currentLook);
+    if (sRes.data) sRes.data.forEach(function(s) { scored[s.contestant_id] = true; });
     roster.innerHTML = '';
     cRes.data.forEach(function(c) {
-        var isScored = scoredMap.hasOwnProperty(c.id);
-        var row = document.createElement('div');
-        row.className = 'judging-row' + (isScored ? ' scored' : '');
-        if (!isScored) { row.onclick = function() { window.openScoringModal(c); }; }
-
-        var photoHtml = c.headshot_url
-            ? '<img class="judging-row-photo" src="' + c.headshot_url + '" alt="' + c.full_name + '" loading="lazy">'
-            : '<div class="judging-row-avatar">👤</div>';
-
-        var pillHtml = isScored
-            ? '<div class="judge-status-pill scored">🟢 ' + scoredMap[c.id] + '/50</div>'
-            : '<div class="judge-status-pill pending">⚪ Pending</div>';
-
-        row.innerHTML = photoHtml +
-            '<div class="judging-row-info">' +
-                '<div class="judging-row-name">' + c.full_name + '</div>' +
-                (c.department ? '<div class="judging-row-dept">' + c.department + '</div>' : '') +
-            '</div>' + pillHtml;
-        roster.appendChild(row);
+        var done = !!scored[c.id];
+        var card = document.createElement('div');
+        card.className = 'judge-card' + (done ? ' judge-card--scored' : '');
+        card.innerHTML =
+            (c.headshot_url ? '<img class="judge-card-img" src="' + c.headshot_url + '" loading="lazy">' :
+                '<div class="judge-card-img" style="background:var(--rose-dark);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">👤</div>') +
+            '<div class="judge-card-name">' + c.full_name + '</div>' +
+            '<div class="judge-card-dept">' + (c.department || '') + '</div>' +
+            (done ? '<div class="judge-card-scored-badge">✓ Scored</div>'
+                  : '<button class="judge-score-btn" onclick="window.openScoringModal(\'' + c.id.replace(/'/g, "\\'") + '\')">Score ▸</button>');
+        roster.appendChild(card);
     });
+    window._judgeContestants = cRes.data;
 };
 
-/* ── Feature 16: Open scoring modal ── */
-window.openScoringModal = function(contestant) {
-    _scoringContestant = contestant;
-    var overlay   = document.getElementById('scoring-overlay');
-    var headerEl  = document.getElementById('scoring-modal-content');
-    var listEl    = document.getElementById('score-criteria-list');
-    var commentEl = document.getElementById('score-comment');
-    var submitBtn = document.getElementById('score-submit-btn');
-
-    /* Reset state */
-    if (commentEl) commentEl.value = '';
-    submitBtn.disabled    = true;
-    submitBtn.textContent = 'Fill in comments to submit';
-
+window.openScoringModal = function(contestantId) {
+    var c = (window._judgeContestants || []).find(function(x) { return x.id === contestantId; });
+    if (!c) return;
+    _scoringContestant = c;
     var look = _looks[_currentLook];
-
-    /* Header: headshot + name + look badge */
-    var photoHtml = contestant.headshot_url
-        ? '<img class="scoring-headshot" src="' + contestant.headshot_url + '" alt="' + contestant.full_name + '">'
-        : '<div class="scoring-headshot-placeholder">👤</div>';
-    headerEl.innerHTML =
-        photoHtml +
-        '<div class="scoring-contestant-name">' + contestant.full_name + '</div>' +
-        '<div class="scoring-contestant-dept">' + (contestant.department || 'Contestant') + '</div>' +
-        '<div><span class="scoring-look-badge">' + look.label + '</span></div>';
-
-    /* Build 5 sliders (1–10) */
-    listEl.innerHTML = '';
-    look.criteria.forEach(function(crit, i) {
-        var item = document.createElement('div');
-        item.className = 'score-criteria-item';
-        item.innerHTML =
-            '<div class="score-criteria-header">' +
-                '<span class="score-criteria-label">' + crit + '</span>' +
-                '<span class="score-criteria-val" id="val-crit-' + i + '">5</span>' +
-            '</div>' +
-            '<input type="range" class="score-slider" id="slider-crit-' + i + '" min="1" max="10" value="5" oninput="window.updateScoringTotal()">' +
-            '<div class="score-slider-hints"><span>1 — Weak</span><span>5 — Good</span><span>10 — Flawless</span></div>';
-        listEl.appendChild(item);
+    document.getElementById('scoring-modal-content').innerHTML =
+        (c.headshot_url ? '<img src="' + c.headshot_url + '" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);margin-bottom:0.5rem;">' :
+            '<div style="width:72px;height:72px;border-radius:50%;background:var(--rose-dark);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 0.5rem;">👤</div>') +
+        '<h3 style="font-size:1rem;font-weight:800;color:var(--cream);margin-bottom:0.25rem;">' + c.full_name + '</h3>' +
+        '<span style="font-size:0.7rem;background:var(--rose);color:#fff;padding:0.2rem 0.7rem;border-radius:999px;font-weight:700;">' + look.label + '</span>';
+    var list = document.getElementById('score-criteria-list');
+    list.innerHTML = '';
+    look.criteria.forEach(function(label, i) {
+        var row = document.createElement('div');
+        row.className = 'score-criterion-row';
+        row.innerHTML =
+            '<div class="score-criterion-label">' + label + '</div>' +
+            '<div class="score-criterion-track">' +
+                '<input type="range" class="score-slider" min="0" max="10" value="5" id="sc-slider-' + i + '" oninput="window.updateScoringSubtotal()">' +
+                '<span class="score-slider-val" id="sc-val-' + i + '">5</span>' +
+            '</div>';
+        list.appendChild(row);
     });
-
-    window.updateScoringTotal();
-    overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    document.getElementById('score-comment').value = '';
+    document.getElementById('score-submit-btn').disabled = true;
+    document.getElementById('score-submit-btn').textContent = 'Fill in comments to submit';
+    window.updateScoringSubtotal();
+    document.getElementById('scoring-overlay').classList.remove('hidden');
 };
 
 window.closeScoringModal = function() {
     document.getElementById('scoring-overlay').classList.add('hidden');
-    document.body.style.overflow = '';
     _scoringContestant = null;
 };
 
-/* Live subtotal as sliders move */
-window.updateScoringTotal = function() {
-    var look = _looks[_currentLook];
+window.updateScoringSubtotal = function() {
     var total = 0;
-    look.criteria.forEach(function(crit, i) {
-        var slider = document.getElementById('slider-crit-' + i);
-        var valEl  = document.getElementById('val-crit-' + i);
-        if (slider && valEl) { var v = parseInt(slider.value, 10); valEl.textContent = v; total += v; }
-    });
-    var disp = document.getElementById('score-subtotal-display');
-    if (disp) disp.textContent = total;
+    for (var i = 0; i < 5; i++) {
+        var s = document.getElementById('sc-slider-' + i), v = document.getElementById('sc-val-' + i);
+        if (s) { var n = parseInt(s.value); total += n; if (v) v.textContent = n; }
+    }
+    var sub = document.getElementById('score-subtotal-display');
+    if (sub) sub.textContent = total;
     window.validateSubmitButton();
 };
 
-/* Enable submit only when comment box has content */
 window.validateSubmitButton = function() {
-    var comment = document.getElementById('score-comment');
-    var btn     = document.getElementById('score-submit-btn');
+    var comment = (document.getElementById('score-comment') || {}).value || '';
+    var btn = document.getElementById('score-submit-btn');
     if (!btn) return;
-    var filled = comment && comment.value.trim().length >= 5;
-    btn.disabled    = !filled;
-    btn.textContent = filled ? 'Submit Score ✓' : 'Fill in comments to submit';
+    if (comment.trim().length >= 10) { btn.disabled = false; btn.textContent = 'Submit Score ❆'; }
+    else { btn.disabled = true; btn.textContent = 'Fill in comments to submit'; }
 };
 
-/* Submit — JSONB payload, unique on (judge, contestant, look) */
 window.submitScore = async function() {
-    if (!_scoringContestant || !_sb || !window.currentUser) return;
+    if (!_sb || !window.currentUser || !_scoringContestant) return;
     var btn = document.getElementById('score-submit-btn');
-    btn.disabled    = true;
-    btn.textContent = 'Submitting...';
+    if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
+    var vals = [];
+    for (var i = 0; i < 5; i++) { var s = document.getElementById('sc-slider-' + i); vals.push(s ? parseInt(s.value) : 5); }
+    var total = vals.reduce(function(a, b) { return a + b; }, 0);
+    var comment = (document.getElementById('score-comment') || {}).value || '';
+    var res = await _sb.from('scores').upsert({
+        judge_id: window.currentUser.id, contestant_id: _scoringContestant.id,
+        look_category: _currentLook, catwalk_score: vals[0], originality_score: vals[1],
+        confidence_score: vals[2], outfit_score: vals[3], total_score: total, notes: comment
+    }, { onConflict: 'judge_id,contestant_id,look_category' });
+    if (res.error) { if (btn) { btn.textContent = 'Error: ' + res.error.message; btn.disabled = false; } return; }
+    window.closeScoringModal();
+    window.loadJudgingRoster();
+};
 
-    var look      = _looks[_currentLook];
-    var breakdown = {};
-    var total     = 0;
-    look.criteria.forEach(function(crit, i) {
-        var slider = document.getElementById('slider-crit-' + i);
-        var v = slider ? parseInt(slider.value, 10) : 5;
-        breakdown[i] = { label: crit, score: v };
-        total += v;
+window.loadLiveRankings = async function() {
+    var container = document.getElementById('judge-rankings-list');
+    if (!container) return;
+    container.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Loading…</p>';
+    if (!_sb) return;
+    var res  = await _sb.from('scores').select('contestant_id,total_score,look_category');
+    var cRes = await _sb.from('contestants').select('id,full_name,headshot_url').eq('is_approved', true);
+    if (res.error || !cRes.data) { container.innerHTML = '<p style="color:#ff6b9d;">Error loading rankings.</p>'; return; }
+    var totals = {};
+    (res.data || []).forEach(function(s) {
+        if (!totals[s.contestant_id]) totals[s.contestant_id] = {};
+        if (!totals[s.contestant_id][s.look_category]) totals[s.contestant_id][s.look_category] = { sum: 0, n: 0 };
+        totals[s.contestant_id][s.look_category].sum += s.total_score;
+        totals[s.contestant_id][s.look_category].n   += 1;
     });
+    var ranked = cRes.data.map(function(c) {
+        var d = totals[c.id] || {}, grand = 0;
+        Object.keys(d).forEach(function(lk) { grand += d[lk].sum / d[lk].n; });
+        return { name: c.full_name, img: c.headshot_url, grand: Math.round(grand) };
+    }).sort(function(a, b) { return b.grand - a.grand; });
+    container.innerHTML = '';
+    ranked.forEach(function(r, i) {
+        var row = document.createElement('div');
+        row.className = 'ranking-row';
+        row.innerHTML =
+            '<span class="ranking-pos">' + (i + 1) + '</span>' +
+            (r.img ? '<img src="' + r.img + '" class="ranking-img">' :
+                '<div class="ranking-img" style="background:var(--rose-dark);display:flex;align-items:center;justify-content:center;">👤</div>') +
+            '<span class="ranking-name">' + r.name + '</span>' +
+            '<span class="ranking-score">' + r.grand + ' pts</span>';
+        container.appendChild(row);
+    });
+};
 
-    var comment = document.getElementById('score-comment');
-    var payload = {
-        judge_id:           window.currentUser.id,
-        contestant_id:      _scoringContestant.id,
-        look_category:      _currentLook,
-        criteria_breakdown: breakdown,
-        look_total:         total,
-        judge_comment:      comment ? comment.value.trim() : ''
-    };
+/* ════════════════════════════════════
+   FEATURE 25 - Gallery Filter
+════════════════════════════════════ */
+window.switchGalleryFilter = function(filter, btn) {
+    document.querySelectorAll('.gallery-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.gallery-filter-pane').forEach(function(p) { p.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    var pane = document.getElementById('gallery-pane-' + filter);
+    if (pane) pane.classList.add('active');
+};
 
+/* ════════════════════════════════════
+   FEATURE 23 - Live Voting (DB + Realtime)
+════════════════════════════════════ */
+var _voteChannel = null;
+
+window.initVoteTab = async function() {
+    if (!_sb) return;
     try {
-        var res = await _sb.from('scores').insert([payload]);
-        if (res.error) throw res.error;
-        btn.textContent = '✓ Submitted!';
-        setTimeout(function() {
-            window.closeScoringModal();
-            window.loadJudgingRoster();
-        }, 900);
-    } catch(e) {
-        btn.disabled    = false;
-        btn.textContent = 'Submit Score ✓';
-        if (e.code === '23505') {
-            alert('You already scored ' + _scoringContestant.full_name + ' for ' + look.label + '.');
-            window.closeScoringModal();
-            window.loadJudgingRoster();
-        } else {
-            alert('Submission failed: ' + (e.message || 'Unknown error'));
+        var sRes = await _sb.from('system_settings').select('show_live_results,is_voting_open').limit(1).single();
+        if (sRes.data) {
+            var banner = document.getElementById('vote-live-banner');
+            if (banner) banner.style.display = sRes.data.show_live_results ? 'flex' : 'none';
         }
+    } catch(e) {}
+    if (window.currentUser) {
+        try {
+            var vRes = await _sb.from('votes').select('category_id,nominee_id').eq('user_id', window.currentUser.id);
+            if (vRes.data) vRes.data.forEach(function(r) { window.votes[r.category_id] = r.nominee_id; });
+        } catch(e) {}
+    }
+    if (!_voteChannel && _sb) {
+        _voteChannel = _sb.channel('votes-realtime')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' },
+                function() { window.renderVoteList(); })
+            .subscribe();
+    }
+    window.renderVoteList();
+};
+
+window.castVote = async function(categoryId, nomineeId) {
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    window.votes[categoryId] = nomineeId;
+    window.renderVoteList();
+    if (_sb) {
+        try {
+            await _sb.from('votes').upsert(
+                { user_id: window.currentUser.id, category_id: categoryId, nominee_id: nomineeId },
+                { onConflict: 'user_id,category_id' }
+            );
+        } catch(e) {}
+    }
+    setTimeout(function() {
+        if (window.expandedCategory === categoryId) window.expandedCategory = null;
+        window.renderVoteList();
+    }, 700);
+};
+
+/* ════════════════════════════════════
+   FEATURE 22 - Contestant Registration Gateway
+════════════════════════════════════ */
+var _contestantCount = 0;
+var _regExperience   = null;
+var REG_CAP          = 30;
+var _regFilesOk      = { headshot: false, fullbody: false, video: false };
+
+window.initRegisterTab = async function() {
+    var closed  = document.getElementById('reg-closed-screen');
+    var success = document.getElementById('reg-success-screen');
+    var gate    = document.getElementById('reg-signin-gate');
+    var content = document.getElementById('reg-form-content');
+    var banner  = document.getElementById('reg-spot-banner');
+    if (closed)  closed.style.display  = 'none';
+    if (success) success.style.display = 'none';
+    if (gate)    gate.style.display    = 'none';
+    if (content) content.style.display = 'none';
+    if (banner)  banner.style.display  = '';
+    if (window.appSettings && window.appSettings.is_registration_open === false) {
+        if (closed) { closed.style.display = 'flex'; if (banner) banner.style.display = 'none'; }
+        return;
+    }
+    _contestantCount = await window.fetchContestantCount();
+    var remaining = REG_CAP - _contestantCount;
+    var countEl = document.getElementById('reg-spot-count');
+    var remEl   = document.getElementById('reg-spot-remaining');
+    if (countEl) countEl.textContent = _contestantCount + ' / ' + REG_CAP;
+    if (remEl)   remEl.textContent   = remaining > 0 ? remaining + ' spot' + (remaining !== 1 ? 's' : '') + ' remaining' : 'All spots filled';
+    if (remaining <= 0) { if (closed) closed.style.display = 'flex'; return; }
+    if (!window.currentUser) { if (gate) gate.style.display = 'block'; return; }
+    if (_sb) {
+        try {
+            var existing = await _sb.from('contestants').select('id').eq('user_id', window.currentUser.id).maybeSingle();
+            if (existing.data) { if (success) success.style.display = 'flex'; return; }
+        } catch(e) {}
+    }
+    if (content) content.style.display = 'block';
+    window.checkRegForm();
+};
+
+window.fetchContestantCount = async function() {
+    if (!_sb) return 0;
+    try {
+        var res = await _sb.from('contestants').select('id', { count: 'exact', head: true }).not('payment_ref', 'is', null);
+        return res.count || 0;
+    } catch(e) { return 0; }
+};
+
+window.setExperience = function(val) {
+    _regExperience = val;
+    var yBtn = document.getElementById('exp-btn-yes'), nBtn = document.getElementById('exp-btn-no');
+    var detail = document.getElementById('rf-experience-detail');
+    if (yBtn) yBtn.classList.toggle('active', val === 'yes');
+    if (nBtn) nBtn.classList.toggle('active', val === 'no');
+    if (detail) { detail.style.display = val === 'yes' ? 'block' : 'none'; if (val === 'no') detail.value = ''; }
+    window.checkRegForm();
+};
+
+window.handleFileSelect = function(input, zoneId, nameId, maxMB) {
+    var zone = document.getElementById(zoneId), nameEl = document.getElementById(nameId);
+    var field = input.id.replace('rf-', '');
+    _regFilesOk[field] = false;
+    if (!input.files || !input.files[0]) {
+        if (zone) zone.classList.remove('has-file', 'file-error');
+        if (nameEl) nameEl.textContent = '';
+        window.checkRegForm(); return;
+    }
+    var file = input.files[0], sizeMB = file.size / (1024 * 1024);
+    if (sizeMB > maxMB) {
+        if (zone) { zone.classList.remove('has-file'); zone.classList.add('file-error'); }
+        if (nameEl) nameEl.textContent = '✗ Too large (' + sizeMB.toFixed(1) + 'MB — max ' + maxMB + 'MB)';
+        input.value = ''; window.checkRegForm(); return;
+    }
+    _regFilesOk[field] = true;
+    if (zone) { zone.classList.add('has-file'); zone.classList.remove('file-error'); }
+    if (nameEl) nameEl.textContent = '✓ ' + file.name + ' (' + sizeMB.toFixed(1) + 'MB)';
+    window.checkRegForm();
+};
+
+window.checkRegForm = function() {
+    var btn = document.getElementById('reg-proceed-btn'); if (!btn) return;
+    var get = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
+    var ok = get('rf-name').trim() && get('rf-age') && get('rf-gender') && get('rf-phone').trim() &&
+             get('rf-email').trim() && get('rf-dept').trim() && get('rf-faculty').trim() &&
+             get('rf-level') && get('rf-height') && get('rf-clothing') && get('rf-shoe') &&
+             get('rf-instagram').trim() && _regExperience !== null &&
+             _regFilesOk.headshot && _regFilesOk.fullbody && _regFilesOk.video;
+    btn.disabled = !ok;
+};
+
+window.proceedToContestantPayment = async function() {
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    var err = document.getElementById('reg-error'); if (err) err.style.display = 'none';
+    var currentCount = await window.fetchContestantCount();
+    if (currentCount >= REG_CAP) {
+        if (err) { err.textContent = 'Sorry — all 30 spots have just been filled.'; err.style.display = 'block'; }
+        window.initRegisterTab(); return;
+    }
+    var btn = document.getElementById('reg-proceed-btn');
+    if (btn) { btn.textContent = 'Opening payment…'; btn.disabled = true; }
+    var handler = PaystackPop.setup({
+        key: PAYSTACK_KEY, email: window.currentUser.email, amount: 300000, currency: 'NGN',
+        ref: 'CDLS_REG_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8).toUpperCase(),
+        metadata: { user_id: window.currentUser.id, type: 'contestant_registration' },
+        callback: function(r) { window.onContestantPaymentSuccess(r.reference); },
+        onClose: function() {
+            if (btn) { btn.textContent = '🔐 Proceed to Payment — ₦3,000'; btn.disabled = false; window.checkRegForm(); }
+        }
+    });
+    handler.openIframe();
+};
+
+window.onContestantPaymentSuccess = async function(payRef) {
+    var btn = document.getElementById('reg-proceed-btn');
+    if (btn) { btn.textContent = 'Uploading your media…'; btn.disabled = true; }
+    var err = document.getElementById('reg-error'); if (err) err.style.display = 'none';
+    try {
+        var session = await _sb.auth.getSession();
+        var token   = session.data.session ? session.data.session.access_token : null;
+        var uid     = window.currentUser.id;
+        if (btn) btn.textContent = 'Uploading headshot…';
+        var hsFile = document.getElementById('rf-headshot').files[0];
+        var hsUrl  = await _uploadToStorage(hsFile, 'contestant-headshots', uid + '/headshot_' + Date.now() + '.' + hsFile.name.split('.').pop(), token);
+        if (btn) btn.textContent = 'Uploading full body photo…';
+        var fbFile = document.getElementById('rf-fullbody').files[0];
+        var fbUrl  = await _uploadToStorage(fbFile, 'contestant-fullbody', uid + '/fullbody_' + Date.now() + '.' + fbFile.name.split('.').pop(), token);
+        if (btn) btn.textContent = 'Uploading video (resumable)…';
+        var vidFile = document.getElementById('rf-video').files[0];
+        var vidUrl  = await _uploadVideoTUS(vidFile, 'contestant-videos', uid + '/video_' + Date.now() + '.' + vidFile.name.split('.').pop(), token);
+        if (btn) btn.textContent = 'Saving application…';
+        var res = await _sb.from('contestants').insert([{
+            user_id: uid,
+            full_name: document.getElementById('rf-name').value.trim(),
+            email: document.getElementById('rf-email').value.trim(),
+            phone: document.getElementById('rf-phone').value.trim(),
+            department: document.getElementById('rf-dept').value.trim(),
+            instagram: document.getElementById('rf-instagram').value.trim(),
+            headshot_url: hsUrl, fullbody_url: fbUrl,
+            age: parseInt(document.getElementById('rf-age').value),
+            gender: document.getElementById('rf-gender').value,
+            level: document.getElementById('rf-level').value,
+            clothing_size: document.getElementById('rf-clothing').value,
+            shoe_size: parseFloat(document.getElementById('rf-shoe').value),
+            height: parseFloat(document.getElementById('rf-height').value),
+            experience: _regExperience === 'yes' ? (document.getElementById('rf-experience-detail').value.trim() || 'Yes') : 'None',
+            video_url: vidUrl, payment_ref: payRef, is_approved: false
+        }]);
+        if (res.error) throw new Error(res.error.message);
+        var bEl = document.getElementById('reg-spot-banner'), wEl = document.getElementById('reg-form-wrap');
+        if (bEl) bEl.style.display = 'none'; if (wEl) wEl.style.display = 'none';
+        var sEl = document.getElementById('reg-success-screen'); if (sEl) sEl.style.display = 'flex';
+    } catch(e) {
+        if (err) { err.textContent = 'Submission error: ' + e.message; err.style.display = 'block'; }
+        if (btn) { btn.textContent = '🔐 Proceed to Payment — ₦3,000'; btn.disabled = false; window.checkRegForm(); }
     }
 };
 
-/* ── Feature 18 / Feature 21: Grand Total leaderboard table (lives in Judging Panel) ── */
-window.loadLiveRankings = async function() {
-    var container = document.getElementById('
+async function _uploadToStorage(file, bucket, path, token) {
+    var fd = new FormData(); fd.append('', file, file.name);
+    var res = await fetch(SUPABASE_URL + '/storage/v1/object/' + bucket + '/' + path,
+        { method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'x-upsert': 'true' }, body: fd });
+    if (!res.ok) throw new Error('Upload failed: ' + await res.text());
+    return SUPABASE_URL + '/storage/v1/object/public/' + bucket + '/' + path;
+}
+
+function _uploadVideoTUS(file, bucket, objectPath, token) {
+    return new Promise(function(resolve, reject) {
+        var bar = document.getElementById('video-progress-bar'), wrap = document.getElementById('video-progress-wrap');
+        if (wrap) wrap.style.display = 'block';
+        new tus.Upload(file, {
+            endpoint: SUPABASE_URL + '/storage/v1/upload/resumable',
+            retryDelays: [0, 3000, 5000, 10000, 20000],
+            headers: { authorization: 'Bearer ' + token, 'x-upsert': 'true' },
+            metadata: { bucketName: bucket, objectName: objectPath, contentType: file.type, cacheControl: '3600' },
+            chunkSize: 6 * 1024 * 1024,
+            onProgress: function(up, tot) { if (bar) bar.style.width = Math.round(up / tot * 100) + '%'; },
+            onSuccess:  function() { if (wrap) wrap.style.display = 'none'; resolve(SUPABASE_URL + '/storage/v1/object/public/' + bucket + '/' + objectPath); },
+            onError:    function(e) { if (wrap) wrap.style.display = 'none'; reject(e); }
+        }).start();
+    });
+}
+
+/* ── RUN ── */
+boot();
+
+})();
+</script>
+</body>
+</html>

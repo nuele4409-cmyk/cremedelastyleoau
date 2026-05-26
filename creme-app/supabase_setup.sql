@@ -358,13 +358,16 @@ create table if not exists votes (
 
 alter table votes enable row level security;
 
-create policy if not exists "votes_insert"
+drop policy if exists "votes_insert" on votes;
+create policy "votes_insert"
     on votes for insert with check (auth.uid() = user_id);
 
-create policy if not exists "votes_select"
+drop policy if exists "votes_select" on votes;
+create policy "votes_select"
     on votes for select using (true);
 
-create policy if not exists "votes_update"
+drop policy if exists "votes_update" on votes;
+create policy "votes_update"
     on votes for update using (auth.uid() = user_id);
 
 grant select, insert, update on votes to authenticated, anon;
@@ -374,8 +377,67 @@ alter table system_settings add column if not exists show_live_results boolean d
 alter table system_settings add column if not exists lineup_revealed   boolean default false;
 
 -- Allow admins to UPDATE system_settings
-create policy if not exists "Admin update system_settings"
+drop policy if exists "Admin update system_settings" on system_settings;
+create policy "Admin update system_settings"
     on system_settings for update
     using (get_my_role() = 'admin');
 
 -- ══════════════════════════════════════════════════════
+
+
+-- ══════════════════════════════════════════════════════
+--  MIGRATION — Features 34–36: App-level control toggles
+--  Adds three admin-controlled on/off switches to
+--  system_settings so the admin panel can open/close
+--  registration, nominations, and voting independently.
+--  Safe to run on an already-populated database.
+-- ══════════════════════════════════════════════════════
+
+alter table system_settings add column if not exists is_registration_open boolean not null default true;
+alter table system_settings add column if not exists is_nomination_open   boolean not null default true;
+alter table system_settings add column if not exists is_voting_open       boolean not null default false;
+
+-- ══════════════════════════════════════════════════════
+
+
+-- ══════════════════════════════════════════════════════
+--  MIGRATION — Judging Panel: look-based scoring
+--  Adds look_category (which runway segment is being
+--  scored) and optional judge notes to the scores table.
+--  Replaces the old unique(judge_id, contestant_id)
+--  constraint with a three-column one so a judge can
+--  submit separate scores per look.
+--  Safe to run on an already-populated database.
+-- ══════════════════════════════════════════════════════
+
+alter table scores add column if not exists look_category text not null default 'professional';
+alter table scores add column if not exists notes         text;
+
+-- Drop the old two-column unique constraint (if it exists)
+alter table scores drop constraint if exists scores_judge_id_contestant_id_key;
+
+-- Add the new three-column unique constraint
+-- (idempotent: the IF NOT EXISTS guard on ADD CONSTRAINT
+--  is supported from PostgreSQL 9.x via DO block below)
+do $$
+begin
+    if not exists (
+        select 1 from pg_constraint
+        where conname = 'scores_judge_contestant_look_unique'
+    ) then
+        alter table scores
+            add constraint scores_judge_contestant_look_unique
+            unique (judge_id, contestant_id, look_category);
+    end if;
+end;
+$$;
+
+-- Judges still need UPDATE to allow upserts via ON CONFLICT
+drop policy if exists "Judges update own scores" on scores;
+create policy "Judges update own scores"
+    on scores for update
+    using (
+        auth.uid() = judge_id
+        and exists (
+            select 1 from user_roles
+            where user_id = auth.uid()
