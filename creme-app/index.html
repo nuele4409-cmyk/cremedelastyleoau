@@ -2324,10 +2324,15 @@ function processTicketScan(decodedText) {
         try {
             if (!_sb) throw new Error('No database connection');
 
-            var res = await _sb.from('tickets')
-                .select('id, entry_token, tier_name, is_used, user_id')
-                .or('entry_token.eq.' + token + ',id.eq.' + token)
-                .maybeSingle();
+            /* Query by entry_token first; only fall back to id if token looks like a UUID */
+            var uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            var query = _sb.from('tickets').select('id, entry_token, tier_name, is_used, user_id');
+            if (uuidPattern.test(token)) {
+                query = query.or('entry_token.eq.' + token + ',id.eq.' + token);
+            } else {
+                query = query.eq('entry_token', token);
+            }
+            var res = await query.maybeSingle();
 
             if (res.error) throw res.error;
 
