@@ -250,6 +250,12 @@ html, body {
 .vote-btn:hover:not(:disabled) { background: var(--crimson); border-color: var(--crimson); }
 .vote-btn.voted-btn { background: var(--crimson); border-color: #ff3377; color: var(--cream); box-shadow: 0 0 12px rgba(227,0,79,0.4); }
 .vote-btn:disabled { background: rgba(26,0,8,0.8); color: rgba(255,248,220,0.2); cursor: not-allowed; border-color: transparent; }
+.vote-count-badge {
+    font-size: 0.68rem; font-weight: 700; color: var(--gold);
+    background: rgba(212,175,55,0.12); border: 1px solid rgba(212,175,55,0.25);
+    border-radius: 999px; padding: 0.15rem 0.55rem; margin-left: auto; margin-right: 0.5rem;
+    white-space: nowrap; flex-shrink: 0;
+}
 
 /* NOMINATE */
 .nominate-form-card {
@@ -404,9 +410,20 @@ html, body {
 .admin-back-btn:hover { background: rgba(255,255,255,0.18); }
 .admin-tabs-bar {
     background: #fff; border-bottom: 1px solid #e5e7eb;
-    display: grid; grid-template-columns: repeat(5, 1fr);
+    display: grid; grid-template-columns: repeat(6, 1fr);
     position: sticky; top: 72px; z-index: 9;
 }
+/* Candidate Roster table */
+.adm-candidates-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.adm-candidates-table th { background: #f9fafb; color: #6b7280; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+.adm-candidates-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid #f3f4f6; vertical-align: middle; color: #1f2937; }
+.adm-candidates-table tr:last-child td { border-bottom: none; }
+.adm-candidates-table tr:hover td { background: #fafafa; }
+.adm-status-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px; }
+.adm-status-badge.approved { background: #dcfce7; color: #16a34a; }
+.adm-status-badge.pending  { background: #fef9c3; color: #92400e; }
+.adm-approve-btn { background: #9A1A45; color: #fff; border: none; border-radius: 8px; padding: 0.35rem 0.85rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+.adm-approve-btn:hover { background: #E3004F; }
 .admin-tab {
     padding: 0.75rem 0.25rem; border: none; border-bottom: 2px solid transparent;
     background: transparent; color: #6b7280; font-size: 0.65rem; font-weight: 700;
@@ -1464,7 +1481,7 @@ html, body {
                     <div class="ticket-glow"></div>
                     <h2 class="ticket-title">The Runway Awakens</h2>
                     <p class="ticket-desc">Where the most stylish students of OAU compete for the ultimate crown. Seats are limited and the doors will not stay open forever.</p>
-                    <button class="ticket-btn" onclick="switchTab('explore')">SECURE YOUR SEAT →</button>
+                    <button class="ticket-btn" onclick="switchTab('tickets')">SECURE YOUR SEAT →</button>
                 </div>
                 <div class="dispatch-card">
                     <h3 class="dispatch-header"><span class="live-dot"></span> Live Dispatches</h3>
@@ -1792,8 +1809,8 @@ html, body {
                             <textarea id="rf-experience-detail" class="nominate-input nominate-textarea" rows="3" placeholder="Briefly describe your prior experience..." style="display:none;" oninput="checkRegForm()"></textarea>
                         </div>
                         <div class="nominate-field">
-                            <label>Instagram Handle *</label>
-                            <input type="text" id="rf-instagram" class="nominate-input" placeholder="@yourhandle" oninput="checkRegForm()">
+                            <label>Social Handles * <span style="color:var(--cream-60);font-weight:400;">(Instagram, TikTok, etc.)</span></label>
+                            <input type="text" id="rf-social-handles" class="nominate-input" placeholder="e.g. IG: @name, TikTok: @name" oninput="checkRegForm()">
                         </div>
                     </div>
 
@@ -2289,6 +2306,7 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('gallery', this)">📸 Gallery</button>
         <button class="admin-tab" onclick="switchAdminTab('scan', this)">📷 Scan</button>
         <button class="admin-tab" onclick="switchAdminTab('controls', this)">🎛️ Controls</button>
+        <button class="admin-tab" onclick="switchAdminTab('candidates', this)">👥 Candidates</button>
     </nav>
     <main class="admin-body">
         <div id="adm-tab-dispatches" class="admin-tab-pane active">
@@ -2446,6 +2464,19 @@ html, body {
                 <div id="ctrl-status" style="margin-top:1rem;font-size:0.8rem;color:#6b7280;min-height:1.2rem;"></div>
             </div>
         </div>
+
+        <!-- CANDIDATES PANE -->
+        <div id="adm-tab-candidates" class="admin-tab-pane">
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1.2rem;">
+                    <h2>👥 Registered Candidates</h2>
+                    <button class="adm-refresh-btn" onclick="window.loadAdminCandidates()">↻ Refresh</button>
+                </div>
+                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All applicants who have paid the ₦3,000 registration fee. Approve a candidate to add them to the public lineup.</p>
+                <div id="adm-candidates-list"><p class="adm-empty">Click Refresh to load candidates.</p></div>
+            </div>
+        </div>
+
     </main>
 </div>
 <!-- Toast notification -->
@@ -2471,6 +2502,7 @@ var _walletTickets = [];
 window.currentUser      = null;
 window.isLoginMode      = true;
 window.votes            = {};
+window.voteCounts       = {};   // { categoryId: { nomineeId: count } }
 window.expandedCategory = null;
 
 var awardCategories = [
@@ -2840,13 +2872,19 @@ window.renderVoteList = function() {
         var isExpanded = window.expandedCategory === cat.id;
         var el = document.createElement('div');
         el.className = 'vote-category';
+        var showCounts = window.appSettings && window.appSettings.show_live_results;
         var nomineesHtml = mockNominees.map(function(n) {
-            var sel  = window.votes[cat.id] === n.id;
-            var dis  = hasVoted && !sel;
-            var catQ = cat.id.replace(/'/g, "\\'");
-            var nidQ = n.id.replace(/'/g, "\\'");
+            var sel   = window.votes[cat.id] === n.id;
+            var dis   = hasVoted && !sel;
+            var catQ  = cat.id.replace(/'/g, "\\'");
+            var nidQ  = n.id.replace(/'/g, "\\'");
+            var count = showCounts && window.voteCounts[cat.id] ? (window.voteCounts[cat.id][n.id] || 0) : null;
+            var countBadge = count !== null
+                ? '<span class="vote-count-badge">' + count + ' vote' + (count !== 1 ? 's' : '') + '</span>'
+                : '';
             return '<div class="nominee-row">' +
                 '<span class="nominee-name' + (sel ? ' voted' : '') + '">' + n.name + '</span>' +
+                countBadge +
                 '<button class="vote-btn' + (sel ? ' voted-btn' : '') + '" onclick="window.castVote(\'' + catQ + '\',\'' + nidQ + '\')"' + (dis ? ' disabled' : '') + '>' + (sel ? '&#10003; VOTED' : 'VOTE') + '</button>' +
                 '</div>';
         }).join('');
@@ -2998,7 +3036,8 @@ window.switchAdminTab  = function(tab, btn) {
     if (pane) pane.classList.add('active');
     if (btn)  btn.classList.add('active');
     if (tab !== 'scan') stopScanner(); // stop camera when leaving scan tab
-    if (tab === 'controls') window.loadAdminControls(); // sync toggles with DB
+    if (tab === 'controls')   window.loadAdminControls();
+    if (tab === 'candidates') window.loadAdminCandidates();
 };
 
 /* ── QR TICKET SCANNER ── */
@@ -3864,10 +3903,15 @@ window.initVoteTab = async function() {
             if (vRes.data) vRes.data.forEach(function(r) { window.votes[r.category_id] = r.nominee_id; });
         } catch(e) {}
     }
+    // Fetch live vote counts (shown when show_live_results is true)
+    await window.fetchVoteCounts();
     if (!_voteChannel && _sb) {
         _voteChannel = _sb.channel('votes-realtime')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' },
-                function() { window.renderVoteList(); })
+                async function() {
+                    await window.fetchVoteCounts();
+                    window.renderVoteList();
+                })
             .subscribe();
     }
     window.renderVoteList();
@@ -4073,6 +4117,92 @@ function _uploadVideoTUS(file, bucket, objectPath, token) {
         }).start();
     });
 }
+
+
+/* ════════════════════════════════════
+   FEATURE 38 - Live Vote Counts
+════════════════════════════════════ */
+/* Fetch aggregate vote counts from DB for live leaderboard */
+window.fetchVoteCounts = async function() {
+    if (!_sb) return;
+    try {
+        var res = await _sb.from('votes').select('category_id,nominee_id');
+        if (!res.data) return;
+        var counts = {};
+        res.data.forEach(function(v) {
+            if (!counts[v.category_id]) counts[v.category_id] = {};
+            counts[v.category_id][v.nominee_id] = (counts[v.category_id][v.nominee_id] || 0) + 1;
+        });
+        window.voteCounts = counts;
+    } catch(e) {}
+};
+
+/* ════════════════════════════════════
+   FEATURE 40 - Admin Candidate Roster
+════════════════════════════════════ */
+window.loadAdminCandidates = async function() {
+    var list = document.getElementById('adm-candidates-list');
+    if (!list) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    if (!_sb) { list.innerHTML = '<p class="adm-empty">Supabase not connected.</p>'; return; }
+    var res = await _sb.from('contestants').select('*').not('payment_ref', 'is', null).order('created_at', { ascending: false });
+    if (res.error) { list.innerHTML = '<p class="adm-empty" style="color:#ef4444;">Error: ' + res.error.message + '</p>'; return; }
+    if (!res.data || res.data.length === 0) {
+        list.innerHTML = '<p class="adm-empty">No registered candidates yet.</p>';
+        return;
+    }
+    var table = document.createElement('table');
+    table.className = 'adm-candidates-table';
+    table.innerHTML =
+        '<thead><tr>' +
+        '<th>#</th><th>Name</th><th>Dept / Level</th><th>Payment Ref</th><th>Status</th><th>Action</th>' +
+        '</tr></thead>';
+    var tbody = document.createElement('tbody');
+    res.data.forEach(function(c, i) {
+        var tr = document.createElement('tr');
+        var safeId   = c.id.replace(/'/g, "\'");
+        var safeName = c.full_name.replace(/'/g, "\'");
+        tr.innerHTML =
+            '<td>' + (i + 1) + '</td>' +
+            '<td><strong>' + c.full_name + '</strong><br><span style="font-size:0.72rem;color:#6b7280;">' + (c.email || '') + '</span></td>' +
+            '<td style="font-size:0.8rem;">' + (c.department || '—') + (c.level ? ' · ' + c.level + 'L' : '') + '</td>' +
+            '<td style="font-size:0.7rem;font-family:monospace;color:#6b7280;">' + (c.payment_ref || '—') + '</td>' +
+            '<td><span class="adm-status-badge ' + (c.is_approved ? 'approved' : 'pending') + '">' +
+                (c.is_approved ? '✓ Approved' : '⏳ Pending') + '</span></td>' +
+            '<td>' + (!c.is_approved
+                ? '<button class="adm-approve-btn" onclick="window.approveCandidate(\'' + safeId + '\',\'' + safeName + '\')">Approve ✓</button>'
+                : '<span style="color:#16a34a;font-size:0.8rem;font-weight:600;">✓ Live</span>') + '</td>';
+        tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    list.innerHTML = '';
+    list.appendChild(table);
+    var total    = res.data.length;
+    var approved = res.data.filter(function(c) { return c.is_approved; }).length;
+    var stats = document.createElement('p');
+    stats.style.cssText = 'font-size:0.78rem;color:#6b7280;margin-top:0.75rem;';
+    stats.textContent = total + ' registered · ' + approved + ' approved · ' + (total - approved) + ' pending review';
+    list.appendChild(stats);
+};
+
+window.approveCandidate = async function(id, name) {
+    if (!_sb) return;
+    var btn = event && event.target;
+    if (btn) { btn.textContent = 'Approving…'; btn.disabled = true; }
+    var res = await _sb.from('contestants').update({ is_approved: true }).eq('id', id);
+    if (res.error) {
+        alert('Approval failed: ' + res.error.message);
+        if (btn) { btn.textContent = 'Approve ✓'; btn.disabled = false; }
+        return;
+    }
+    // Broadcast a public notification
+    await _sb.from('notifications').insert([{
+        title: '🎉 New Contestant Confirmed!',
+        message: name + ' has officially joined the Crème De La Style lineup. Welcome them!',
+        type: 'update'
+    }]);
+    window.loadAdminCandidates(); // Refresh the roster
+};
 
 /* ── RUN ── */
 boot();
