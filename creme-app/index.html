@@ -2083,7 +2083,15 @@ window.handleAuth = async function() {
 };
 window.handleGoogleSignIn = async function() {
     if (!_sb) return;
-    var result = await _sb.auth.signInWithOAuth({ provider: 'google', options: { queryParams: { access_type: 'offline', prompt: 'consent' } } });
+    /* Always redirect back to whichever page we're currently on (works on localhost AND GitHub Pages) */
+    var redirectTo = window.location.href.split('#')[0].split('?')[0];
+    var result = await _sb.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+            redirectTo: redirectTo,
+            queryParams: { access_type: 'offline', prompt: 'consent' }
+        }
+    });
     if (result.error) { var e = document.getElementById('auth-error'); e.textContent = 'Google sign-in failed: ' + result.error.message; e.style.display = 'block'; }
 };
 window.handleSignOut = async function() {
