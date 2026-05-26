@@ -1,0 +1,3150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crème De La Style ✦ OAU Official Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════
+   CRÈME DE LA STYLE — Styles
+══════════════════════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg: #050001; --crimson: #E3004F; --rose: #9A1A45;
+    --rose-dark: #2A0010; --gold: #FFD700; --cream: #FFF8DC;
+    --cream-60: rgba(255,248,220,0.6); --cream-40: rgba(255,248,220,0.4);
+    --border: rgba(154,26,69,0.35); --card-bg: rgba(42,0,16,0.4);
+}
+
+html, body {
+    height: 100%; background: var(--bg); color: var(--cream);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    overflow-x: hidden; line-height: 1.6;
+}
+
+/* AUTH */
+.auth-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+.auth-overlay.hidden { display: none !important; }
+.auth-box {
+    background: #0A0003; border: 1px solid rgba(154,26,69,0.45);
+    border-radius: 20px; width: 100%; max-width: 400px; padding: 2rem;
+    position: relative; box-shadow: 0 0 60px rgba(154,26,69,0.25);
+    animation: slide-up 0.3s ease;
+}
+.auth-close {
+    position: absolute; top: 1rem; right: 1rem; width: 32px; height: 32px;
+    border-radius: 50%; background: rgba(26,0,8,1); border: 1px solid var(--border);
+    color: var(--cream-60); font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.auth-close:hover { color: var(--cream); background: var(--rose-dark); }
+.auth-brand { margin-bottom: 1.5rem; }
+.auth-brand-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--crimson); margin-bottom: 0.3rem;
+}
+.auth-brand h2 { font-size: 1.6rem; font-weight: 800; color: var(--cream); }
+.google-btn {
+    width: 100%; display: flex; align-items: center; justify-content: center;
+    gap: 0.65rem; background: #fff; color: #111; border: none; border-radius: 10px;
+    padding: 0.85rem 1rem; font-size: 0.95rem; font-weight: 600;
+    font-family: inherit; cursor: pointer; transition: background 0.2s; margin-bottom: 1.2rem;
+}
+.google-btn:hover { background: #f0f0f0; }
+.auth-divider {
+    display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.2rem;
+}
+.auth-divider::before, .auth-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.auth-divider span {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--cream-40); white-space: nowrap;
+}
+.auth-error {
+    background: rgba(227,0,79,0.12); border: 1px solid rgba(227,0,79,0.4);
+    border-radius: 8px; padding: 0.6rem 0.9rem;
+    font-size: 0.85rem; color: #ff6b9d; margin-bottom: 0.8rem;
+}
+.auth-input {
+    width: 100%; background: #140006; border: 1.5px solid rgba(154,26,69,0.45);
+    border-radius: 10px; padding: 0.85rem 1rem; font-size: 0.95rem;
+    font-family: inherit; color: var(--cream); margin-bottom: 0.75rem;
+    transition: border-color 0.2s; outline: none;
+}
+.auth-input:focus { border-color: var(--crimson); }
+.auth-input::placeholder { color: var(--cream-40); }
+.auth-submit-btn {
+    width: 100%; padding: 0.9rem;
+    background: linear-gradient(135deg, var(--crimson), var(--rose));
+    color: var(--cream); border: none; border-radius: 10px;
+    font-size: 1rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; margin-top: 0.25rem; margin-bottom: 1.2rem; transition: opacity 0.2s;
+}
+.auth-submit-btn:hover { opacity: 0.88; }
+.auth-toggle { text-align: center; font-size: 0.82rem; color: var(--cream-60); }
+.auth-toggle button {
+    background: none; border: none; color: var(--cream); font-weight: 700;
+    font-family: inherit; cursor: pointer;
+    text-decoration: underline; text-decoration-color: var(--rose); margin-left: 0.3rem;
+}
+
+/* LAYOUT */
+#app {
+    min-height: 100vh; display: flex; flex-direction: column;
+    position: relative; overflow-x: hidden;
+}
+.glow {
+    position: fixed; border-radius: 50%; pointer-events: none;
+    z-index: 0; filter: blur(120px);
+}
+.glow-left {
+    top: -10%; left: -10%; width: 55vw; height: 55vw;
+    min-width: 380px; min-height: 380px;
+    background: var(--crimson); opacity: 0.15; mix-blend-mode: screen;
+}
+.glow-right {
+    bottom: 5%; right: -10%; width: 65vw; height: 65vw;
+    min-width: 450px; min-height: 450px;
+    background: var(--rose); opacity: 0.22; mix-blend-mode: screen;
+}
+.top-bar {
+    position: relative; z-index: 10; display: flex;
+    justify-content: flex-end; align-items: center;
+    padding: 1rem 1.5rem 0; min-height: 60px;
+}
+.enter-hub-btn {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; border: 1px solid rgba(154,26,69,0.55);
+    color: var(--cream); background: transparent; padding: 0.5rem 1.2rem;
+    border-radius: 50px; cursor: pointer; font-family: inherit; transition: background 0.2s;
+}
+.enter-hub-btn:hover { background: var(--rose-dark); }
+.user-info { display: flex; align-items: center; gap: 0.75rem; }
+.user-name { font-size: 0.85rem; font-weight: 700; color: var(--gold); }
+.sign-out-btn {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    border: 1px solid rgba(154,26,69,0.4); color: var(--cream-60); background: transparent;
+    padding: 0.35rem 0.9rem; border-radius: 50px; cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.sign-out-btn:hover { background: var(--rose-dark); color: var(--cream); }
+.main-content {
+    flex: 1; position: relative; z-index: 5;
+    padding: 0 1.25rem 7rem; overflow-x: hidden;
+}
+.tab-screen {
+    display: none; max-width: 720px;
+    margin: 0 auto; padding-top: 1.5rem; animation: fade-in 0.25s ease;
+}
+.tab-screen.active { display: block; }
+
+/* HOME */
+.home-hero { text-align: center; padding: 1.5rem 0 2rem; }
+.hero-title {
+    font-size: clamp(2rem, 8vw, 3.2rem); font-weight: 900; color: var(--cream);
+    letter-spacing: -0.02em; line-height: 1.1; text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+}
+.gold { color: var(--gold); }
+.hero-subtitle {
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--cream-60); margin-top: 0.75rem;
+}
+.hero-desc { font-size: 1rem; font-style: italic; color: var(--cream-60); margin-top: 0.9rem; line-height: 1.6; }
+.hero-tagline {
+    font-size: 0.7rem; font-weight: 800; letter-spacing: 0.3em;
+    text-transform: uppercase; color: rgba(227,0,79,0.75); margin-top: 1rem;
+}
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+@media (max-width: 600px) { .home-grid { grid-template-columns: 1fr; } }
+
+.ticket-card {
+    background: linear-gradient(135deg, rgba(154,26,69,0.45), rgba(227,0,79,0.2));
+    border: 1px solid rgba(227,0,79,0.4); border-radius: 24px; padding: 2rem;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: center;
+    box-shadow: 0 0 30px rgba(227,0,79,0.12);
+}
+.ticket-glow {
+    position: absolute; top: -40px; right: -40px; width: 160px; height: 160px;
+    background: rgba(255,215,0,0.08); border-radius: 50%; filter: blur(40px); pointer-events: none;
+}
+.ticket-title { font-size: 1.3rem; font-weight: 800; color: var(--cream); margin-bottom: 0.6rem; position: relative; z-index: 1; }
+.ticket-desc { font-size: 0.85rem; color: rgba(255,248,220,0.78); line-height: 1.6; margin-bottom: 1.4rem; position: relative; z-index: 1; }
+.ticket-btn {
+    align-self: flex-start; background: var(--crimson); color: var(--cream);
+    border: none; border-radius: 50px; padding: 0.7rem 1.6rem;
+    font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; font-family: inherit; box-shadow: 0 0 20px rgba(227,0,79,0.4);
+    transition: all 0.2s; position: relative; z-index: 1;
+}
+.ticket-btn:hover { background: #ff3377; transform: translateY(-1px); }
+
+.dispatch-card {
+    background: rgba(42,0,16,0.35); border: 1px solid rgba(154,26,69,0.3);
+    border-radius: 24px; padding: 1.75rem;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+}
+.dispatch-header {
+    font-size: 0.72rem; font-weight: 800; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--gold);
+    display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.2rem;
+}
+.live-dot {
+    display: inline-block; width: 8px; height: 8px; background: #ff3377;
+    border-radius: 50%; animation: pulse 1.5s infinite; flex-shrink: 0;
+}
+.dispatch-item { padding-bottom: 1rem; border-bottom: 1px solid rgba(154,26,69,0.18); margin-bottom: 1rem; }
+.dispatch-item.no-border { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.dispatch-item p { font-size: 0.88rem; color: var(--cream); line-height: 1.55; }
+.dispatch-time { font-size: 0.72rem; color: var(--cream-40); font-weight: 600; display: block; margin-top: 0.4rem; }
+
+/* PAGE HEADER */
+.page-header { margin-bottom: 1.75rem; }
+.page-title { font-size: 1.8rem; font-weight: 800; color: var(--cream); }
+.page-sub { font-size: 0.85rem; color: var(--cream-60); margin-top: 0.35rem; }
+
+/* VOTE */
+.vote-category {
+    background: rgba(42,0,16,0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+    margin-bottom: 0.85rem; transition: border-color 0.25s;
+}
+.vote-category:hover { border-color: rgba(154,26,69,0.6); }
+.vote-category-header {
+    width: 100%; background: transparent; border: none;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.1rem 1.4rem; cursor: pointer; text-align: left;
+}
+.vote-category-title { font-size: 0.9rem; font-weight: 700; color: var(--cream); line-height: 1.4; padding-right: 1rem; }
+.vote-category-title.voted { color: var(--gold); }
+.vote-toggle { color: var(--crimson); font-size: 1.5rem; font-weight: 300; flex-shrink: 0; line-height: 1; }
+.vote-nominees {
+    display: none; padding: 1rem 1.4rem 1.2rem;
+    background: rgba(20,0,6,0.55); border-top: 1px solid rgba(154,26,69,0.2);
+}
+.vote-nominees.open { display: block; }
+.nominee-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem 0.9rem; border-radius: 10px;
+    background: rgba(42,0,16,0.35); border: 1px solid rgba(154,26,69,0.12);
+    margin-bottom: 0.5rem; transition: background 0.2s;
+}
+.nominee-row:hover { background: rgba(74,0,28,0.45); }
+.nominee-name { font-size: 0.92rem; color: var(--cream); }
+.nominee-name.voted { color: var(--gold); font-weight: 700; }
+.vote-btn {
+    padding: 0.4rem 1rem; border-radius: 8px; border: 1px solid rgba(154,26,69,0.5);
+    background: rgba(154,26,69,0.25); color: var(--cream);
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.vote-btn:hover:not(:disabled) { background: var(--crimson); border-color: var(--crimson); }
+.vote-btn.voted-btn { background: var(--crimson); border-color: #ff3377; color: var(--cream); box-shadow: 0 0 12px rgba(227,0,79,0.4); }
+.vote-btn:disabled { background: rgba(26,0,8,0.8); color: rgba(255,248,220,0.2); cursor: not-allowed; border-color: transparent; }
+
+/* NOMINATE */
+.nominate-form-card {
+    background: var(--card-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--border); border-radius: 24px; padding: 2rem 1.75rem;
+}
+.nominate-form-intro { font-size: 0.9rem; color: var(--cream-60); line-height: 1.65; margin-bottom: 1.75rem; font-style: italic; }
+.nominate-success {
+    display: flex; align-items: center; gap: 0.75rem;
+    background: rgba(22,163,74,0.12); border: 1px solid rgba(22,163,74,0.35);
+    border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1.25rem;
+    font-size: 0.9rem; color: #4ade80; font-weight: 600;
+}
+.nominate-success span { font-size: 1.2rem; }
+.nominate-error {
+    background: rgba(227,0,79,0.1); border: 1px solid rgba(227,0,79,0.35);
+    border-radius: 10px; padding: 0.7rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #ff6b9d;
+}
+.nominate-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.1rem; }
+.nominate-field label {
+    font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--cream-60);
+}
+.optional { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--cream-40); font-size: 0.7rem; }
+.nominate-input {
+    width: 100%; background: rgba(20,0,6,0.7); border: 1.5px solid rgba(154,26,69,0.4);
+    border-radius: 10px; padding: 0.8rem 1rem; font-size: 0.92rem;
+    font-family: inherit; color: var(--cream); outline: none; transition: border-color 0.2s;
+}
+.nominate-input:focus { border-color: var(--crimson); }
+.nominate-input::placeholder { color: var(--cream-40); }
+.nominate-select {
+    cursor: pointer; appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239A1A45' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem;
+}
+.nominate-select option { background: #140006; color: var(--cream); }
+.nominate-textarea { resize: vertical; min-height: 90px; }
+.nominate-submit-btn {
+    width: 100%; padding: 0.9rem;
+    background: linear-gradient(135deg, var(--crimson), var(--rose));
+    color: var(--cream); border: none; border-radius: 12px;
+    font-size: 0.9rem; font-weight: 800; letter-spacing: 0.08em;
+    font-family: inherit; cursor: pointer; margin-top: 0.5rem;
+    box-shadow: 0 0 24px rgba(227,0,79,0.3); transition: opacity 0.2s, transform 0.15s;
+}
+.nominate-submit-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.nominate-submit-btn:active { transform: scale(0.98); }
+
+/* EXPLORE */
+.explore-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+@media (max-width: 600px) { .explore-grid { grid-template-columns: repeat(2, 1fr); } }
+.explore-card {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 0.6rem; padding: 1.5rem 0.5rem;
+    background: rgba(42,0,16,0.35); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border); border-radius: 20px;
+    cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.explore-card:hover { background: rgba(154,26,69,0.4); border-color: rgba(227,0,79,0.55); transform: translateY(-2px); }
+.explore-icon { font-size: 2rem; }
+.explore-label { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream); }
+
+/* BOTTOM NAV */
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 76px;
+    background: rgba(10,0,3,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(154,26,69,0.3); display: flex; justify-content: center; z-index: 50;
+}
+.nav-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; flex: 1; max-width: 100px; background: transparent; border: none;
+    color: rgba(255,248,220,0.45); cursor: pointer; font-family: inherit; transition: all 0.2s; padding: 0.5rem 0.25rem;
+}
+.nav-btn span { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+.nav-btn.active { color: var(--gold); transform: translateY(-3px); }
+
+/* ADMIN FAB — hidden by default; shown only to admin via applyRoleBasedUI() */
+.admin-fab {
+    display: none;
+    position: fixed; bottom: 95px; right: 1.25rem; width: 52px; height: 52px;
+    border-radius: 50%; background: var(--rose); border: none; color: #fff;
+    font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 20px rgba(154,26,69,0.5); z-index: 40; transition: all 0.2s;
+}
+.admin-fab:hover { background: var(--crimson); transform: scale(1.08); }
+
+/* JUDGING PANEL INTERNAL TOGGLE */
+.judge-view-toggle {
+    display: flex; gap: 0.5rem; margin: 0.75rem 0 1.25rem;
+    background: rgba(255,255,255,0.06); border-radius: 12px; padding: 4px;
+}
+.judge-view-btn {
+    flex: 1; padding: 0.55rem 0.5rem; border: none; border-radius: 9px;
+    background: transparent; color: rgba(255,248,220,0.55);
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.judge-view-btn.active {
+    background: var(--rose); color: #fff;
+    box-shadow: 0 2px 10px rgba(154,26,69,0.45);
+}
+
+/* ADMIN PANEL */
+.admin-panel {
+    position: fixed; inset: 0; z-index: 9000; background: #f5f5f5; color: #222;
+    display: none; flex-direction: column; overflow-y: auto; font-family: 'Inter', sans-serif;
+}
+.admin-panel.open { display: flex; }
+.admin-top-bar {
+    background: #140006; color: #fff; padding: 1.1rem 1.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.admin-top-bar h1 { font-size: 1.05rem; font-weight: 800; }
+.admin-top-bar p { font-size: 0.72rem; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.admin-back-btn {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; padding: 0.45rem 1rem; border-radius: 50px;
+    font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.2s;
+}
+.admin-back-btn:hover { background: rgba(255,255,255,0.18); }
+.admin-tabs-bar {
+    background: #fff; border-bottom: 1px solid #e5e7eb;
+    display: flex; overflow-x: auto; padding: 0 1rem; position: sticky; top: 72px; z-index: 9;
+}
+.admin-tab {
+    padding: 1rem 1.2rem; border: none; border-bottom: 2px solid transparent;
+    background: transparent; color: #6b7280; font-size: 0.82rem; font-weight: 700;
+    font-family: inherit; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+}
+.admin-tab:hover { color: #374151; background: #f9fafb; }
+.admin-tab.active { border-bottom-color: #9A1A45; color: #9A1A45; }
+.admin-tab-pane { display: none; }
+.admin-tab-pane.active { display: block; }
+.admin-body { padding: 1.5rem 1rem 3rem; max-width: 800px; margin: 0 auto; width: 100%; }
+.admin-section {
+    background: #fff; border-radius: 12px; padding: 1.4rem; margin-bottom: 1rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07); border: 1px solid #e5e7eb;
+}
+.admin-section h2 { font-size: 0.95rem; font-weight: 800; color: #1f2937; margin-bottom: 1.1rem; display: flex; align-items: center; gap: 0.4rem; }
+.adm-accent { color: #9A1A45; font-size: 1.2rem; }
+.adm-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+@media (max-width: 500px) { .adm-form-row { grid-template-columns: 1fr; } }
+.adm-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 0.75rem; }
+.adm-field label { font-size: 0.72rem; font-weight: 800; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
+.adm-field input, .adm-field select, .adm-field textarea {
+    width: 100%; padding: 0.65rem 0.85rem; border: 1.5px solid #d1d5db;
+    border-radius: 8px; font-size: 0.88rem; font-family: inherit; outline: none; transition: border-color 0.2s; background: transparent;
+}
+.adm-field input:focus, .adm-field select:focus, .adm-field textarea:focus { border-color: #9A1A45; }
+.adm-field textarea { resize: vertical; }
+.adm-submit-btn {
+    width: 100%; padding: 0.8rem; background: #140006; color: #fff; border: none;
+    border-radius: 10px; font-size: 0.9rem; font-weight: 800; font-family: inherit;
+    cursor: pointer; margin-top: 0.25rem; transition: background 0.2s;
+}
+.adm-submit-btn:hover { background: #9A1A45; }
+.adm-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; }
+@media (max-width: 500px) { .adm-stats-grid { grid-template-columns: 1fr; } }
+.adm-stat-card {
+    background: #fff; border-radius: 12px; padding: 1.2rem;
+    border: 1px solid #e5e7eb; border-top: 4px solid #9A1A45;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06); text-align: center;
+}
+.adm-stat-num { font-size: 2.2rem; font-weight: 900; color: #1f2937; line-height: 1.1; }
+.adm-stat-label { font-size: 0.72rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.3rem; }
+.adm-stat-change { font-size: 0.75rem; color: #9ca3af; margin-top: 0.4rem; font-weight: 600; }
+.adm-stat-change.positive { color: #16a34a; }
+.adm-empty { text-align: center; color: #9ca3af; font-size: 0.85rem; padding: 1rem 0; }
+.gallery-dropzone {
+    border: 2px dashed #d1d5db; border-radius: 12px; padding: 2.5rem 1rem;
+    text-align: center; cursor: pointer; margin-bottom: 1rem; transition: all 0.2s; background: #f9fafb;
+}
+.gallery-dropzone:hover { border-color: #9A1A45; background: #fff5f7; }
+.gallery-dropzone span { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+
+/* ── SCANNER TAB ── */
+.scanner-section { text-align: center; }
+.scanner-viewfinder-wrap {
+    position: relative; width: 100%; max-width: 400px; margin: 0 auto 1.2rem;
+    border-radius: 16px; overflow: hidden; background: #000;
+    border: 2px solid #e5e7eb;
+}
+/* html5-qrcode injects its own div; style it */
+#qr-reader { width: 100% !important; border: none !important; }
+#qr-reader video { width: 100% !important; border-radius: 14px; display: block; }
+#qr-reader img { display: none !important; }
+/* hide the default html5-qrcode UI chrome we don't want */
+#qr-reader__header_message,
+#qr-reader__status_span,
+#qr-reader__camera_permission_button,
+#qr-reader__dashboard_section_csr,
+#qr-reader__dashboard_section_fsr { display: none !important; }
+#qr-reader__dashboard_section_swaplink { display: none !important; }
+.scan-corner {
+    position: absolute; width: 28px; height: 28px;
+    border-color: #FFD700; border-style: solid; border-width: 0; pointer-events: none; z-index: 2;
+}
+.scan-corner.tl { top: 10px; left: 10px; border-top-width: 3px; border-left-width: 3px; border-radius: 6px 0 0 0; }
+.scan-corner.tr { top: 10px; right: 10px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 6px 0 0; }
+.scan-corner.bl { bottom: 10px; left: 10px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 6px; }
+.scan-corner.br { bottom: 10px; right: 10px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 6px 0; }
+.scan-line {
+    position: absolute; left: 14px; right: 14px; height: 2px;
+    background: linear-gradient(90deg, transparent, #FFD700, transparent);
+    animation: scanline 2s linear infinite; z-index: 2; top: 50%;
+}
+@keyframes scanline { 0% { top: 15%; opacity: 1; } 50% { top: 85%; } 100% { top: 15%; opacity: 1; } }
+.scan-status {
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    width: 100%; max-width: 400px; margin: 0 auto 1rem;
+    padding: 0.9rem 1.2rem; border-radius: 12px;
+    font-size: 0.92rem; font-weight: 700; font-family: inherit;
+    transition: all 0.25s; letter-spacing: 0.02em;
+}
+.scan-status--ready   { background: #f3f4f6; color: #6b7280; border: 1.5px solid #e5e7eb; }
+.scan-status--valid   { background: #dcfce7; color: #15803d; border: 1.5px solid #86efac; animation: flashGreen 0.4s ease; }
+.scan-status--used    { background: #fee2e2; color: #b91c1c; border: 1.5px solid #fca5a5; animation: flashRed 0.4s ease; }
+.scan-status--invalid { background: #fef9c3; color: #854d0e; border: 1.5px solid #fde047; animation: flashYellow 0.4s ease; }
+@keyframes flashGreen  { 0%,100% { box-shadow: 0 0 0 rgba(22,163,74,0);   } 50% { box-shadow: 0 0 18px rgba(22,163,74,.45); } }
+@keyframes flashRed    { 0%,100% { box-shadow: 0 0 0 rgba(185,28,28,0);   } 50% { box-shadow: 0 0 18px rgba(185,28,28,.45); } }
+@keyframes flashYellow { 0%,100% { box-shadow: 0 0 0 rgba(133,77,14,0);   } 50% { box-shadow: 0 0 18px rgba(234,179,8,.45); } }
+.scan-log-wrap { margin-top: 1.2rem; text-align: left; }
+.scan-log-wrap h3 { font-size: 0.78rem; font-weight: 800; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.6rem; }
+.scan-log { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; }
+.scan-log-entry {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+}
+.scan-log-entry.valid   { background: #f0fdf4; color: #15803d; border-left: 3px solid #22c55e; }
+.scan-log-entry.used    { background: #fef2f2; color: #b91c1c; border-left: 3px solid #ef4444; }
+.scan-log-entry.invalid { background: #fefce8; color: #854d0e; border-left: 3px solid #eab308; }
+.scan-log-time { font-size: 0.7rem; opacity: 0.6; font-weight: 500; }
+.scanner-start-btn {
+    width: 100%; max-width: 400px; margin: 0 auto 1rem; display: block;
+    padding: 0.85rem; background: #140006; color: #fff; border: none;
+    border-radius: 12px; font-size: 0.9rem; font-weight: 800; font-family: inherit;
+    cursor: pointer; transition: background 0.2s;
+}
+.scanner-start-btn:hover { background: #9A1A45; }
+.scanner-start-btn.stop { background: #6b7280; }
+.scanner-start-btn.stop:hover { background: #374151; }
+.gallery-dropzone p { font-size: 0.9rem; font-weight: 700; color: #374151; }
+.gallery-dropzone small { font-size: 0.78rem; color: #9ca3af; }
+
+/* BACK BUTTON */
+.back-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--cream-60); font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.4rem 0.9rem; border-radius: 50px;
+    cursor: pointer; font-family: inherit; margin-bottom: 1.25rem;
+    transition: all 0.2s;
+}
+.back-btn:hover { background: var(--rose-dark); color: var(--cream); border-color: rgba(154,26,69,0.6); }
+
+/* NOTIFICATION BELL */
+.notif-btn {
+    position: relative; background: transparent; border: none;
+    font-size: 1.2rem; cursor: pointer; padding: 0.25rem;
+    line-height: 1; transition: transform 0.2s;
+}
+.notif-btn:hover { transform: scale(1.15); }
+.notif-dot {
+    position: absolute; top: 0; right: 0; width: 9px; height: 9px;
+    background: var(--crimson); border-radius: 50%;
+    border: 1.5px solid var(--bg); display: none;
+}
+.notif-dot.visible { display: block; }
+
+/* NOTIFICATION DRAWER */
+.notif-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 320px; max-width: 92vw;
+    background: #09000d; border-left: 1px solid rgba(154,26,69,0.35);
+    z-index: 8000; transform: translateX(100%); transition: transform 0.3s ease;
+    display: flex; flex-direction: column;
+    box-shadow: -8px 0 40px rgba(0,0,0,0.5);
+}
+.notif-drawer.open { transform: translateX(0); }
+.notif-drawer-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.25rem 1.25rem 1rem; border-bottom: 1px solid rgba(154,26,69,0.2);
+    flex-shrink: 0;
+}
+.notif-drawer-title { font-size: 1rem; font-weight: 800; color: var(--cream); }
+.notif-close-btn {
+    background: transparent; border: none; color: var(--cream-60);
+    font-size: 1.1rem; cursor: pointer; padding: 0.2rem;
+}
+.notif-list { flex: 1; overflow-y: auto; padding: 0.75rem; }
+.notif-item {
+    padding: 0.9rem 1rem; border-radius: 12px; margin-bottom: 0.5rem;
+    background: rgba(42,0,16,0.4); border: 1px solid rgba(154,26,69,0.15);
+    transition: background 0.2s; cursor: default;
+}
+.notif-item.unread {
+    background: rgba(74,0,28,0.55); border-color: rgba(227,0,79,0.25);
+    box-shadow: 0 0 12px rgba(227,0,79,0.06);
+}
+.notif-type-badge {
+    font-size: 0.55rem; font-weight: 800; letter-spacing: 0.15em;
+    text-transform: uppercase; margin-bottom: 0.3rem; display: block;
+}
+.notif-type-alert { color: var(--crimson); }
+.notif-type-info  { color: #60a5fa; }
+.notif-type-update { color: var(--gold); }
+.notif-title { font-size: 0.88rem; font-weight: 700; color: var(--cream); margin-bottom: 0.2rem; }
+.notif-item:not(.unread) .notif-title { color: var(--cream-60); font-weight: 600; }
+.notif-message { font-size: 0.78rem; color: var(--cream-60); line-height: 1.5; }
+.notif-item:not(.unread) .notif-message { color: var(--cream-40); }
+.notif-time { font-size: 0.65rem; color: var(--cream-40); font-weight: 600; margin-top: 0.4rem; display: block; }
+.notif-empty { text-align: center; color: var(--cream-60); padding: 2.5rem 1rem; font-size: 0.88rem; }
+.notif-backdrop {
+    position: fixed; inset: 0; z-index: 7999;
+    background: rgba(0,0,0,0.4); display: none;
+}
+.notif-backdrop.visible { display: block; }
+
+/* PROFILE MODAL */
+.profile-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    background: rgba(0,0,0,0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.profile-overlay.hidden { display: none !important; }
+.profile-box {
+    background: #06000e; border: 1px solid rgba(154,26,69,0.45);
+    border-radius: 24px; width: 100%; max-width: 460px;
+    max-height: 88vh; overflow-y: auto; position: relative;
+}
+.profile-hero {
+    width: 100%; height: 260px; object-fit: cover; object-position: top;
+    border-radius: 24px 24px 0 0; display: block;
+}
+.profile-hero-placeholder {
+    width: 100%; height: 200px; border-radius: 24px 24px 0 0;
+    background: linear-gradient(135deg, var(--rose-dark), rgba(42,0,16,0.9));
+    display: flex; align-items: center; justify-content: center; font-size: 4rem;
+}
+.profile-info { padding: 1.5rem; }
+.profile-role-tag {
+    font-size: 0.6rem; font-weight: 800; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--crimson); margin-bottom: 0.4rem; display: block;
+}
+.profile-name { font-size: 1.5rem; font-weight: 900; color: var(--cream); margin-bottom: 0.25rem; }
+.profile-title { font-size: 0.85rem; color: var(--cream-60); margin-bottom: 1.25rem; }
+.profile-bio-para { font-size: 0.88rem; color: var(--cream-60); line-height: 1.7; margin-bottom: 0.9rem; }
+
+/* HEAD JUDGE CARD */
+.judge-card.head-judge {
+    border-color: rgba(255,215,0,0.45); background: linear-gradient(135deg,rgba(255,215,0,0.08),rgba(42,0,16,0.6));
+    grid-column: span 2; flex-direction: row; gap: 1.25rem; padding: 1.5rem;
+    box-shadow: 0 0 30px rgba(255,215,0,0.1);
+}
+@media (max-width: 599px) { .judge-card.head-judge { grid-column: span 1; flex-direction: column; } }
+.judge-card.head-judge .judge-avatar { width: 80px; height: 80px; font-size: 2rem; flex-shrink: 0; border-color: rgba(255,215,0,0.5); }
+.judge-card.head-judge .judge-name { font-size: 1rem; }
+.judge-card.head-judge .judge-head-badge {
+    font-size: 0.58rem; font-weight: 800; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 0.2rem; display: block;
+}
+.judge-card { cursor: pointer; }
+.judge-card img.judge-photo {
+    width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+    border: 2px solid rgba(227,0,79,0.3); margin-bottom: 0.25rem;
+}
+.judge-card.head-judge img.judge-photo { width: 80px; height: 80px; border-color: rgba(255,215,0,0.5); }
+
+/* ANIMATIONS */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
+
+/* TICKETS */
+.ticket-tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+@media (max-width: 600px) { .ticket-tiers { grid-template-columns: 1fr; } }
+.tier-card {
+    border-radius: 24px; padding: 2rem 1.75rem; display: flex;
+    flex-direction: column; gap: 0.5rem; position: relative; overflow: hidden;
+}
+.tier-gold {
+    background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(154,26,69,0.3));
+    border: 1px solid rgba(255,215,0,0.35);
+    box-shadow: 0 0 30px rgba(255,215,0,0.08);
+}
+.tier-regular {
+    background: rgba(42,0,16,0.45);
+    border: 1px solid var(--border);
+}
+.tier-badge {
+    font-size: 0.65rem; font-weight: 800; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 0.25rem;
+}
+.tier-regular .tier-badge { color: var(--cream-60); }
+.tier-name { font-size: 1.3rem; font-weight: 800; color: var(--cream); }
+.tier-price { font-size: 2rem; font-weight: 900; color: var(--gold); line-height: 1.1; margin: 0.35rem 0 0.75rem; }
+.tier-regular .tier-price { color: var(--cream); }
+.tier-perks { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.5rem; flex: 1; }
+.tier-perks li { font-size: 0.85rem; color: var(--cream-60); display: flex; align-items: center; gap: 0.5rem; }
+.tier-perks li::before { content: '✓'; color: var(--gold); font-weight: 800; flex-shrink: 0; }
+.tier-regular .tier-perks li::before { color: var(--crimson); }
+.tickets-note { font-size: 0.78rem; color: var(--cream-40); text-align: center; padding: 0 1rem; line-height: 1.6; }
+
+/* JUDGES & TEAM */
+.judges-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+@media (min-width: 600px) { .judges-grid { grid-template-columns: repeat(4, 1fr); } }
+.judge-card {
+    background: rgba(42,0,16,0.45); border: 1px solid var(--border);
+    border-radius: 20px; padding: 1.75rem 1rem; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    transition: all 0.2s;
+}
+.judge-card:hover { border-color: rgba(227,0,79,0.5); background: rgba(74,0,28,0.45); }
+.judge-avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--rose-dark), var(--rose));
+    border: 2px solid rgba(227,0,79,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; margin-bottom: 0.25rem;
+}
+.judge-name { font-size: 0.88rem; font-weight: 800; color: var(--cream); }
+.judge-title { font-size: 0.72rem; color: var(--cream-60); font-weight: 500; line-height: 1.4; }
+
+/* GALLERY */
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+@media (max-width: 480px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+.gallery-placeholder {
+    aspect-ratio: 1; border-radius: 16px;
+    background: rgba(42,0,16,0.45); border: 1px dashed rgba(154,26,69,0.3);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 0.4rem; color: var(--cream-40); transition: all 0.2s;
+}
+.gallery-placeholder:hover { border-color: rgba(227,0,79,0.45); background: rgba(74,0,28,0.35); }
+.gallery-placeholder span { font-size: 1.8rem; opacity: 0.4; }
+.gallery-placeholder p { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* JOURNAL */
+.journal-list { display: flex; flex-direction: column; gap: 1rem; }
+.journal-card {
+    background: rgba(42,0,16,0.45); border: 1px solid var(--border);
+    border-radius: 20px; padding: 1.5rem 1.75rem; transition: all 0.2s; cursor: pointer;
+}
+.journal-card:hover { border-color: rgba(227,0,79,0.5); background: rgba(74,0,28,0.45); }
+.journal-tag {
+    font-size: 0.6rem; font-weight: 800; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--crimson); display: block; margin-bottom: 0.5rem;
+}
+.journal-title { font-size: 1rem; font-weight: 800; color: var(--cream); line-height: 1.4; margin-bottom: 0.5rem; }
+.journal-excerpt { font-size: 0.85rem; color: var(--cream-60); line-height: 1.65; margin-bottom: 0.75rem; }
+.journal-date { font-size: 0.72rem; color: var(--cream-40); font-weight: 600; }
+
+/* COUNTDOWN */
+.countdown-widget {
+    text-align: center; margin: 1.75rem 0 2rem;
+}
+.countdown-event-label {
+    font-size: 0.65rem; font-weight: 800; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--crimson); margin-bottom: 1rem;
+}
+.countdown-boxes {
+    display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;
+}
+.countdown-box {
+    background: rgba(42,0,16,0.75); border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 14px; padding: 1rem 1.1rem; min-width: 68px;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.countdown-num {
+    font-size: 2rem; font-weight: 900; color: var(--gold);
+    line-height: 1; font-variant-numeric: tabular-nums;
+}
+.countdown-label {
+    font-size: 0.55rem; font-weight: 800; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--cream-60); margin-top: 0.35rem;
+}
+.countdown-done {
+    font-size: 1.1rem; font-weight: 800; color: var(--gold); letter-spacing: 0.05em;
+}
+
+/* NEW TICKET TIERS */
+.tier-oppulent {
+    background: linear-gradient(135deg, rgba(192,168,120,0.15), rgba(154,26,69,0.35));
+    border: 1px solid rgba(192,168,120,0.45);
+    box-shadow: 0 0 30px rgba(192,168,120,0.08);
+}
+.tier-coutured {
+    background: linear-gradient(135deg, rgba(255,215,0,0.14), rgba(154,26,69,0.38));
+    border: 1px solid rgba(255,215,0,0.5);
+    box-shadow: 0 0 40px rgba(255,215,0,0.12);
+}
+.tier-satins { background: rgba(42,0,16,0.55); border: 1px solid var(--border); }
+.tier-coutured .tier-badge { color: var(--gold); }
+.tier-oppulent .tier-badge { color: #c0a878; }
+.tier-satins .tier-badge { color: var(--cream-60); }
+.tier-coutured .tier-price { color: var(--gold); }
+.tier-oppulent .tier-price { color: #c0a878; }
+.tier-satins .tier-price { color: var(--cream); }
+.tier-coutured .tier-perks li::before { color: var(--gold); }
+.tier-oppulent .tier-perks li::before { color: #c0a878; }
+.ticket-tiers-3 { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+@media (min-width: 600px) { .ticket-tiers-3 { grid-template-columns: repeat(3, 1fr); } }
+
+/* MY TICKETS MODAL */
+.wallet-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.wallet-overlay.hidden { display: none !important; }
+.wallet-box {
+    background: #06000e; border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 24px; width: 100%; max-width: 380px;
+    padding: 2rem; position: relative; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 0 80px rgba(255,215,0,0.12);
+}
+.digital-ticket {
+    background: linear-gradient(145deg, #0d0003, #1a0008);
+    border: 1px solid rgba(255,215,0,0.4); border-radius: 20px;
+    padding: 1.75rem; margin-bottom: 1rem; position: relative; overflow: hidden;
+}
+.digital-ticket::before {
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(255,215,0,0.08), transparent 70%);
+    border-radius: 50%;
+}
+.ticket-brand { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--crimson); margin-bottom: 0.25rem; }
+.ticket-event-name { font-size: 1.4rem; font-weight: 900; color: var(--cream); margin-bottom: 0.15rem; }
+.ticket-tier-badge {
+    display: inline-block; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.15em;
+    text-transform: uppercase; color: #0d0003; background: var(--gold);
+    padding: 0.2rem 0.65rem; border-radius: 50px; margin-bottom: 1.25rem;
+}
+.ticket-divider {
+    border: none; border-top: 1px dashed rgba(255,215,0,0.25); margin: 1rem 0;
+}
+.ticket-meta { display: flex; justify-content: space-between; margin-bottom: 1.25rem; }
+.ticket-meta-item { display: flex; flex-direction: column; gap: 2px; }
+.ticket-meta-label { font-size: 0.55rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream-40); }
+.ticket-meta-val { font-size: 0.82rem; font-weight: 700; color: var(--cream); }
+.ticket-qr-wrap {
+    display: flex; justify-content: center; margin-top: 0.5rem;
+    padding: 0.75rem; background: #fff; border-radius: 12px;
+}
+.wallet-empty { text-align: center; color: var(--cream-60); padding: 2rem 0; font-size: 0.9rem; }
+.ticket-print-btn {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    width: 100%; margin-top: 1.1rem; padding: 0.7rem 1rem;
+    background: transparent; border: 1px solid rgba(255,215,0,0.35);
+    border-radius: 10px; color: var(--gold); font-size: 0.78rem;
+    font-weight: 700; font-family: inherit; letter-spacing: 0.06em;
+    text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+}
+.ticket-print-btn:hover { background: rgba(255,215,0,0.08); border-color: var(--gold); }
+
+/* CONTESTANT ROSTER */
+.lineup-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; margin-bottom: 1.5rem;
+}
+@media (min-width: 500px) { .lineup-grid { grid-template-columns: repeat(3, 1fr); } }
+.lineup-card {
+    border-radius: 18px; overflow: hidden; cursor: pointer;
+    position: relative; background: rgba(42,0,16,0.6);
+    border: 1px solid var(--border); transition: all 0.2s;
+    aspect-ratio: 3/4;
+}
+.lineup-card:hover { border-color: rgba(227,0,79,0.55); transform: translateY(-2px); }
+.lineup-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lineup-card-name {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 0.6rem 0.75rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+    font-size: 0.78rem; font-weight: 800; color: var(--cream);
+}
+.lineup-placeholder {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+    font-size: 2.5rem; color: var(--cream-40);
+}
+
+/* CONTESTANT DETAIL MODAL */
+.contestant-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.contestant-overlay.hidden { display: none !important; }
+.contestant-box {
+    background: #06000e; border: 1px solid rgba(154,26,69,0.45);
+    border-radius: 24px; width: 100%; max-width: 440px;
+    max-height: 88vh; overflow-y: auto; position: relative;
+}
+.contestant-hero {
+    width: 100%; aspect-ratio: 3/4; max-height: 280px;
+    object-fit: cover; border-radius: 24px 24px 0 0; display: block;
+}
+.contestant-hero-placeholder {
+    width: 100%; height: 200px; border-radius: 24px 24px 0 0;
+    background: linear-gradient(135deg, var(--rose-dark), rgba(42,0,16,0.9));
+    display: flex; align-items: center; justify-content: center; font-size: 4rem;
+}
+.contestant-info { padding: 1.5rem; }
+.contestant-name { font-size: 1.4rem; font-weight: 900; color: var(--cream); margin-bottom: 0.25rem; }
+.contestant-stats {
+    display: flex; gap: 1.25rem; margin: 1rem 0; flex-wrap: wrap;
+}
+.contestant-stat { display: flex; flex-direction: column; gap: 2px; }
+.contestant-stat-label { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cream-40); }
+.contestant-stat-val { font-size: 0.9rem; font-weight: 700; color: var(--gold); }
+.contestant-bio { font-size: 0.88rem; color: var(--cream-60); line-height: 1.65; margin-bottom: 1rem; }
+.contestant-socials { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.contestant-social-tag {
+    font-size: 0.72rem; font-weight: 700; background: rgba(154,26,69,0.25);
+    border: 1px solid var(--border); border-radius: 50px; padding: 0.3rem 0.75rem; color: var(--cream);
+}
+
+/* DYNAMIC CONTESTANT FORM FIELDS */
+.contestant-fields { display: none; margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1.25rem; }
+.contestant-fields.visible { display: block; }
+.stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+.unit-toggle {
+    display: flex; border-radius: 8px; overflow: hidden;
+    border: 1px solid rgba(154,26,69,0.4); margin-top: 4px;
+}
+.unit-toggle button {
+    flex: 1; padding: 0.4rem; background: transparent; border: none;
+    font-size: 0.7rem; font-weight: 700; color: var(--cream-60); cursor: pointer; font-family: inherit;
+}
+.unit-toggle button.active { background: var(--rose); color: var(--cream); }
+.upload-zone {
+    border: 2px dashed rgba(154,26,69,0.4); border-radius: 14px;
+    padding: 1.5rem 1rem; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: rgba(20,0,6,0.5); position: relative;
+}
+.upload-zone:hover { border-color: var(--crimson); background: rgba(42,0,16,0.6); }
+.upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-zone-icon { font-size: 2rem; display: block; margin-bottom: 0.4rem; }
+.upload-zone-label { font-size: 0.78rem; font-weight: 700; color: var(--cream-60); }
+.upload-zone-sub { font-size: 0.65rem; color: var(--cream-40); margin-top: 0.2rem; }
+.upload-preview { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; margin-top: 0.5rem; display: none; }
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.1rem; }
+
+/* CONTACT LINKS */
+.contact-links { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.5rem; }
+.contact-link {
+    display: flex; align-items: center; gap: 0.75rem;
+    background: rgba(42,0,16,0.35); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1rem 1.25rem;
+    font-size: 0.88rem; color: var(--cream); font-weight: 600;
+    text-decoration: none; transition: all 0.2s;
+}
+.contact-link:hover { background: rgba(74,0,28,0.5); border-color: rgba(227,0,79,0.45); }
+
+/* ══ JUDGE CLIPBOARD — Feature 15 ══ */
+#judge-nav-btn { display: none; }
+
+/* Look Selector */
+.look-selector-wrap {
+    background: rgba(42,0,16,0.35); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1rem 1.1rem; margin-bottom: 1.25rem;
+}
+.look-selector-label {
+    font-size: 0.62rem; font-weight: 800; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--cream-40); margin-bottom: 0.65rem;
+}
+.look-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; }
+@media (max-width: 480px) { .look-tabs { grid-template-columns: repeat(2, 1fr); } }
+.look-tab {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    background: transparent; border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.55rem 0.35rem;
+    font-family: inherit; cursor: pointer; transition: all 0.2s;
+}
+.look-tab-num {
+    font-size: 0.58rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--cream-40);
+}
+.look-tab-name { font-size: 0.7rem; font-weight: 700; color: var(--cream-60); text-align: center; line-height: 1.3; }
+.look-tab.active { background: var(--crimson); border-color: var(--crimson); }
+.look-tab.active .look-tab-num,
+.look-tab.active .look-tab-name { color: #fff; }
+.look-tab:not(.active):hover { border-color: rgba(227,0,79,0.45); background: rgba(227,0,79,0.07); }
+
+/* Contestant Roster */
+.judging-roster { display: flex; flex-direction: column; gap: 0.75rem; }
+.judging-row {
+    display: flex; align-items: center; gap: 1rem;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; padding: 0.9rem 1.1rem;
+    cursor: pointer; transition: all 0.2s;
+}
+.judging-row:hover { border-color: rgba(227,0,79,0.5); background: rgba(74,0,28,0.4); }
+.judging-row.scored { cursor: default; }
+.judging-row.scored:hover { border-color: var(--border); background: var(--card-bg); }
+.judging-row-photo {
+    width: 48px; height: 48px; border-radius: 50%;
+    object-fit: cover; border: 2px solid var(--border); flex-shrink: 0;
+}
+.judging-row-avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--rose-dark); border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; flex-shrink: 0;
+}
+.judging-row-info { flex: 1; min-width: 0; }
+.judging-row-name { font-size: 0.95rem; font-weight: 700; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.judging-row-dept { font-size: 0.72rem; color: var(--cream-60); margin-top: 2px; }
+.judge-status-pill {
+    display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0;
+    font-size: 0.68rem; font-weight: 700; white-space: nowrap;
+    padding: 0.3rem 0.75rem; border-radius: 50px;
+}
+.judge-status-pill.pending {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.14);
+    color: var(--cream-60);
+}
+.judge-status-pill.scored {
+    background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
+    color: #4ade80;
+}
+
+/* ══ SCORING MODAL — Feature 16 ══ */
+.scoring-overlay {
+    position: fixed; inset: 0; z-index: 10000;
+    display: flex; align-items: flex-end; justify-content: center;
+    background: rgba(0,0,0,0.82); backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+.scoring-overlay.hidden { display: none !important; }
+.scoring-box {
+    background: linear-gradient(170deg, #0a0003, #130007);
+    border: 1px solid rgba(255,215,0,0.18);
+    border-radius: 28px 28px 0 0; width: 100%; max-width: 540px;
+    padding: 2rem 1.5rem 2.5rem; position: relative;
+    max-height: 92vh; overflow-y: auto;
+    box-shadow: 0 -12px 60px rgba(154,26,69,0.3);
+    animation: slide-up 0.3s ease;
+}
+.scoring-headshot {
+    width: 72px; height: 72px; border-radius: 50%;
+    object-fit: cover; border: 3px solid rgba(255,215,0,0.35);
+    display: block; margin: 0 auto 0.75rem;
+}
+.scoring-headshot-placeholder {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--rose-dark); border: 3px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; margin: 0 auto 0.75rem;
+}
+.scoring-contestant-name {
+    font-size: 1.1rem; font-weight: 800; color: var(--cream);
+    text-align: center; margin-bottom: 0.15rem;
+}
+.scoring-contestant-dept { font-size: 0.72rem; color: var(--cream-60); text-align: center; margin-bottom: 0.6rem; }
+.scoring-look-badge {
+    display: inline-block; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em;
+    text-transform: uppercase; background: var(--crimson); color: #fff;
+    padding: 0.25rem 0.8rem; border-radius: 50px; margin-bottom: 1.25rem;
+}
+.score-criteria-list { display: flex; flex-direction: column; gap: 1.1rem; margin-bottom: 1.25rem; }
+.score-criteria-item { display: flex; flex-direction: column; gap: 0.35rem; }
+.score-criteria-header { display: flex; justify-content: space-between; align-items: center; }
+.score-criteria-label { font-size: 0.75rem; font-weight: 700; color: var(--cream-60); }
+.score-criteria-val { font-size: 1.2rem; font-weight: 900; color: var(--gold); min-width: 2ch; text-align: right; }
+.score-slider-hints { display: flex; justify-content: space-between; font-size: 0.58rem; color: var(--cream-40); margin-top: 2px; }
+.score-slider {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 6px; border-radius: 4px;
+    background: rgba(255,255,255,0.1); outline: none; cursor: pointer;
+}
+.score-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--gold); cursor: pointer;
+    box-shadow: 0 0 10px rgba(255,215,0,0.5);
+}
+.score-slider::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--gold); cursor: pointer; border: none;
+    box-shadow: 0 0 10px rgba(255,215,0,0.5);
+}
+/* Required comment box */
+.score-comment-wrap { margin-bottom: 1rem; }
+.score-comment-label {
+    display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--cream-60); margin-bottom: 0.5rem;
+}
+.score-comment-textarea {
+    width: 100%; background: rgba(20,0,6,0.7); border: 1.5px solid rgba(154,26,69,0.35);
+    border-radius: 12px; padding: 0.75rem 1rem; font-size: 0.88rem;
+    font-family: inherit; color: var(--cream); resize: vertical; min-height: 80px;
+    outline: none; transition: border-color 0.2s; line-height: 1.5;
+}
+.score-comment-textarea:focus { border-color: var(--crimson); }
+.score-comment-textarea::placeholder { color: var(--cream-40); }
+/* Subtotal banner */
+.score-subtotal-wrap {
+    background: rgba(255,215,0,0.06); border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 14px; padding: 0.85rem 1.25rem;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem;
+}
+.score-subtotal-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cream-60); }
+.score-subtotal-val { font-size: 2.2rem; font-weight: 900; color: var(--gold); line-height: 1; font-variant-numeric: tabular-nums; }
+.score-subtotal-denom { font-size: 0.95rem; font-weight: 700; color: var(--cream-40); }
+.score-submit-btn {
+    width: 100%; padding: 1rem; background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff; border: none; border-radius: 14px;
+    font-size: 1rem; font-weight: 800; font-family: inherit;
+    cursor: pointer; transition: opacity 0.2s; letter-spacing: 0.04em;
+    box-shadow: 0 4px 20px rgba(34,197,94,0.3);
+}
+.score-submit-btn:hover:not(:disabled) { opacity: 0.88; }
+.score-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+/* ══ LIVE RANKINGS LEADERBOARD — Feature 18 ══ */
+/* Dark-theme overrides: leaderboard inside Judging Panel */
+#judge-rankings-view .lb-table-wrap { border-color: rgba(255,248,220,0.1); }
+#judge-rankings-view .lb-table thead th {
+    background: rgba(255,255,255,0.05); color: rgba(255,248,220,0.55);
+    border-bottom-color: rgba(255,248,220,0.1);
+}
+#judge-rankings-view .lb-table tbody td {
+    color: rgba(255,248,220,0.85); border-bottom-color: rgba(255,248,220,0.06);
+}
+#judge-rankings-view .lb-table tbody td:nth-child(2) { color: #fff; }
+#judge-rankings-view .lb-table tbody tr:first-child td { background: rgba(212,175,55,0.08); }
+#judge-rankings-view .lb-table tbody tr:hover td { background: rgba(255,255,255,0.04); }
+#judge-rankings-view .lb-table td.lb-look-score { color: rgba(255,248,220,0.7); }
+#judge-rankings-view .lb-table td.lb-look-empty { color: rgba(255,248,220,0.2); }
+#judge-rankings-view .lb-table td.lb-grand-total {
+    color: var(--gold); border-left-color: rgba(212,175,55,0.3);
+}
+
+/* Light-theme (admin panel) rankings header + refresh button */
+.adm-rankings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem; }
+.adm-refresh-btn {
+    background: transparent; border: 1px solid #d1d5db; color: #6b7280;
+    padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.72rem; font-weight: 700;
+    font-family: inherit; cursor: pointer; transition: all 0.2s;
+}
+.adm-refresh-btn:hover { border-color: #9A1A45; color: #9A1A45; }
+.lb-table-wrap { overflow-x: auto; margin-top: 0.75rem; border-radius: 10px; border: 1px solid #e5e7eb; }
+.lb-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 540px; }
+.lb-table thead th {
+    background: #f3f4f6; color: #6b7280; font-size: 0.62rem;
+    font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 0.65rem 0.75rem; text-align: center;
+    border-bottom: 2px solid #e5e7eb; white-space: nowrap; line-height: 1.4;
+}
+.lb-table thead th:first-child { text-align: center; width: 2.5rem; }
+.lb-table thead th:nth-child(2) { text-align: left; }
+.lb-table tbody td {
+    padding: 0.7rem 0.75rem; text-align: center;
+    border-bottom: 1px solid #f3f4f6; color: #374151; font-weight: 600;
+}
+.lb-table tbody td:first-child { font-size: 1rem; text-align: center; }
+.lb-table tbody td:nth-child(2) { font-weight: 700; color: #111827; text-align: left; }
+.lb-table tbody tr:last-child td { border-bottom: none; }
+.lb-table tbody tr:first-child td { background: #fffbeb; }
+.lb-table tbody tr:hover td { background: #f9fafb; }
+.lb-table td.lb-look-score { color: #4b5563; }
+.lb-table td.lb-look-empty { color: #d1d5db; font-weight: 400; }
+.lb-table td.lb-grand-total {
+    font-weight: 900; color: #9A1A45; font-size: 1rem;
+    border-left: 2px solid #fde68a; background: inherit;
+}
+</style>
+</head>
+<body>
+<!-- AUTH MODAL -->
+<div id="auth-overlay" class="auth-overlay hidden">
+    <div class="auth-box">
+        <button class="auth-close" onclick="closeAuthModal()">✕</button>
+        <div class="auth-brand">
+            <p class="auth-brand-label">Crème de la Style</p>
+            <h2 id="auth-title">Sign in</h2>
+        </div>
+        <button class="google-btn" onclick="handleGoogleSignIn()">
+            <svg viewBox="0 0 24 24" width="18" height="18" style="flex-shrink:0;">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Continue with Google
+        </button>
+        <div class="auth-divider"><span>Or with email</span></div>
+        <div id="auth-error" class="auth-error" style="display:none;"></div>
+        <input type="email" id="auth-email" class="auth-input" placeholder="you@example.com">
+        <input type="password" id="auth-password" class="auth-input" placeholder="Password (min 6 chars)" minlength="6">
+        <button class="auth-submit-btn" onclick="handleAuth()">Sign In</button>
+        <div class="auth-toggle">
+            <span id="auth-toggle-text">New here?</span>
+            <button onclick="toggleAuthMode()" id="auth-toggle-btn">Create an account</button>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+    <div class="glow glow-left"></div>
+    <div class="glow glow-right"></div>
+
+    <header class="top-bar">
+        <button class="notif-btn" id="notif-btn" onclick="toggleNotifications()" title="Notifications">
+            🔔<span class="notif-dot" id="notif-dot"></span>
+        </button>
+        <div id="user-info" class="user-info" style="display:none;">
+            <span id="user-name-display" class="user-name"></span>
+            <button onclick="openWallet()" class="sign-out-btn">🎟 My Tickets</button>
+            <button onclick="handleSignOut()" class="sign-out-btn">Sign Out</button>
+        </div>
+        <button id="enter-hub-btn" onclick="openAuthModal()" class="enter-hub-btn">Enter The Hub</button>
+    </header>
+
+    <main class="main-content">
+
+        <!-- RUNWAY -->
+        <div id="tab-home" class="tab-screen active">
+            <div class="home-hero">
+                <h1 class="hero-title">Crème De La Style <span class="gold">✨</span></h1>
+                <p class="hero-subtitle">✦ OAU Official Hub ✦</p>
+                <p class="hero-desc">Where culture meets the runway. Where boldness becomes legacy.</p>
+                <p class="hero-tagline">ONE NIGHT. ONE STAGE. ONE CROWN.</p>
+            </div>
+            <div class="countdown-widget">
+                <p class="countdown-event-label">✦ Event Countdown ✦</p>
+                <div class="countdown-boxes" id="countdown-boxes">
+                    <div class="countdown-box"><div class="countdown-num" id="cd-days">--</div><div class="countdown-label">Days</div></div>
+                    <div class="countdown-box"><div class="countdown-num" id="cd-hours">--</div><div class="countdown-label">Hours</div></div>
+                    <div class="countdown-box"><div class="countdown-num" id="cd-mins">--</div><div class="countdown-label">Minutes</div></div>
+                    <div class="countdown-box"><div class="countdown-num" id="cd-secs">--</div><div class="countdown-label">Seconds</div></div>
+                </div>
+            </div>
+
+            <div class="home-grid">
+                <div class="ticket-card">
+                    <div class="ticket-glow"></div>
+                    <h2 class="ticket-title">The Runway Awakens</h2>
+                    <p class="ticket-desc">Where the most stylish students of OAU compete for the ultimate crown. Seats are limited and the doors will not stay open forever.</p>
+                    <button class="ticket-btn" onclick="switchTab('explore')">SECURE YOUR SEAT →</button>
+                </div>
+                <div class="dispatch-card">
+                    <h3 class="dispatch-header"><span class="live-dot"></span> Live Dispatches</h3>
+                    <div id="dispatch-list">
+                        <div class="dispatch-item">
+                            <p>Editorial frames refreshed. Contestant lineup updated in Gallery.</p>
+                            <span class="dispatch-time">2 hours ago</span>
+                        </div>
+                        <div class="dispatch-item no-border">
+                            <p>Exclusive Judges Panel revealed! Meet the arbiters of taste.</p>
+                            <span class="dispatch-time">5 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VOTE -->
+        <div id="tab-vote" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Cast Your Vote</h2>
+                <p class="page-sub">One vote per category. Choose the faces that move you.</p>
+            </div>
+            <div id="vote-list"></div>
+        </div>
+
+        <!-- NOMINATE -->
+        <div id="tab-nominate" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Nominate</h2>
+                <p class="page-sub">Champion the most stylish faces on campus.</p>
+            </div>
+            <div class="nominate-form-card">
+                <p class="nominate-form-intro">Know someone who deserves a crown? Put their name forward. One nomination can change everything.</p>
+                <div id="nominate-success" class="nominate-success" style="display:none;"><span>✨</span><p>Nomination submitted! The panel will take it from here.</p></div>
+                <div id="nominate-error" class="nominate-error" style="display:none;"></div>
+                <div class="nominate-field">
+                    <label>Nominee's Full Name</label>
+                    <input type="text" id="nom-name" class="nominate-input" placeholder="e.g. Oluwanifemi Akangbe">
+                </div>
+                <div class="nominate-field">
+                    <label>Category</label>
+                    <select id="nom-category" class="nominate-input nominate-select">
+                        <option value="">— Select a category —</option>
+                        <option value="artist">Most Fashionable Artist of the Year</option>
+                        <option value="creator">Most Fashionable Content Creator of the Year</option>
+                        <option value="actor">Most Fashionable Actor of the Year</option>
+                        <option value="dancer">Most Fashionable Dancer of the Year</option>
+                        <option value="entrepreneur">Most Fashionable Entrepreneur of the Year</option>
+                        <option value="comedian">Most Fashionable Comedian of the Year</option>
+                        <option value="influencer">Most Fashionable Influencer of the Year</option>
+                        <option value="student">Most Fashionable Student Personality of the Year</option>
+                    </select>
+                </div>
+                <div class="nominate-field">
+                    <label>Instagram / Social Handle <span class="optional">(optional)</span></label>
+                    <input type="text" id="nom-handle" class="nominate-input" placeholder="@handle">
+                </div>
+                <div class="nominate-field">
+                    <label>Why do they deserve it?</label>
+                    <textarea id="nom-reason" class="nominate-input nominate-textarea" rows="3" placeholder="Tell us why this person stands out..."></textarea>
+                </div>
+                <div class="nominate-field">
+                    <label>Nominee's WhatsApp Number</label>
+                    <input type="tel" id="nom-whatsapp" class="nominate-input" placeholder="e.g. 08012345678" maxlength="15" oninput="this.value=this.value.replace(/[^0-9+]/g,'')">
+                </div>
+                <button class="nominate-submit-btn" onclick="submitNomination()">Submit Nomination ✦</button>
+            </div>
+        </div>
+
+        <!-- EXPLORE -->
+        <div id="tab-explore" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Explore</h2>
+                <p class="page-sub">Navigate the Crème de la Style experience.</p>
+            </div>
+            <div class="explore-grid">
+                <button class="explore-card" onclick="switchTab('home')"><span class="explore-icon">🏠</span><span class="explore-label">Home</span></button>
+                <button class="explore-card" onclick="switchTab('tickets')"><span class="explore-icon">🎟️</span><span class="explore-label">Tickets</span></button>
+                <button class="explore-card" onclick="switchTab('register')"><span class="explore-icon">📝</span><span class="explore-label">Register</span></button>
+                <button class="explore-card" onclick="switchTab('nominate')"><span class="explore-icon">✨</span><span class="explore-label">Nominate</span></button>
+                <button class="explore-card" onclick="switchTab('vote')"><span class="explore-icon">🗳️</span><span class="explore-label">Vote</span></button>
+                <button class="explore-card" onclick="switchTab('judges')"><span class="explore-icon">⚖️</span><span class="explore-label">Judges</span></button>
+                <button class="explore-card" onclick="switchTab('gallery')"><span class="explore-icon">📸</span><span class="explore-label">Gallery</span></button>
+                <button class="explore-card" onclick="switchTab('team')"><span class="explore-icon">👥</span><span class="explore-label">Team</span></button>
+                <button class="explore-card" onclick="switchTab('journal')"><span class="explore-icon">📓</span><span class="explore-label">Journal</span></button>
+                <button class="explore-card" onclick="switchTab('lineup')"><span class="explore-icon">👗</span><span class="explore-label">The Lineup</span></button>
+                <button class="explore-card" onclick="switchTab('contact')"><span class="explore-icon">✉️</span><span class="explore-label">Contact</span></button>
+            </div>
+        </div>
+
+        <!-- TICKETS -->
+        <div id="tab-tickets" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Tickets</h2>
+                <p class="page-sub">Secure your seat at the most stylish night of the year.</p>
+            </div>
+            <div class="ticket-tiers-3">
+                <div class="tier-card tier-satins">
+                    <div class="tier-badge">EARLY BIRD</div>
+                    <h3 class="tier-name">Satins</h3>
+                    <p class="tier-price">₦1,000</p>
+                    <ul class="tier-perks">
+                        <li>General Admission</li>
+                        <li>Runway Access</li>
+                        <li>Event Keepsake</li>
+                    </ul>
+                    <button class="ticket-btn" onclick="initiateTicketPurchase('Satins', 1000, this)">BUY TICKET →</button>
+                </div>
+                <div class="tier-card tier-oppulent">
+                    <div class="tier-badge">✦ REGULAR</div>
+                    <h3 class="tier-name">Oppulents</h3>
+                    <p class="tier-price">₦1,500</p>
+                    <ul class="tier-perks">
+                        <li>Premium Seating</li>
+                        <li>Runway Access</li>
+                        <li>Event Keepsake</li>
+                        <li>Welcome Refreshment</li>
+                    </ul>
+                    <button class="ticket-btn" onclick="initiateTicketPurchase('Oppulents', 1500, this)">BUY TICKET →</button>
+                </div>
+                <div class="tier-card tier-coutured">
+                    <div class="tier-badge">✦✦ VIP</div>
+                    <h3 class="tier-name">The Coutured</h3>
+                    <p class="tier-price">₦3,000</p>
+                    <ul class="tier-perks">
+                        <li>Front Row Seating</li>
+                        <li>Welcome Cocktail</li>
+                        <li>Backstage Meet & Greet</li>
+                        <li>Exclusive Gift Bag</li>
+                    </ul>
+                    <button class="ticket-btn" onclick="initiateTicketPurchase('The Coutured', 3000, this)">BUY TICKET →</button>
+                </div>
+            </div>
+            <p class="tickets-note">⚠️ Seats are strictly limited. All sales are final. Tickets must be presented at entry.</p>
+        </div>
+
+        <!-- REGISTER -->
+        <div id="tab-register" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Register</h2>
+                <p class="page-sub">Sign up to compete or attend Crème De La Style.</p>
+            </div>
+            <div class="nominate-form-card">
+                <p class="nominate-form-intro">Want to be part of the runway? Register your interest and the team will be in touch.</p>
+                <div id="register-success" class="nominate-success" style="display:none;"><span>✨</span><p>Registration received! We'll reach out soon.</p></div>
+                <div id="register-error" class="nominate-error" style="display:none;"></div>
+                <div class="nominate-field">
+                    <label>Full Name</label>
+                    <input type="text" id="reg-name" class="nominate-input" placeholder="e.g. Oluwanifemi Akangbe">
+                </div>
+                <div class="nominate-field">
+                    <label>Email Address</label>
+                    <input type="email" id="reg-email" class="nominate-input" placeholder="you@example.com">
+                </div>
+                <div class="nominate-field">
+                    <label>Phone Number</label>
+                    <input type="tel" id="reg-phone" class="nominate-input" placeholder="080XXXXXXXX">
+                </div>
+                <div class="nominate-field">
+                    <label>Department / Faculty</label>
+                    <input type="text" id="reg-dept" class="nominate-input" placeholder="e.g. Faculty of Arts">
+                </div>
+                <div class="nominate-field">
+                    <label>I am registering as</label>
+                    <select id="reg-type" class="nominate-input nominate-select" onchange="toggleContestantFields(this.value)">
+                        <option value="">— Select one —</option>
+                        <option value="contestant">A Contestant</option>
+                        <option value="attendee">An Attendee</option>
+                        <option value="volunteer">A Volunteer</option>
+                    </select>
+                </div>
+
+                <!-- DYNAMIC CONTESTANT FIELDS -->
+                <div id="contestant-fields" class="contestant-fields">
+                    <p class="nominate-form-intro" style="margin-bottom:1.25rem;">We need a few more details for your contestant profile.</p>
+
+                    <div class="nominate-field">
+                        <label>Physical Stats</label>
+                        <div class="stats-row">
+                            <div>
+                                <input type="number" id="reg-height" class="nominate-input" placeholder="Height">
+                            </div>
+                            <div>
+                                <input type="number" id="reg-waist" class="nominate-input" placeholder="Waist">
+                            </div>
+                            <div>
+                                <input type="number" id="reg-hips" class="nominate-input" placeholder="Hips">
+                            </div>
+                        </div>
+                        <div class="unit-toggle" style="margin-top:0.5rem;">
+                            <button id="unit-cm" class="active" onclick="setUnit('cm')">cm</button>
+                            <button id="unit-in" onclick="setUnit('in')">inches</button>
+                        </div>
+                    </div>
+
+                    <div class="nominate-field">
+                        <label>Instagram Handle <span class="optional">(optional)</span></label>
+                        <input type="text" id="reg-instagram" class="nominate-input" placeholder="@yourhandle">
+                    </div>
+                    <div class="nominate-field">
+                        <label>TikTok Handle <span class="optional">(optional)</span></label>
+                        <input type="text" id="reg-tiktok" class="nominate-input" placeholder="@yourhandle">
+                    </div>
+
+                    <div class="nominate-field">
+                        <label>Photos</label>
+                        <div class="upload-grid">
+                            <div class="upload-zone" onclick="document.getElementById('upload-headshot').click()">
+                                <input type="file" id="upload-headshot" accept="image/*" onchange="previewUpload(this,'prev-headshot')">
+                                <span class="upload-zone-icon">🤳</span>
+                                <p class="upload-zone-label">Headshot</p>
+                                <p class="upload-zone-sub">Portrait / face photo · max 5MB</p>
+                                <img id="prev-headshot" class="upload-preview" alt="">
+                            </div>
+                            <div class="upload-zone" onclick="document.getElementById('upload-fullbody').click()">
+                                <input type="file" id="upload-fullbody" accept="image/*" onchange="previewUpload(this,'prev-fullbody')">
+                                <span class="upload-zone-icon">🧍</span>
+                                <p class="upload-zone-label">Full Body</p>
+                                <p class="upload-zone-sub">Head-to-toe shot · max 5MB</p>
+                                <img id="prev-fullbody" class="upload-preview" alt="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nominate-field">
+                        <label>About Me</label>
+                        <textarea id="reg-about" class="nominate-input nominate-textarea" rows="3" placeholder="Tell us who you are..."></textarea>
+                    </div>
+                    <div class="nominate-field">
+                        <label>Why Should You Be Picked?</label>
+                        <textarea id="reg-why" class="nominate-input nominate-textarea" rows="3" placeholder="Make your case..."></textarea>
+                    </div>
+                </div>
+
+                <button class="nominate-submit-btn" onclick="submitRegistration()">Submit Registration ✦</button>
+                <p style="font-size:0.75rem;font-style:italic;color:var(--cream-40);text-align:center;margin-top:0.9rem;line-height:1.6;">Please note: All submissions will be reviewed carefully by the casting panel. Only shortlisted candidates will be contacted.</p>
+            </div>
+        </div>
+
+        <!-- JUDGES -->
+        <div id="tab-judges" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">The Judges</h2>
+                <p class="page-sub">Meet the arbiters of taste. The panel that decides the crown.</p>
+            </div>
+            <div id="judges-grid" class="judges-grid"></div>
+        </div>
+
+        <!-- GALLERY -->
+        <div id="tab-gallery" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Gallery</h2>
+                <p class="page-sub">Frames from the runway. Moments that move.</p>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+                <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
+            </div>
+            <p class="tickets-note" style="margin-top:1.5rem;">Editorial photos will be posted here as the event approaches.</p>
+        </div>
+
+        <!-- TEAM -->
+        <div id="tab-team" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">The Team</h2>
+                <p class="page-sub">The people making the magic happen behind the scenes.</p>
+            </div>
+            <div id="team-grid" class="judges-grid"></div>
+        </div>
+
+        <!-- JOURNAL -->
+        <div id="tab-journal" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Journal</h2>
+                <p class="page-sub">Stories, features and fashion dispatches from OAU.</p>
+            </div>
+            <div class="journal-list">
+                <div class="journal-card">
+                    <span class="journal-tag">FASHION</span>
+                    <h3 class="journal-title">What Does It Mean to Be the Most Fashionable?</h3>
+                    <p class="journal-excerpt">Style is more than fabric. It's attitude, confidence, and the ability to make a room stop and stare. We explore what sets the truly fashionable apart.</p>
+                    <span class="journal-date">Coming Soon</span>
+                </div>
+                <div class="journal-card">
+                    <span class="journal-tag">CULTURE</span>
+                    <h3 class="journal-title">OAU's Most Stylish: A History</h3>
+                    <p class="journal-excerpt">From the front gates to the faculty halls, some students have always stood out. A look at the campus style icons who came before.</p>
+                    <span class="journal-date">Coming Soon</span>
+                </div>
+                <div class="journal-card">
+                    <span class="journal-tag">BEHIND THE SCENES</span>
+                    <h3 class="journal-title">Inside the Making of Crème De La Style</h3>
+                    <p class="journal-excerpt">The late nights, the creative debates, and the vision that sparked the most anticipated fashion event OAU has ever seen.</p>
+                    <span class="journal-date">Coming Soon</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- THE LINEUP -->
+        <div id="tab-lineup" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">The Lineup</h2>
+                <p class="page-sub">Meet the faces competing for the crown.</p>
+            </div>
+            <div id="lineup-grid" class="lineup-grid">
+                <p style="color:var(--cream-60);font-size:0.88rem;grid-column:1/-1;">Loading contestants...</p>
+            </div>
+        </div>
+
+        <!-- JUDGING PANEL (visible to role=judge or admin) -->
+        <div id="tab-judging" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">⚖️ Judging Panel</h2>
+                <p class="page-sub">Digital Clipboard — score each Look as contestants walk the runway.</p>
+            </div>
+
+            <!-- Internal view toggle -->
+            <div class="judge-view-toggle">
+                <button class="judge-view-btn active" id="judge-view-btn-score" onclick="window.switchJudgingView('score')">⚖️ Score Contestants</button>
+                <button class="judge-view-btn" id="judge-view-btn-rankings" onclick="window.switchJudgingView('rankings')">🏆 Live Rankings</button>
+            </div>
+
+            <!-- VIEW: Score Contestants -->
+            <div id="judge-score-view">
+                <!-- Look / Segment Selector -->
+                <div class="look-selector-wrap">
+                    <p class="look-selector-label">Current Runway Segment</p>
+                    <div class="look-tabs" id="look-tabs">
+                        <button class="look-tab active" data-look="professional" onclick="window.selectLook('professional', this)">
+                            <span class="look-tab-num">Look 1</span>
+                            <span class="look-tab-name">Professional</span>
+                        </button>
+                        <button class="look-tab" data-look="y2k" onclick="window.selectLook('y2k', this)">
+                            <span class="look-tab-num">Look 2</span>
+                            <span class="look-tab-name">Y2K</span>
+                        </button>
+                        <button class="look-tab" data-look="trad" onclick="window.selectLook('trad', this)">
+                            <span class="look-tab-num">Look 3</span>
+                            <span class="look-tab-name">Costume Trad</span>
+                        </button>
+                        <button class="look-tab" data-look="met_gala" onclick="window.selectLook('met_gala', this)">
+                            <span class="look-tab-num">Look 4</span>
+                            <span class="look-tab-name">OAU Met Gala</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="judging-roster" class="judging-roster">
+                    <p style="color:var(--cream-60);font-size:0.88rem;">Loading contestants...</p>
+                </div>
+            </div>
+
+            <!-- VIEW: Live Rankings -->
+            <div id="judge-rankings-view" style="display:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+                    <p style="color:var(--cream-60);font-size:0.8rem;margin:0;">Grand Total = avg Look 1 + avg Look 2 + avg Look 3 + avg Look 4 across all judges (max 200).</p>
+                    <button onclick="window.loadLiveRankings()" style="margin-left:0.75rem;flex-shrink:0;background:transparent;border:1px solid rgba(255,248,220,0.3);color:rgba(255,248,220,0.7);padding:0.4rem 1rem;border-radius:8px;font-size:0.72rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(255,248,220,0.3)';this.style.color='rgba(255,248,220,0.7)'">↻ Refresh</button>
+                </div>
+                <div id="judge-rankings-list"><p style="color:var(--cream-60);font-size:0.88rem;">Click Refresh to load rankings.</p></div>
+            </div>
+        </div>
+
+        <!-- CONTACT -->
+        <div id="tab-contact" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Contact</h2>
+                <p class="page-sub">Reach the Crème De La Style team.</p>
+            </div>
+            <div class="nominate-form-card">
+                <p class="nominate-form-intro">Got a question, partnership inquiry, or press request? Send us a message and we'll get back to you.</p>
+                <div id="contact-success" class="nominate-success" style="display:none;"><span>✉️</span><p>Message sent! We'll respond within 24–48 hours.</p></div>
+                                <div id="contact-error" class="nominate-error" style="display:none;"></div>
+                <div class="nominate-field">
+                    <label>Your Name</label>
+                    <input type="text" id="contact-name" class="nominate-input" placeholder="Full name">
+                </div>
+                <div class="nominate-field">
+                    <label>Email Address</label>
+                    <input type="email" id="contact-email" class="nominate-input" placeholder="you@example.com">
+                </div>
+                <div class="nominate-field">
+                    <label>Subject</label>
+                    <select id="contact-subject" class="nominate-input nominate-select">
+                        <option value="">— Select a topic —</option>
+                        <option value="general">General Enquiry</option>
+                        <option value="partnership">Partnership / Sponsorship</option>
+                        <option value="press">Press & Media</option>
+                        <option value="tickets">Tickets</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="nominate-field">
+                    <label>Message</label>
+                    <textarea id="contact-message" class="nominate-input nominate-textarea" rows="4" placeholder="Write your message here..."></textarea>
+                </div>
+                <button class="nominate-submit-btn" onclick="submitContact()">Send Message ✦</button>
+            </div>
+            <div class="contact-links">
+                <a class="contact-link" href="mailto:cremedelastyleoau@gmail.com">✉️ cremedelastyleoau@gmail.com</a>
+                <a class="contact-link" href="https://instagram.com/cremedelastyleoau" target="_blank">📸 @cremedelastyleoau</a>
+            </div>
+        </div>
+
+    </main>
+
+    <button class="admin-fab" onclick="openAdminPanel()">⚙️</button>
+
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-tab="home" onclick="switchTab('home')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>RUNWAY</span>
+        </button>
+        <button class="nav-btn" data-tab="vote" onclick="switchTab('vote')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>VOTE</span>
+        </button>
+        <button class="nav-btn" data-tab="nominate" onclick="switchTab('nominate')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>NOMINATE</span>
+        </button>
+        <button class="nav-btn" data-tab="lineup" onclick="switchTab('lineup')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>LINEUP</span>
+        </button>
+        <button class="nav-btn" id="judge-nav-btn" data-tab="judging" onclick="switchTab('judging')">
+            <span style="font-size:1.3rem;line-height:1;">⚖️</span>
+            <span>JUDGING</span>
+        </button>
+        <button class="nav-btn" data-tab="explore" onclick="switchTab('explore')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>EXPLORE</span>
+        </button>
+    </nav>
+</div>
+
+<!-- NOTIFICATION DRAWER -->
+<div class="notif-backdrop" id="notif-backdrop" onclick="closeNotifications()"></div>
+<div id="notif-drawer" class="notif-drawer">
+    <div class="notif-drawer-header">
+        <span class="notif-drawer-title">🔔 Notifications</span>
+        <button class="notif-close-btn" onclick="closeNotifications()">✕</button>
+    </div>
+    <div class="notif-list" id="notif-list">
+        <p class="notif-empty">Loading...</p>
+    </div>
+</div>
+
+<!-- PROFILE MODAL (Judges / Team / Contestants) -->
+<div id="profile-overlay" class="profile-overlay hidden">
+    <div class="profile-box">
+        <button class="auth-close" style="position:absolute;top:1rem;right:1rem;z-index:10;background:rgba(10,0,3,0.8);" onclick="closeProfileModal()">✕</button>
+        <div id="profile-modal-content"></div>
+    </div>
+</div>
+
+<!-- MY TICKETS / WALLET MODAL -->
+<div id="wallet-overlay" class="wallet-overlay hidden">
+    <div class="wallet-box">
+        <button class="auth-close" onclick="closeWallet()">✕</button>
+        <div class="auth-brand">
+            <p class="auth-brand-label">Crème de la Style</p>
+            <h2 style="font-size:1.4rem;font-weight:800;color:var(--cream);">My Tickets</h2>
+        </div>
+        <div id="wallet-content"><p class="wallet-empty">Loading your tickets...</p></div>
+    </div>
+</div>
+
+<!-- CONTESTANT DETAIL MODAL -->
+<div id="contestant-overlay" class="contestant-overlay hidden">
+    <div class="contestant-box">
+        <button class="auth-close" style="position:absolute;top:1rem;right:1rem;z-index:10;" onclick="closeContestantModal()">✕</button>
+        <div id="contestant-modal-content"></div>
+    </div>
+</div>
+
+<!-- SCORING MODAL -->
+<div id="scoring-overlay" class="scoring-overlay hidden">
+    <div class="scoring-box">
+        <button class="auth-close" style="position:absolute;top:1rem;right:1rem;z-index:10;background:rgba(10,0,3,0.8);" onclick="closeScoringModal()">✕</button>
+        <!-- Headshot + name + look badge — injected by JS -->
+        <div id="scoring-modal-content" style="text-align:center;"></div>
+        <!-- 5 criteria sliders — injected by JS -->
+        <div class="score-criteria-list" id="score-criteria-list"></div>
+        <!-- Required judge comment -->
+        <div class="score-comment-wrap">
+            <label class="score-comment-label" for="score-comment">
+                Judge's Comments <span style="color:#E3004F;">*</span>
+            </label>
+            <textarea id="score-comment" class="score-comment-textarea"
+                placeholder="Your observations on this contestant's performance for this Look..."
+                oninput="window.validateSubmitButton()"></textarea>
+        </div>
+        <!-- Live subtotal -->
+        <div class="score-subtotal-wrap">
+            <div>
+                <div class="score-subtotal-label">Subtotal</div>
+                <div style="display:flex;align-items:baseline;gap:4px;">
+                    <span class="score-subtotal-val" id="score-subtotal-display">25</span>
+                    <span class="score-subtotal-denom">/50</span>
+                </div>
+            </div>
+            <span style="font-size:1.8rem;opacity:0.6;">📋</span>
+        </div>
+        <button id="score-submit-btn" class="score-submit-btn" onclick="submitScore()" disabled>
+            Fill in comments to submit
+        </button>
+    </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" class="admin-panel">
+    <header class="admin-top-bar">
+        <div><h1>⚙️ Admin Dashboard</h1><p>Crème de la Style Management</p></div>
+        <button class="admin-back-btn" onclick="closeAdminPanel()">← Back to App</button>
+    </header>
+    <nav class="admin-tabs-bar">
+        <button class="admin-tab active" onclick="switchAdminTab('dispatches', this)">📢 Live Dispatches</button>
+        <button class="admin-tab" onclick="switchAdminTab('analytics', this)">📊 Analytics</button>
+        <button class="admin-tab" onclick="switchAdminTab('gallery', this)">📸 Gallery Upload</button>
+        <button class="admin-tab" onclick="switchAdminTab('scan', this)">📷 Scan Tickets</button>
+    </nav>
+    <main class="admin-body">
+        <div id="adm-tab-dispatches" class="admin-tab-pane active">
+            <div class="admin-section">
+                <h2><span class="adm-accent">+</span> Post New Dispatch</h2>
+                <div class="adm-form-row">
+                    <div class="adm-field"><label>Headline</label><input type="text" id="adm-headline" placeholder="e.g. Runway Times Confirmed"></div>
+                    <div class="adm-field"><label>Tag Type</label><select id="adm-tag"><option>Announcement</option><option>Media</option></select></div>
+                </div>
+                <div class="adm-field"><label>Message Content</label><textarea id="adm-message" rows="3" placeholder="Enter details..."></textarea></div>
+                <button class="adm-submit-btn" onclick="postDispatch()">Push Update to Live App</button>
+                <div id="adm-dispatch-msg" style="display:none;text-align:center;margin-top:10px;font-size:0.88rem;"></div>
+            </div>
+            <div class="admin-section">
+                <h2>📋 Recent Dispatches</h2>
+                <div id="adm-dispatches-list"><p class="adm-empty">No dispatches yet.</p></div>
+            </div>
+        </div>
+        <div id="adm-tab-analytics" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2>Platform Overview</h2>
+                <div class="adm-stats-grid">
+                    <div class="adm-stat-card" style="border-top-color:#3b82f6;"><div class="adm-stat-num">1,204</div><div class="adm-stat-label">Total Users</div><div class="adm-stat-change positive">↑ +14 today</div></div>
+                    <div class="adm-stat-card" style="border-top-color:#E3004F;"><div class="adm-stat-num">8,430</div><div class="adm-stat-label">Votes Cast</div><div class="adm-stat-change positive">↑ Active now</div></div>
+                    <div class="adm-stat-card" style="border-top-color:#FFD700;"><div class="adm-stat-num">24</div><div class="adm-stat-label">Nominees</div><div class="adm-stat-change">8 categories</div></div>
+                </div>
+            </div>
+        </div>
+        <div id="adm-tab-gallery" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2>📸 Upload to Gallery</h2>
+                <div class="gallery-dropzone" onclick="document.getElementById('gallery-file-input').click()">
+                    <span>📁</span><p>Click to upload or drag & drop</p><small>SVG, PNG, JPG or GIF (max. 5MB)</small>
+                    <input type="file" id="gallery-file-input" accept="image/*" style="display:none;">
+                </div>
+                <button class="adm-submit-btn">Upload & Publish</button>
+            </div>
+        </div>
+        <div id="adm-tab-scan" class="admin-tab-pane">
+            <div class="admin-section scanner-section">
+                <h2>📷 Ticket Scanner</h2>
+                <div class="scanner-viewfinder-wrap">
+                    <div id="qr-reader"></div>
+                    <div class="scan-corner tl"></div>
+                    <div class="scan-corner tr"></div>
+                    <div class="scan-corner bl"></div>
+                    <div class="scan-corner br"></div>
+                    <div class="scan-line" id="scan-line"></div>
+                </div>
+                <button id="scanner-toggle-btn" class="scanner-start-btn" onclick="toggleScanner()">▶ Start Camera</button>
+                <div id="scan-status" class="scan-status scan-status--ready">
+                    <span id="scan-status-icon">📷</span>
+                    <span id="scan-status-text">Ready to scan...</span>
+                </div>
+                <div class="scan-log-wrap">
+                    <h3>Recent Scans</h3>
+                    <div id="scan-log"><p class="adm-empty">No scans yet.</p></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function() {
+
+/* ── Config ── */
+var SUPABASE_URL = 'https://nfoeltjcmemcpwdwewbq.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mb2VsdGpjbWVtY3B3ZHdld2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzc5MDgsImV4cCI6MjA5NTE1MzkwOH0.YIp_5dRhsSYCdwpNy51RRqmKtzx4qZY5yHXfbBlnxMk';
+var PAYSTACK_KEY = 'pk_test_1a022423120fb68879a89f257cecb2a4e668b59c';
+var _sb = null;
+var _statUnit = 'cm';
+var _eventDate = new Date('2026-11-26T19:00:00+01:00');
+var _countdownTimer = null;
+var _walletTickets = [];
+
+window.currentUser      = null;
+window.isLoginMode      = true;
+window.votes            = {};
+window.expandedCategory = null;
+
+var awardCategories = [
+    { id: 'artist',       title: 'Most Fashionable Artist of the Year' },
+    { id: 'creator',      title: 'Most Fashionable Content Creator of the Year' },
+    { id: 'actor',        title: 'Most Fashionable Actor of the Year' },
+    { id: 'dancer',       title: 'Most Fashionable Dancer of the Year' },
+    { id: 'entrepreneur', title: 'Most Fashionable Entrepreneur of the Year' },
+    { id: 'comedian',     title: 'Most Fashionable Comedian of the Year' },
+    { id: 'influencer',   title: 'Most Fashionable Influencer of the Year' },
+    { id: 'student',      title: 'Most Fashionable Student Personality of the Year' },
+];
+var mockNominees = [
+    { id: 'n1', name: 'Tunde A.' },
+    { id: 'n2', name: 'Bisi O.' },
+    { id: 'n3', name: 'Zara Cole' },
+];
+
+var mockJudges = [
+    {
+        id: 'j1', isHead: true,
+        name: 'Adaeze Okafor',
+        title: 'Head Judge · Fashion Designer & Creative Director',
+        photo: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=700&fit=crop&q=80',
+        bios: [
+            'Adaeze Okafor is a Lagos-based fashion designer whose label has graced runways from Lagos to Paris. With over a decade in the industry, she brings an unmatched eye for form, fabric, and cultural storytelling to the judging panel.',
+            'A graduate of the London College of Fashion and founder of House of Adaeze, she has dressed some of the most recognised faces in Afro-pop and Nollywood. Her work has been featured in Vogue Africa, This Day Style, and CNN Style.',
+            'As Head Judge of Crème De La Style, Adaeze will evaluate contestants on originality, cohesion, confidence, and their ability to own a room without saying a word.'
+        ]
+    },
+    {
+        id: 'j2',
+        name: 'Seun Balogun',
+        title: 'Stylist & Brand Consultant',
+        photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=700&fit=crop&q=80',
+        bios: [
+            'Seun Balogun has styled some of Nigeria\'s biggest artists, athletes, and public figures. Known for his clean, architectural approach to menswear and bold use of colour, he brings a sharp commercial eye to the panel.',
+            'Seun started his career assisting on music video sets and quickly rose to become the go-to stylist for red carpet moments across the country. He currently runs Balogun Creative Agency out of Abuja.',
+            '"I want to see someone who dresses for themselves first — not for approval. That authenticity is what separates a fashion person from a truly stylish person."'
+        ]
+    },
+    {
+        id: 'j3',
+        name: 'Chioma Eze',
+        title: 'Fashion Photographer',
+        photo: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=600&h=700&fit=crop&q=80',
+        bios: [
+            'Chioma Eze\'s lens has captured fashion weeks, editorial shoots, and cultural festivals across West Africa. Her photography is known for its cinematic quality and its celebration of Black beauty in all its forms.',
+            'Based between Lagos and Accra, Chioma has shot for major fashion magazines and collaborated with brands including Zara, ASOS Africa, and several independent Nigerian designers.',
+            'As a judge, Chioma will be assessing how well contestants understand the visual language of fashion — how they carry themselves, how they move, and how they tell a story without a camera prompt.'
+        ]
+    },
+    {
+        id: 'j4',
+        name: 'Tunde Fashola',
+        title: 'Content Creator & Influencer',
+        photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=700&fit=crop&q=80',
+        bios: [
+            'Tunde Fashola is one of Nigeria\'s most followed menswear creators, with a community built on his authentic approach to everyday luxury. He understands what resonates with a generation that consumes fashion digitally.',
+            'He started posting outfit content from his university dorm room and turned it into a full media brand. He now consults for fashion brands looking to connect with Nigerian Gen-Z audiences.',
+            'Tunde will judge on personal brand clarity, audience appeal, and whether each contestant has what it takes to translate their style into cultural impact.'
+        ]
+    }
+];
+
+var mockTeam = [
+    {
+        id: 't1',
+        name: 'Oluwanifemi Akangbe',
+        title: 'Event Director',
+        photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=700&fit=crop&q=80',
+        bios: [
+            'Nifemi is the visionary behind Crème De La Style. A final-year student of OAU with a passion for culture, fashion, and community, she conceived the event as a space for the most stylish students on campus to be properly celebrated.',
+            '"We want people to leave that night feeling like they witnessed something historic. We are not just throwing a party — we are setting a standard for how OAU students see themselves."'
+        ]
+    },
+    {
+        id: 't2',
+        name: 'Babatunde Osei',
+        title: 'Creative Lead & Art Director',
+        photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&h=700&fit=crop&q=80',
+        bios: [
+            'Babatunde is the creative force shaping the visual identity of Crème De La Style. He is responsible for the brand aesthetics, stage design, and the overall experience from the moment a guest arrives to the moment they leave.',
+            'A graphic design student with a deep interest in fashion editorial and spatial design, Tunde brings a meticulous eye and an unapologetically bold aesthetic to everything he touches.'
+        ]
+    },
+    {
+        id: 't3',
+        name: 'Adunola Bello',
+        title: 'PR & Communications',
+        photo: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=600&h=700&fit=crop&q=80',
+        bios: [
+            'Adunola manages the public image and communications strategy for Crème De La Style. From press releases to social media campaigns, she ensures the right message reaches the right audience at the right time.',
+            'With a background in mass communication and a sharp instinct for digital storytelling, Adunola has built the event\'s social presence from scratch and continues to grow a highly engaged community around the brand.'
+        ]
+    },
+    {
+        id: 't4',
+        name: 'Emeka Chukwu',
+        title: 'Digital & Technology Lead',
+        photo: 'https://images.unsplash.com/photo-1463453091185-61582044d556?w=600&h=700&fit=crop&q=80',
+        bios: [
+            'Emeka built and manages the Crème De La Style digital platform — the very app you are using right now. He handles the full technology stack: from the web application to the database architecture and the ticketing system.',
+            'A computer science student with a taste for clean code and elegant design, Emeka believes that technology should be invisible — the experience should feel like magic, not like software.'
+        ]
+    }
+];
+
+var mockContestants = [
+    {
+        id: 'c1', full_name: 'Zara Okonkwo',
+        headshot_url: 'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=600&h=750&fit=crop&q=80',
+        fullbody_url: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&h=800&fit=crop&q=80',
+        height: 175, waist: 60, hips: 88, stat_unit: 'cm',
+        instagram: '@zaraokonkwo', tiktok: '@zarathestyle',
+        about_me: 'Final year Fashion Design student. Style is my language and I have been speaking it fluently since I was twelve.',
+        why_picked: 'Because no one on this campus walks into a room like I do. I don\'t follow trends — I set them.', is_approved: true
+    },
+    {
+        id: 'c2', full_name: 'Kolade Adeyemi',
+        headshot_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=750&fit=crop&q=80',
+        fullbody_url: 'https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=600&h=800&fit=crop&q=80',
+        height: 182, waist: 76, hips: 90, stat_unit: 'cm',
+        instagram: '@koladeofficial', tiktok: null,
+        about_me: 'Law student, but fashion is my first love. Menswear, tailoring, and a clean silhouette — that is my entire personality.',
+        why_picked: 'Men\'s fashion on this campus needs a new standard. I am it.', is_approved: true
+    },
+    {
+        id: 'c3', full_name: 'Temi Falola',
+        headshot_url: 'https://images.unsplash.com/photo-1523263685509-57c1d050d19b?w=600&h=750&fit=crop&q=80',
+        fullbody_url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&h=800&fit=crop&q=80',
+        height: 168, waist: 62, hips: 86, stat_unit: 'cm',
+        instagram: '@temifalola_', tiktok: '@temiifalola',
+        about_me: 'I mix vintage pieces with contemporary African fashion. Every outfit I wear is a conversation I am having with culture.',
+        why_picked: 'Style without culture is just clothes. I bring both.', is_approved: true
+    },
+    {
+        id: 'c4', full_name: 'David Nnadi',
+        headshot_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=750&fit=crop&q=80',
+        fullbody_url: 'https://images.unsplash.com/photo-1617137968427-85924c800a22?w=600&h=800&fit=crop&q=80',
+        height: 179, waist: 74, hips: 89, stat_unit: 'cm',
+        instagram: '@davidnnadi', tiktok: '@nnadi_david',
+        about_me: 'Architecture student by day. Fashion devotee always. I design buildings and outfits with the same philosophy — form, function, and statement.',
+        why_picked: 'I am deliberate about everything I wear. That intentionality is what makes me unforgettable.', is_approved: true
+    },
+    {
+        id: 'c5', full_name: 'Blessing Okoro',
+        headshot_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=750&fit=crop&q=80',
+        fullbody_url: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&h=800&fit=crop&q=80',
+        height: 172, waist: 64, hips: 92, stat_unit: 'cm',
+        instagram: '@blessingokoro__', tiktok: '@blessingokoro',
+        about_me: 'Medical student who refuses to look like one. My style is bold, colorful, and completely mine.',
+        why_picked: 'Medicine taught me that confidence saves lives. My fashion does the same for me.', is_approved: true
+    },
+    {
+        id: 'c6', full_name: 'Precious Obi',
+        headshot_url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=750&fit=crop&q=80',
+        fullbody_url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=800&fit=crop&q=80',
+        height: 165, waist: 58, hips: 84, stat_unit: 'cm',
+        instagram: '@precious.obi', tiktok: null,
+        about_me: 'Economics student with a luxury mindset on a student budget. Thrift, tailoring, and attitude — that is my formula.',
+        why_picked: 'I prove every day that style has nothing to do with money and everything to do with vision.', is_approved: true
+    }
+];
+
+function boot() {
+    if (window.supabase) {
+        try {
+            _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            _sb.auth.onAuthStateChange(function(_e, session) {
+                window.currentUser = session ? session.user : null;
+                window.updateTopBar();
+            });
+            _sb.auth.getSession().then(function(res) {
+                window.currentUser = (res.data && res.data.session) ? res.data.session.user : null;
+                window.updateTopBar();
+            }).catch(function() {});
+        } catch(e) { console.warn('Supabase init error:', e); }
+    }
+    window.updateTopBar();
+    window.renderVoteList();
+    fetchEventDate();
+    window.loadLineup();
+    renderJudges();
+    renderTeam();
+    fetchNotifications();
+    ['auth-overlay','wallet-overlay','contestant-overlay','profile-overlay'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+                if (id === 'auth-overlay') window.closeAuthModal();
+            }
+        });
+    });
+    document.querySelectorAll('.nav-btn[data-tab="lineup"], .explore-card').forEach(function(b) {
+        b.addEventListener('click', function() {
+            if ((b.dataset && b.dataset.tab === 'lineup') || (b.querySelector && b.querySelector('.explore-label') && b.querySelector('.explore-label').textContent === 'The Lineup')) {
+                setTimeout(window.loadLineup, 50);
+            }
+        });
+    });
+}
+
+window.updateTopBar = function() {
+    var userInfo = document.getElementById('user-info');
+    var enterBtn = document.getElementById('enter-hub-btn');
+    var nameEl   = document.getElementById('user-name-display');
+    if (window.currentUser) {
+        nameEl.textContent     = 'Hi, ' + window.currentUser.email.split('@')[0];
+        userInfo.style.display = 'flex';
+        enterBtn.style.display = 'none';
+        fetchUserRole(); // async — sets currentUserRole then calls applyRoleBasedUI()
+    } else {
+        userInfo.style.display = 'none';
+        enterBtn.style.display = 'inline-flex';
+        window.currentUserRole = 'student';
+        applyRoleBasedUI();
+    }
+};
+
+window.switchTab = function(tab) {
+    /* Feature 20: block students from the judging tab entirely */
+    if (tab === 'judging' && window.currentUserRole !== 'judge' && window.currentUserRole !== 'admin') {
+        return; // silently do nothing — nav button is hidden anyway
+    }
+    document.querySelectorAll('.tab-screen').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+    var screen = document.getElementById('tab-' + tab);
+    if (screen) screen.classList.add('active');
+    var btn = document.querySelector('.nav-btn[data-tab="' + tab + '"]');
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('.injected-back-btn').forEach(function(b) { b.remove(); });
+    if (screen && tab !== 'home') {
+        var backBtn = document.createElement('button');
+        backBtn.className = 'back-btn injected-back-btn';
+        backBtn.innerHTML = '&#8592; Back';
+        backBtn.onclick = function() { window.switchTab('explore'); };
+        screen.insertBefore(backBtn, screen.firstChild);
+    }
+    if (tab === 'judging') { window.loadJudgingRoster(); }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.openAuthModal = function() {
+    document.getElementById('auth-overlay').classList.remove('hidden');
+    document.getElementById('auth-email').value    = '';
+    document.getElementById('auth-password').value = '';
+    document.getElementById('auth-error').style.display = 'none';
+};
+window.closeAuthModal = function() { document.getElementById('auth-overlay').classList.add('hidden'); };
+window.toggleAuthMode = function() {
+    window.isLoginMode = !window.isLoginMode;
+    document.getElementById('auth-title').textContent = window.isLoginMode ? 'Sign in' : 'Create account';
+    document.querySelector('#auth-overlay .auth-submit-btn').textContent = window.isLoginMode ? 'Sign In' : 'Sign Up';
+    document.getElementById('auth-toggle-text').textContent = window.isLoginMode ? 'New here?' : 'Already have an account?';
+    document.getElementById('auth-toggle-btn').textContent  = window.isLoginMode ? 'Create an account' : 'Sign in';
+    document.getElementById('auth-error').style.display = 'none';
+};
+window.handleAuth = async function() {
+    var email    = document.getElementById('auth-email').value.trim();
+    var password = document.getElementById('auth-password').value;
+    var btn      = document.querySelector('#auth-overlay .auth-submit-btn');
+    var errEl    = document.getElementById('auth-error');
+    errEl.style.display = 'none';
+    if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display = 'block'; return; }
+    if (!_sb) { errEl.textContent = 'Auth service unavailable.'; errEl.style.display = 'block'; return; }
+    btn.textContent = 'Please wait...'; btn.disabled = true;
+    var result = window.isLoginMode
+        ? await _sb.auth.signInWithPassword({ email: email, password: password })
+        : await _sb.auth.signUp({ email: email, password: password });
+    if (result.error) {
+        errEl.textContent = (window.isLoginMode ? 'Login' : 'Sign up') + ' failed: ' + result.error.message;
+        errEl.style.display = 'block';
+    } else {
+        window.currentUser = result.data.user;
+        window.updateTopBar();
+        window.closeAuthModal();
+    }
+    btn.textContent = window.isLoginMode ? 'Sign In' : 'Sign Up';
+    btn.disabled = false;
+};
+window.handleGoogleSignIn = async function() {
+    if (!_sb) return;
+    var result = await _sb.auth.signInWithOAuth({ provider: 'google', options: { queryParams: { access_type: 'offline', prompt: 'consent' } } });
+    if (result.error) { var e = document.getElementById('auth-error'); e.textContent = 'Google sign-in failed: ' + result.error.message; e.style.display = 'block'; }
+};
+window.handleSignOut = async function() {
+    if (_sb) await _sb.auth.signOut();
+    window.currentUser = null;
+    window.updateTopBar();
+};
+
+window.renderVoteList = function() {
+    var container = document.getElementById('vote-list');
+    if (!container) return;
+    container.innerHTML = '';
+    awardCategories.forEach(function(cat) {
+        var hasVoted   = window.votes[cat.id] !== undefined;
+        var isExpanded = window.expandedCategory === cat.id;
+        var el = document.createElement('div');
+        el.className = 'vote-category';
+        var nomineesHtml = mockNominees.map(function(n) {
+            var sel  = window.votes[cat.id] === n.id;
+            var dis  = hasVoted && !sel;
+            var catQ = cat.id.replace(/'/g, "\\'");
+            var nidQ = n.id.replace(/'/g, "\\'");
+            return '<div class="nominee-row">' +
+                '<span class="nominee-name' + (sel ? ' voted' : '') + '">' + n.name + '</span>' +
+                '<button class="vote-btn' + (sel ? ' voted-btn' : '') + '" onclick="window.castVote(\'' + catQ + '\',\'' + nidQ + '\')"' + (dis ? ' disabled' : '') + '>' + (sel ? '&#10003; VOTED' : 'VOTE') + '</button>' +
+                '</div>';
+        }).join('');
+        var catQ2 = cat.id.replace(/'/g, "\\'");
+        el.innerHTML =
+            '<button class="vote-category-header" onclick="window.toggleCategory(\'' + catQ2 + '\')">' +
+                '<span class="vote-category-title' + (hasVoted ? ' voted' : '') + '">' + cat.title + '</span>' +
+                '<span class="vote-toggle">' + (isExpanded ? '&#8722;' : '+') + '</span>' +
+            '</button>' +
+            '<div class="vote-nominees' + (isExpanded ? ' open' : '') + '">' + nomineesHtml + '</div>';
+        container.appendChild(el);
+    });
+};
+window.toggleCategory = function(id) {
+    window.expandedCategory = window.expandedCategory === id ? null : id;
+    window.renderVoteList();
+};
+window.castVote = function(categoryId, nomineeId) {
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    window.votes[categoryId] = nomineeId;
+    setTimeout(function() {
+        if (window.expandedCategory === categoryId) window.expandedCategory = null;
+        window.renderVoteList();
+    }, 700);
+    window.renderVoteList();
+};
+
+window.submitNomination = async function() {
+    var name     = document.getElementById('nom-name').value.trim();
+    var cat      = document.getElementById('nom-category').value;
+    var handle   = document.getElementById('nom-handle').value.trim();
+    var reason   = document.getElementById('nom-reason').value.trim();
+    var whatsapp = document.getElementById('nom-whatsapp').value.trim();
+    var err      = document.getElementById('nominate-error');
+    var suc      = document.getElementById('nominate-success');
+    err.style.display = 'none'; suc.style.display = 'none';
+    if (!name) { err.textContent = "Please enter the nominee's name."; err.style.display = 'block'; return; }
+    if (!cat)  { err.textContent = 'Please select a category.'; err.style.display = 'block'; return; }
+    if (whatsapp && (whatsapp.replace(/\D/g,'').length < 7 || whatsapp.replace(/\D/g,'').length > 15)) {
+        err.textContent = 'Please enter a valid WhatsApp number.'; err.style.display = 'block'; return;
+    }
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    if (_sb) {
+        var _r = await _sb.from('nominations').insert([{
+            user_id: window.currentUser.id, nominee_name: name, category: cat,
+            social_handle: handle, reason: reason, whatsapp_number: whatsapp || null
+        }]);
+        if (_r.error) { err.textContent = 'Submission failed: ' + _r.error.message; err.style.display = 'block'; return; }
+    }
+    suc.style.display = 'flex';
+    ['nom-name','nom-category','nom-handle','nom-reason','nom-whatsapp'].forEach(function(id) { document.getElementById(id).value = ''; });
+};
+
+window.toggleContestantFields = function(val) {
+    var el = document.getElementById('contestant-fields');
+    if (val === 'contestant') el.classList.add('visible');
+    else el.classList.remove('visible');
+};
+window.setUnit = function(unit) {
+    _statUnit = unit;
+    document.getElementById('unit-cm').classList.toggle('active', unit === 'cm');
+    document.getElementById('unit-in').classList.toggle('active', unit === 'in');
+};
+window.previewUpload = function(input, previewId) {
+    var file = input.files[0];
+    var prev = document.getElementById(previewId);
+    if (!file) { prev.style.display = 'none'; return; }
+    if (file.size > 5 * 1024 * 1024) { alert('File is too large. Maximum size is 5MB.'); input.value = ''; prev.style.display = 'none'; return; }
+    var reader = new FileReader();
+    reader.onload = function(e) { prev.src = e.target.result; prev.style.display = 'block'; };
+    reader.readAsDataURL(file);
+};
+window.submitRegistration = async function() {
+    var name  = document.getElementById('reg-name').value.trim();
+    var email = document.getElementById('reg-email').value.trim();
+    var type  = document.getElementById('reg-type').value;
+    var err   = document.getElementById('register-error');
+    var suc   = document.getElementById('register-success');
+    err.style.display = 'none'; suc.style.display = 'none';
+    if (!name)  { err.textContent = 'Please enter your name.';  err.style.display = 'block'; return; }
+    if (!email) { err.textContent = 'Please enter your email.'; err.style.display = 'block'; return; }
+    if (!type)  { err.textContent = 'Please select a type.';    err.style.display = 'block'; return; }
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    var btn = document.querySelector('#tab-register .nominate-submit-btn');
+    btn.textContent = 'Submitting...'; btn.disabled = true;
+    if (type === 'contestant' && _sb) {
+        var hsFile = document.getElementById('upload-headshot').files[0];
+        var fbFile = document.getElementById('upload-fullbody').files[0];
+        if (!hsFile || !fbFile) { err.textContent = 'Please upload both a headshot and a full body photo.'; err.style.display = 'block'; btn.textContent = 'Submit Registration ✦'; btn.disabled = false; return; }
+        var uid    = window.currentUser.id;
+        var hsPath = uid + '/headshot_' + Date.now();
+        var fbPath = uid + '/fullbody_'  + Date.now();
+        var up1 = await _sb.storage.from('contestant-headshots').upload(hsPath, hsFile, { upsert: true });
+        var up2 = await _sb.storage.from('contestant-fullbody').upload(fbPath, fbFile, { upsert: true });
+        if (up1.error || up2.error) { err.textContent = 'Photo upload failed. Please try again.'; err.style.display = 'block'; btn.textContent = 'Submit Registration ✦'; btn.disabled = false; return; }
+        var hsUrl = _sb.storage.from('contestant-headshots').getPublicUrl(hsPath).data.publicUrl;
+        var fbUrl = _sb.storage.from('contestant-fullbody').getPublicUrl(fbPath).data.publicUrl;
+        var insert = await _sb.from('contestants').insert([{
+            user_id: uid, full_name: name, email: email,
+            phone: document.getElementById('reg-phone').value.trim(),
+            department: document.getElementById('reg-dept').value.trim(),
+            height: document.getElementById('reg-height').value,
+            waist: document.getElementById('reg-waist').value,
+            hips: document.getElementById('reg-hips').value,
+            stat_unit: _statUnit,
+            instagram: document.getElementById('reg-instagram').value.trim(),
+            tiktok: document.getElementById('reg-tiktok').value.trim(),
+            headshot_url: hsUrl, fullbody_url: fbUrl,
+            about_me: document.getElementById('reg-about').value.trim(),
+            why_picked: document.getElementById('reg-why').value.trim(),
+            is_approved: false
+        }]);
+        if (insert.error) { err.textContent = 'Submission failed: ' + insert.error.message; err.style.display = 'block'; btn.textContent = 'Submit Registration ✦'; btn.disabled = false; return; }
+    } else if (_sb) {
+        await _sb.from('registrations').insert([{
+            user_id: window.currentUser.id, full_name: name, email: email,
+            phone: document.getElementById('reg-phone').value.trim(),
+            department: document.getElementById('reg-dept').value.trim(),
+            type: type
+        }]);
+    }
+    suc.style.display = 'flex';
+    btn.textContent = 'Submit Registration ✦'; btn.disabled = false;
+    ['reg-name','reg-email','reg-phone','reg-dept','reg-type'].forEach(function(id) { document.getElementById(id).value = ''; });
+    document.getElementById('contestant-fields').classList.remove('visible');
+};
+
+window.submitContact = function() {
+    var name  = document.getElementById('contact-name').value.trim();
+    var email = document.getElementById('contact-email').value.trim();
+    var msg   = document.getElementById('contact-message').value.trim();
+    var err   = document.getElementById('contact-error');
+    var suc   = document.getElementById('contact-success');
+    err.style.display = 'none'; suc.style.display = 'none';
+    if (!name || !email || !msg) { err.textContent = 'Please fill out all required fields.'; err.style.display = 'block'; return; }
+    suc.style.display = 'flex';
+    ['contact-name','contact-email','contact-subject','contact-message'].forEach(function(id) { document.getElementById(id).value = ''; });
+};
+
+window.openAdminPanel  = function() { document.getElementById('admin-panel').classList.add('open'); };
+window.closeAdminPanel = function() {
+    document.getElementById('admin-panel').classList.remove('open');
+    stopScanner(); // always kill camera when panel closes
+};
+window.switchAdminTab  = function(tab, btn) {
+    document.querySelectorAll('.admin-tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.admin-tab').forEach(function(b) { b.classList.remove('active'); });
+    var pane = document.getElementById('adm-tab-' + tab);
+    if (pane) pane.classList.add('active');
+    if (btn)  btn.classList.add('active');
+    if (tab !== 'scan') stopScanner(); // stop camera when leaving scan tab
+};
+
+/* ── QR TICKET SCANNER ── */
+var _scanner       = null;
+var _scannerActive = false;
+var _scanCooldown  = false;
+
+function setScanStatus(type, icon, text) {
+    var el = document.getElementById('scan-status');
+    var ic = document.getElementById('scan-status-icon');
+    var tx = document.getElementById('scan-status-text');
+    if (!el) return;
+    el.className = 'scan-status scan-status--' + type;
+    ic.textContent = icon;
+    tx.textContent = text;
+}
+
+function addScanLog(type, text) {
+    var log = document.getElementById('scan-log');
+    if (!log) return;
+    var empty = log.querySelector('.adm-empty');
+    if (empty) empty.remove();
+    var now = new Date();
+    var timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+    var entry = document.createElement('div');
+    entry.className = 'scan-log-entry ' + type;
+    entry.innerHTML = '<span>' + text + '</span><span class="scan-log-time">' + timeStr + '</span>';
+    log.insertBefore(entry, log.firstChild);
+    // cap at 20 entries
+    while (log.children.length > 20) log.removeChild(log.lastChild);
+}
+
+function processTicketScan(decodedText) {
+    if (_scanCooldown) return;
+    _scanCooldown = true;
+
+    var token = decodedText.trim();
+
+    // Validate format — must look like a CDLS token or UUID
+    if (!token) {
+        setScanStatus('invalid', '⚠️', 'Unrecognized QR Code');
+        addScanLog('invalid', 'Unknown: empty code');
+        setTimeout(function() {
+            setScanStatus('ready', '📷', 'Ready to scan...');
+            _scanCooldown = false;
+        }, 2000);
+        return;
+    }
+
+    setScanStatus('ready', '⏳', 'Checking ticket...');
+
+    (async function() {
+        try {
+            if (!_sb) throw new Error('No database connection');
+
+            var res = await _sb.from('tickets')
+                .select('id, entry_token, tier_name, is_used, user_id')
+                .or('entry_token.eq.' + token + ',id.eq.' + token)
+                .maybeSingle();
+
+            if (res.error) throw res.error;
+
+            if (!res.data) {
+                setScanStatus('invalid', '⚠️', 'Unrecognized QR Code');
+                addScanLog('invalid', 'Not found: ' + token.substring(0, 20));
+                setTimeout(function() { setScanStatus('ready', '📷', 'Ready to scan...'); _scanCooldown = false; }, 2000);
+                return;
+            }
+
+            var ticket = res.data;
+
+            if (ticket.is_used) {
+                setScanStatus('used', '🚫', 'Ticket Already Used!');
+                addScanLog('used', 'USED — ' + (ticket.tier_name || 'Ticket') + ' · ' + (ticket.entry_token || ticket.id).substring(0, 16));
+                setTimeout(function() { setScanStatus('ready', '📷', 'Ready to scan...'); _scanCooldown = false; }, 2500);
+                return;
+            }
+
+            // Mark as used
+            var upd = await _sb.from('tickets')
+                .update({ is_used: true })
+                .eq('id', ticket.id);
+
+            if (upd.error) throw upd.error;
+
+            setScanStatus('valid', '✅', 'Valid Ticket: ' + (ticket.tier_name || 'Ticket') + ' — Entry Granted!');
+            addScanLog('valid', 'VALID — ' + (ticket.tier_name || 'Ticket') + ' · ' + (ticket.entry_token || ticket.id).substring(0, 16));
+            setTimeout(function() { setScanStatus('ready', '📷', 'Ready to scan...'); _scanCooldown = false; }, 2000);
+
+        } catch(e) {
+            setScanStatus('invalid', '⚠️', 'Error: ' + (e.message || 'Unknown error'));
+            addScanLog('invalid', 'Error: ' + (e.message || 'Unknown'));
+            setTimeout(function() { setScanStatus('ready', '📷', 'Ready to scan...'); _scanCooldown = false; }, 2500);
+        }
+    })();
+}
+
+function _resetScannerUI() {
+    _scanner       = null;
+    _scannerActive = false;
+    _scanCooldown  = false;
+    // wipe the qr-reader div so the next start() gets a clean container
+    var reader = document.getElementById('qr-reader');
+    if (reader) reader.innerHTML = '';
+    var btn = document.getElementById('scanner-toggle-btn');
+    if (btn) { btn.textContent = '▶ Start Camera'; btn.classList.remove('stop'); }
+    var sl = document.getElementById('scan-line');
+    if (sl) sl.style.display = 'none';
+    setScanStatus('ready', '📷', 'Ready to scan...');
+}
+
+function startScanner() {
+    if (_scannerActive) return;
+    if (typeof Html5Qrcode === 'undefined') {
+        setScanStatus('invalid', '⚠️', 'Scanner library not loaded. Check connection.');
+        return;
+    }
+    // ensure container is clean before creating a new instance
+    var reader = document.getElementById('qr-reader');
+    if (reader) reader.innerHTML = '';
+
+    _scanner = new Html5Qrcode('qr-reader');
+
+    _scanner.start(
+        { facingMode: 'environment' },
+        { fps: 12, qrbox: { width: 240, height: 240 }, aspectRatio: 1.0 },
+        function(decodedText) { processTicketScan(decodedText); },
+        function() { /* frequent no-match callbacks — ignore */ }
+    ).then(function() {
+        _scannerActive = true;
+        var btn = document.getElementById('scanner-toggle-btn');
+        if (btn) { btn.textContent = '⏹ Stop Camera'; btn.classList.add('stop'); }
+        setScanStatus('ready', '📷', 'Ready to scan...');
+        var sl = document.getElementById('scan-line');
+        if (sl) sl.style.display = 'block';
+    }).catch(function() {
+        setScanStatus('invalid', '⚠️', 'Camera access denied — check browser permissions.');
+        _resetScannerUI();
+    });
+}
+
+function stopScanner() {
+    if (!_scanner) return;
+    if (!_scannerActive) { _resetScannerUI(); return; }
+    // immediately flip flag so rapid double-clicks can't fire twice
+    _scannerActive = false;
+    _scanner.stop()
+        .then(function() { _resetScannerUI(); })
+        .catch(function() { _resetScannerUI(); }); // reset even on error
+}
+
+window.toggleScanner = function() {
+    if (_scannerActive) { stopScanner(); } else { startScanner(); }
+};
+window.postDispatch = function() {
+    var headline = document.getElementById('adm-headline').value.trim();
+    var message  = document.getElementById('adm-message').value.trim();
+    var msgEl    = document.getElementById('adm-dispatch-msg');
+    if (!headline || !message) { msgEl.textContent = 'Please fill in headline and message.'; msgEl.style.color = '#E3004F'; msgEl.style.display = 'block'; return; }
+    msgEl.textContent = 'Dispatch posted!'; msgEl.style.color = '#16a34a'; msgEl.style.display = 'block';
+    var list = document.getElementById('dispatch-list');
+    if (list) {
+        var last = list.querySelector('.no-border');
+        if (last) last.classList.remove('no-border');
+        var div = document.createElement('div');
+        div.className = 'dispatch-item no-border';
+        div.innerHTML = '<p><strong>' + headline + ':</strong> ' + message + '</p><span class="dispatch-time">Just now</span>';
+        list.appendChild(div);
+    }
+    document.getElementById('adm-headline').value = '';
+    document.getElementById('adm-message').value  = '';
+    setTimeout(function() { msgEl.style.display = 'none'; }, 3000);
+};
+
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+function tickCountdown() {
+    var now  = new Date();
+    var diff = _eventDate - now;
+    if (diff <= 0) { document.getElementById('countdown-boxes').innerHTML = '<p class="countdown-done">✦ The Night Has Arrived ✦</p>'; clearInterval(_countdownTimer); return; }
+    var days  = Math.floor(diff / 86400000);
+    var hours = Math.floor((diff % 86400000) / 3600000);
+    var mins  = Math.floor((diff % 3600000)  / 60000);
+    var secs  = Math.floor((diff % 60000)    / 1000);
+    document.getElementById('cd-days').textContent  = pad(days);
+    document.getElementById('cd-hours').textContent = pad(hours);
+    document.getElementById('cd-mins').textContent  = pad(mins);
+    document.getElementById('cd-secs').textContent  = pad(secs);
+}
+function startCountdown() { tickCountdown(); _countdownTimer = setInterval(tickCountdown, 1000); }
+async function fetchEventDate() {
+    if (!_sb) { startCountdown(); return; }
+    try {
+        var res = await _sb.from('system_settings').select('event_date').single();
+        if (!res.error && res.data && res.data.event_date) { _eventDate = new Date(res.data.event_date); }
+    } catch(e) {}
+    startCountdown();
+}
+
+window.initiateTicketPurchase = function(tierName, amount, btn) {
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    if (btn) { btn.textContent = 'Processing...'; btn.disabled = true; }
+    var ref     = 'CDLS_' + Date.now() + '_' + Math.random().toString(36).substr(2,6).toUpperCase();
+    var restore = function() { if (btn) { btn.textContent = 'BUY TICKET →'; btn.disabled = false; } };
+    try {
+        var handler = PaystackPop.setup({
+            key: PAYSTACK_KEY, email: window.currentUser.email,
+            amount: amount * 100, currency: 'NGN', ref: ref,
+            metadata: { tier: tierName, user_id: window.currentUser.id },
+            callback: function(response) { restore(); onPaymentSuccess(tierName, amount, response.reference); },
+            onClose: function() { restore(); }
+        });
+        handler.openIframe();
+    } catch(e) { restore(); alert('Payment system unavailable. Please add your Paystack public key.'); }
+};
+
+async function onPaymentSuccess(tierName, amount, reference) {
+    if (!_sb || !window.currentUser) { alert('Payment received but could not save ticket — please contact support. Ref: ' + reference); return; }
+    var entryToken = 'CDLS-' + window.currentUser.id.substr(0,8).toUpperCase() + '-' + reference.substr(-6).toUpperCase();
+    var res = await _sb.from('tickets').insert([{
+        user_id: window.currentUser.id, tier_name: tierName, amount: amount,
+        payment_status: 'paid', payment_reference: reference, entry_token: entryToken
+    }]);
+    if (res.error) { console.error('Ticket insert error:', res.error); alert('Payment received but ticket save failed: ' + res.error.message + '\nRef: ' + reference); return; }
+    alert('Payment successful! Opening your ticket now...');
+    window.openWallet();
+}
+
+window.openWallet = async function() {
+    document.getElementById('wallet-overlay').classList.remove('hidden');
+    var content = document.getElementById('wallet-content');
+    content.innerHTML = '<p class="wallet-empty">Loading your tickets...</p>';
+    if (!_sb || !window.currentUser) { content.innerHTML = '<p class="wallet-empty">Please sign in to view your tickets.</p>'; return; }
+    var res = await _sb.from('tickets').select('*').eq('user_id', window.currentUser.id).order('created_at', { ascending: false });
+    if (res.error) { content.innerHTML = '<p class="wallet-empty" style="color:#ff6b9d;">Error loading tickets: ' + res.error.message + '</p>'; return; }
+    if (!res.data || res.data.length === 0) { content.innerHTML = '<p class="wallet-empty">You have no tickets yet. Head to the Tickets tab to get yours.</p>'; return; }
+    content.innerHTML = '';
+    _walletTickets = res.data;
+    res.data.forEach(function(t, idx) {
+        var wrap = document.createElement('div');
+        wrap.className = 'digital-ticket';
+        wrap.innerHTML =
+            '<p class="ticket-brand">Crème De La Style ✦ OAU</p>' +
+            '<h2 class="ticket-event-name">Crème De La Style</h2>' +
+            '<span class="ticket-tier-badge">' + t.tier_name + '</span>' +
+            '<hr class="ticket-divider">' +
+            '<div class="ticket-meta">' +
+                '<div class="ticket-meta-item"><span class="ticket-meta-label">Holder</span><span class="ticket-meta-val">' + window.currentUser.email.split('@')[0] + '</span></div>' +
+                '<div class="ticket-meta-item"><span class="ticket-meta-label">Amount</span><span class="ticket-meta-val">&#8358;' + t.amount.toLocaleString() + '</span></div>' +
+                '<div class="ticket-meta-item"><span class="ticket-meta-label">Status</span><span class="ticket-meta-val" style="color:#4ade80;">' + (t.payment_status === 'paid' ? '&#10003; Paid' : t.payment_status) + '</span></div>' +
+            '</div>' +
+            '<div class="ticket-qr-wrap" id="qr-slot-' + idx + '"></div>' +
+            '<button class="ticket-print-btn" onclick="printTicket(' + idx + ')">&#128424; Print / Save as PDF</button>';
+        content.appendChild(wrap);
+        try {
+            new QRCode(document.getElementById('qr-slot-' + idx), {
+                text: t.entry_token || t.id, width: 140, height: 140,
+                colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H
+            });
+        } catch(e) {}
+    });
+};
+
+window.closeWallet = function() { document.getElementById('wallet-overlay').classList.add('hidden'); };
+
+window.openWallet = async function() {
+    document.getElementById('wallet-overlay').classList.remove('hidden');
+    var content = document.getElementById('wallet-content');
+    content.innerHTML = '<p class="wallet-empty">Loading your tickets...</p>';
+    if (!_sb || !window.currentUser) { content.innerHTML = '<p class="wallet-empty">Please sign in to view your tickets.</p>'; return; }
+    var res = await _sb.from('tickets').select('*').eq('user_id', window.currentUser.id).order('created_at', { ascending: false });
+    if (res.error) { content.innerHTML = '<p class="wallet-empty" style="color:#ff6b9d;">Error loading tickets: ' + res.error.message + '</p>'; return; }
+    if (!res.data || res.data.length === 0) { content.innerHTML = '<p class="wallet-empty">You have no tickets yet. Head to the Tickets tab to get yours.</p>'; return; }
+    content.innerHTML = '';
+    _walletTickets = res.data;
+    res.data.forEach(function(t, idx) {
+        var wrap = document.createElement('div');
+        wrap.className = 'digital-ticket';
+        wrap.innerHTML =
+            '<p class="ticket-brand">Crème De La Style ✦ OAU</p>' +
+            '<h2 class="ticket-event-name">Crème De La Style</h2>' +
+            '<span class="ticket-tier-badge">' + t.tier_name + '</span>' +
+            '<hr class="ticket-divider">' +
+            '<div class="ticket-meta">' +
+                '<div class="ticket-meta-item"><span class="ticket-meta-label">Holder</span><span class="ticket-meta-val">' + window.currentUser.email.split('@')[0] + '</span></div>' +
+                '<div class="ticket-meta-item"><span class="ticket-meta-label">Amount</span><span class="ticket-meta-val">&#8358;' + t.amount.toLocaleString() + '</span></div>' +
+                '<div class="ticket-meta-item"><span class="ticket-meta-label">Status</span><span class="ticket-meta-val" style="color:#4ade80;">' + (t.payment_status === 'paid' ? '&#10003; Paid' : t.payment_status) + '</span></div>' +
+            '</div>' +
+            '<div class="ticket-qr-wrap" id="qr-slot-' + idx + '"></div>' +
+            '<button class="ticket-print-btn" onclick="printTicket(' + idx + ')">&#128424; Print / Save as PDF</button>';
+        content.appendChild(wrap);
+        try {
+            new QRCode(document.getElementById('qr-slot-' + idx), {
+                text: t.entry_token || t.id, width: 140, height: 140,
+                colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H
+            });
+        } catch(e) {}
+    });
+};
+
+window.closeWallet = function() { document.getElementById('wallet-overlay').classList.add('hidden'); };
+
+window.printTicket = function(idx) {
+    var t = _walletTickets[idx];
+    if (!t) return;
+    
+    var holder = window.currentUser ? window.currentUser.email.split('@')[0] : 'Guest';
+    var qrSlot = document.getElementById('qr-slot-' + idx);
+    var qrDataUrl = '';
+    
+    if (qrSlot) {
+        var canvas = qrSlot.querySelector('canvas');
+        var img    = qrSlot.querySelector('img');
+        if (canvas) { try { qrDataUrl = canvas.toDataURL('image/png'); } catch(e) {} }
+        else if (img) { qrDataUrl = img.src; }
+    }
+    
+    var qrBlock     = qrDataUrl ? '<img src="' + qrDataUrl + '" width="180" height="180" style="display:block;margin:0 auto;" alt="Entry QR">' : '<p style="text-align:center;color:#888;font-size:0.8rem;">QR code not available</p>';
+    var statusColor = t.payment_status === 'paid' ? '#22c55e' : '#f59e0b';
+    var statusText  = t.payment_status === 'paid' ? '✓ PAID' : t.payment_status.toUpperCase();
+    var amountStr   = '₦' + Number(t.amount).toLocaleString();
+    var ticketId    = (t.entry_token || t.id || '').substring(0, 16).toUpperCase();
+
+    // 1. Create an off-screen iframe (needs real size so backgrounds render)
+    var printFrame = document.createElement('iframe');
+    printFrame.style.position = 'fixed';
+    printFrame.style.left = '-9999px';
+    printFrame.style.top = '0';
+    printFrame.style.width = '500px';
+    printFrame.style.height = '750px';
+    printFrame.style.border = 'none';
+    document.body.appendChild(printFrame);
+
+    // 2. Build the ticket design safely using DOM manipulation
+    var frameDoc = printFrame.contentWindow.document;
+    
+    var style = frameDoc.createElement('style');
+    style.innerHTML =
+        '*, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }' +
+        'html, body { margin:0; padding:0; background:#050001 !important; display:flex; align-items:center; justify-content:center; min-height:100vh; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }' +
+        '@media print { html, body { background:#050001 !important; } @page { margin:0; size: 420px 700px; } }' +
+        '.wrap { padding: 30px 20px; display:flex; justify-content:center; }' +
+        '.c { background:linear-gradient(160deg,#0d0003,#1a0008) !important; border:2px solid #FFD700; border-radius:20px; padding:2rem; color:#FFF8DC !important; width:340px; text-align:center; font-family:Georgia,serif; box-shadow:0 4px 40px rgba(255,215,0,0.18); }' +
+        '.h { font-size:10px; font-weight:800; letter-spacing:0.2em; text-transform:uppercase; color:#E3004F !important; margin-bottom:4px; font-family:sans-serif; }' +
+        '.e { font-size:24px; font-weight:900; margin:0 0 10px; color:#FFF8DC !important; }' +
+        '.b { display:inline-block; font-size:10px; font-weight:800; letter-spacing:0.15em; text-transform:uppercase; background:#FFD700 !important; color:#0d0003 !important; padding:4px 14px; border-radius:50px; margin-bottom:20px; font-family:sans-serif; }' +
+        '.d { border:none; border-top:1px dashed rgba(255,215,0,0.3); margin:0 0 16px; }' +
+        '.m { display:flex; justify-content:space-between; margin-bottom:20px; text-align:left; }' +
+        '.mc { display:flex; flex-direction:column; gap:4px; }' +
+        '.ml { font-size:9px; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,248,220,0.45) !important; font-family:sans-serif; }' +
+        '.mv { font-size:14px; font-weight:bold; color:#FFF8DC !important; font-family:sans-serif; }' +
+        '.q { background:#fff !important; border-radius:12px; padding:15px; margin:0 auto 15px; width:fit-content; }' +
+        '.f { font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,248,220,0.4) !important; margin-top:10px; font-family:sans-serif; }' +
+        '.r { font-size:10px; font-family:monospace; color:rgba(255,248,220,0.35) !important; margin-top:5px; }';
+    
+    frameDoc.head.appendChild(style);
+
+    var bodyHtml = '<div class="wrap"><div class="c">' +
+        '<p class="h">Crème De La Style ✦ OAU</p>' +
+        '<h1 class="e">Crème De La Style</h1>' +
+        '<span class="b">' + t.tier_name + '</span>' +
+        '<hr class="d">' +
+        '<div class="m">' +
+            '<div class="mc"><span class="ml">Holder</span><span class="mv">' + holder + '</span></div>' +
+            '<div class="mc"><span class="ml">Amount</span><span class="mv">' + amountStr + '</span></div>' +
+            '<div class="mc"><span class="ml">Status</span><span class="mv" style="-webkit-print-color-adjust:exact;print-color-adjust:exact;color:' + statusColor + ';">' + statusText + '</span></div>' +
+        '</div>' +
+        '<div class="q">' + qrBlock + '</div>' +
+        '<p class="f">Obafemi Awolowo University · November 2026</p>' +
+        '<p class="r">Ref: ' + ticketId + '</p>' +
+        '</div></div>';
+
+    frameDoc.body.innerHTML = bodyHtml;
+
+    // 3. Print the iframe quietly
+    setTimeout(function() {
+        printFrame.contentWindow.focus();
+        printFrame.contentWindow.print();
+        
+        // Remove the iframe after printing
+        setTimeout(function() {
+            document.body.removeChild(printFrame);
+        }, 1000);
+    }, 500);
+};
+
+function renderContestantCards(data, grid) {
+    grid.innerHTML = '';
+    if (!data || data.length === 0) { grid.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;grid-column:1/-1;">The lineup will be revealed soon. Stay tuned.</p>'; return; }
+    data.forEach(function(c) {
+        var card = document.createElement('div');
+        card.className = 'lineup-card';
+        card.onclick = function() { window.openContestantModal(c); };
+        card.innerHTML = c.headshot_url
+            ? '<img src="' + c.headshot_url + '" alt="' + c.full_name + '" loading="lazy"><div class="lineup-card-name">' + c.full_name + '</div>'
+            : '<div class="lineup-placeholder">👤</div><div class="lineup-card-name">' + c.full_name + '</div>';
+        grid.appendChild(card);
+    });
+}
+window.loadLineup = async function() {
+    var grid = document.getElementById('lineup-grid');
+    if (!grid) return;
+    if (!_sb) { renderContestantCards(mockContestants, grid); return; }
+    var res = await _sb.from('contestants').select('*').eq('is_approved', true).order('created_at', { ascending: true });
+    if (res.error || !res.data || res.data.length === 0) { renderContestantCards(mockContestants, grid); return; }
+    renderContestantCards(res.data, grid);
+};
+
+window.openContestantModal = function(c) {
+    var overlay = document.getElementById('contestant-overlay');
+    var content = document.getElementById('contestant-modal-content');
+    var heroHtml = c.fullbody_url ? '<img class="contestant-hero" src="' + c.fullbody_url + '" alt="' + c.full_name + '">' : '<div class="contestant-hero-placeholder">👤</div>';
+    var unit = c.stat_unit || 'cm';
+    var statsHtml = '';
+    if (c.height) statsHtml += '<div class="contestant-stat"><span class="contestant-stat-label">Height</span><span class="contestant-stat-val">' + c.height + unit + '</span></div>';
+    if (c.waist)  statsHtml += '<div class="contestant-stat"><span class="contestant-stat-label">Waist</span><span class="contestant-stat-val">'  + c.waist  + unit + '</span></div>';
+    if (c.hips)   statsHtml += '<div class="contestant-stat"><span class="contestant-stat-label">Hips</span><span class="contestant-stat-val">'   + c.hips   + unit + '</span></div>';
+    var socialsHtml = '';
+    if (c.instagram) socialsHtml += '<span class="contestant-social-tag">&#x1F4F8; ' + c.instagram + '</span>';
+    if (c.tiktok)    socialsHtml += '<span class="contestant-social-tag">&#x1F3B5; ' + c.tiktok    + '</span>';
+    content.innerHTML = heroHtml + '<div class="contestant-info">' +
+        '<h2 class="contestant-name">' + c.full_name + '</h2>' +
+        (statsHtml ? '<div class="contestant-stats">' + statsHtml + '</div>' : '') +
+        (c.about_me   ? '<p class="contestant-bio">' + c.about_me + '</p>' : '') +
+        (c.why_picked ? '<p class="contestant-bio" style="font-style:italic;color:var(--cream-60);">"' + c.why_picked + '"</p>' : '') +
+        (socialsHtml  ? '<div class="contestant-socials">' + socialsHtml + '</div>' : '') +
+        '</div>';
+    overlay.classList.remove('hidden');
+};
+window.closeContestantModal = function() { document.getElementById('contestant-overlay').classList.add('hidden'); };
+
+window.openProfileModal = function(person) {
+    var overlay = document.getElementById('profile-overlay');
+    var content = document.getElementById('profile-modal-content');
+    var heroHtml = person.photo ? '<img class="profile-hero" src="' + person.photo + '" alt="' + person.name + '">' : '<div class="profile-hero-placeholder">👤</div>';
+    var biosHtml = (person.bios || []).map(function(p) { return '<p class="profile-bio-para">' + p + '</p>'; }).join('');
+    var roleTag  = person.isHead ? '✦ Head Judge' : (person.department || '');
+    content.innerHTML = heroHtml + '<div class="profile-info">' +
+        (roleTag ? '<span class="profile-role-tag">' + roleTag + '</span>' : '') +
+        '<h2 class="profile-name">' + person.name + '</h2>' +
+        '<p class="profile-title">' + (person.title || '') + '</p>' +
+        biosHtml + '</div>';
+    overlay.classList.remove('hidden');
+};
+window.closeProfileModal = function() { document.getElementById('profile-overlay').classList.add('hidden'); };
+
+function renderJudges() {
+    var grid = document.getElementById('judges-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    mockJudges.forEach(function(j) {
+        var card = document.createElement('div');
+        card.className = 'judge-card' + (j.isHead ? ' head-judge' : '');
+        card.onclick = function() { window.openProfileModal(j); };
+        var photoHtml = j.photo ? '<img class="judge-photo" src="' + j.photo + '" alt="' + j.name + '">' : '<div class="judge-avatar">👑</div>';
+        card.innerHTML = photoHtml + '<div>' + (j.isHead ? '<span class="judge-head-badge">✦ Head Judge</span>' : '') + '<h3 class="judge-name">' + j.name + '</h3><p class="judge-title">' + j.title.replace('Head Judge · ','') + '</p></div>';
+        grid.appendChild(card);
+    });
+}
+function renderTeam() {
+    var grid = document.getElementById('team-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    mockTeam.forEach(function(m) {
+        var card = document.createElement('div');
+        card.className = 'judge-card';
+        card.onclick = function() { window.openProfileModal(m); };
+        var photoHtml = m.photo ? '<img class="judge-photo" src="' + m.photo + '" alt="' + m.name + '">' : '<div class="judge-avatar">👤</div>';
+        card.innerHTML = photoHtml + '<h3 class="judge-name">' + m.name + '</h3><p class="judge-title">' + m.title + '</p>';
+        grid.appendChild(card);
+    });
+}
+
+var _notifOpen  = false;
+var _lastReadId = localStorage.getItem('cdls_last_read_notif') || null;
+function timeAgo(dateStr) {
+    var diff = Date.now() - new Date(dateStr).getTime();
+    var mins = Math.floor(diff / 60000);
+    if (mins < 1)  return 'Just now';
+    if (mins < 60) return mins + 'm ago';
+    var hrs = Math.floor(mins / 60);
+    if (hrs < 24)  return hrs + 'h ago';
+    return Math.floor(hrs / 24) + 'd ago';
+}
+async function fetchNotifications() {
+    var list = document.getElementById('notif-list');
+    if (!_sb) { list.innerHTML = '<p class="notif-empty">No notifications yet.</p>'; return; }
+    var res = await _sb.from('notifications').select('*').order('created_at', { ascending: false }).limit(20);
+    if (res.error || !res.data || res.data.length === 0) { list.innerHTML = '<p class="notif-empty">No notifications yet.</p>'; return; }
+    var hasUnread = _lastReadId ? res.data.some(function(n) { return n.id > _lastReadId; }) : res.data.length > 0;
+    document.getElementById('notif-dot').classList.toggle('visible', hasUnread);
+    list.innerHTML = '';
+    res.data.forEach(function(n) {
+        var isUnread  = !_lastReadId || n.id > _lastReadId;
+        var typeClass = 'notif-type-' + (n.type || 'info');
+        var item = document.createElement('div');
+        item.className = 'notif-item' + (isUnread ? ' unread' : '');
+        item.innerHTML = '<span class="notif-type-badge ' + typeClass + '">' + (n.type || 'INFO').toUpperCase() + '</span>' +
+            '<p class="notif-title">' + n.title + '</p>' +
+            '<p class="notif-message">' + n.message + '</p>' +
+            '<span class="notif-time">' + timeAgo(n.created_at) + '</span>';
+        list.appendChild(item);
+    });
+}
+window.toggleNotifications = function() { if (_notifOpen) { closeNotifications(); } else { openNotifications(); } };
+function openNotifications() {
+    _notifOpen = true;
+    document.getElementById('notif-drawer').classList.add('open');
+    document.getElementById('notif-backdrop').classList.add('visible');
+    fetchNotifications();
+}
+window.closeNotifications = function() {
+    _notifOpen = false;
+    document.getElementById('notif-drawer').classList.remove('open');
+    document.getElementById('notif-backdrop').classList.remove('visible');
+    if (_sb) {
+        _sb.from('notifications').select('id').order('created_at', { ascending: false }).limit(1).then(function(res) {
+            if (res.data && res.data[0]) {
+                _lastReadId = res.data[0].id;
+                localStorage.setItem('cdls_last_read_notif', _lastReadId);
+                document.getElementById('notif-dot').classList.remove('visible');
+            }
+        });
+    } else {
+        document.getElementById('notif-dot').classList.remove('visible');
+    }
+};
+
+/* ══════════════════════════════════════════════
+   FEATURES 15–18: LOOK-BASED JUDGE CLIPBOARD
+══════════════════════════════════════════════ */
+
+/* ── Feature 19: Global role default ── */
+window.currentUserRole = 'student';   // 'student' | 'judge' | 'admin'
+var _scoringContestant = null;
+var _currentLook    = 'professional';
+
+/* ── Look definitions: 4 looks × 5 criteria (1–10 each = 50 max per look) ── */
+var _looks = {
+    professional: {
+        label: 'Look 1 — Professional',
+        criteria: ['Outfit polish', 'Fit & tailoring', 'Accessories & grooming', 'Confidence & carriage', 'Overall presentation']
+    },
+    y2k: {
+        label: 'Look 2 — Y2K',
+        criteria: ['Accuracy to Y2K', 'Styling & coordination', 'Creativity within theme', 'Confidence & energy', 'Overall presentation']
+    },
+    trad: {
+        label: 'Look 3 — Costume Trad',
+        criteria: ['Cultural authenticity', 'Costume drama & impact', 'Creativity & execution', 'Confidence & carriage', 'Overall presentation']
+    },
+    met_gala: {
+        label: 'Look 4 — OAU Met Gala',
+        criteria: ['Creativity & originality', 'Conceptual depth', 'Execution & details', 'Stage presence', 'Overall wow factor']
+    }
+};
+
+/* ── Feature 19: Role fetching (called from boot + onAuthStateChange) ── */
+async function fetchUserRole() {
+    if (!_sb || !window.currentUser) {
+        window.currentUserRole = 'student';
+        applyRoleBasedUI();
+        return;
+    }
+    try {
+        var res = await _sb.from('user_roles').select('role').eq('user_id', window.currentUser.id).maybeSingle();
+        window.currentUserRole = (res.data && res.data.role) ? res.data.role : 'student';
+    } catch(e) {
+        window.currentUserRole = 'student';
+    }
+    applyRoleBasedUI();
+}
+
+/* ── Feature 20: UI fencing — 3 tiers ── */
+function applyRoleBasedUI() {
+    var role     = window.currentUserRole;
+    var fab      = document.getElementById('admin-fab') || document.querySelector('.admin-fab');
+    var judgeBtn = document.getElementById('judge-nav-btn');
+
+    if (role === 'admin') {
+        /* Admin: sees FAB AND judge nav */
+        if (fab)      fab.style.display      = 'flex';
+        if (judgeBtn) judgeBtn.style.display = 'flex';
+    } else if (role === 'judge') {
+        /* Judge: judge nav only — NO admin FAB */
+        if (fab)      fab.style.display      = 'none';
+        if (judgeBtn) judgeBtn.style.display = 'flex';
+    } else {
+        /* Student/public: neither */
+        if (fab)      fab.style.display      = 'none';
+        if (judgeBtn) judgeBtn.style.display = 'none';
+    }
+}
+
+/* ── Feature 21: Judging Panel internal view toggle ── */
+window.switchJudgingView = function(view) {
+    var scoreView    = document.getElementById('judge-score-view');
+    var rankingsView = document.getElementById('judge-rankings-view');
+    var scoreBtn     = document.getElementById('judge-view-btn-score');
+    var rankingsBtn  = document.getElementById('judge-view-btn-rankings');
+
+    if (view === 'score') {
+        if (scoreView)    scoreView.style.display    = '';
+        if (rankingsView) rankingsView.style.display = 'none';
+        if (scoreBtn)     scoreBtn.classList.add('active');
+        if (rankingsBtn)  rankingsBtn.classList.remove('active');
+    } else {
+        if (scoreView)    scoreView.style.display    = 'none';
+        if (rankingsView) rankingsView.style.display = '';
+        if (scoreBtn)     scoreBtn.classList.remove('active');
+        if (rankingsBtn)  rankingsBtn.classList.add('active');
+        window.loadLiveRankings();
+    }
+};
+
+/* ── Feature 15: Look selector ── */
+window.selectLook = function(look, btn) {
+    _currentLook = look;
+    document.querySelectorAll('.look-tab').forEach(function(b) { b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    window.loadJudgingRoster();
+};
+
+/* ── Feature 15: Contestant roster (filtered by current look) ── */
+window.loadJudgingRoster = async function() {
+    var roster = document.getElementById('judging-roster');
+    if (!roster) return;
+
+    if (!window.currentUser) {
+        roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Please sign in to access the judging panel.</p>';
+        return;
+    }
+    if (window.currentUserRole !== 'judge' && window.currentUserRole !== 'admin') {
+        roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Access restricted to authorised judges and admins.</p>';
+        return;
+    }
+
+    roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Loading contestants...</p>';
+    if (!_sb) { roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">No database connection.</p>'; return; }
+
+    /* Approved contestants */
+    var cRes = await _sb.from('contestants').select('*').eq('is_approved', true).order('full_name', { ascending: true });
+    if (cRes.error || !cRes.data || cRes.data.length === 0) {
+        roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">No approved contestants available yet.</p>';
+        return;
+    }
+
+    /* This judge\'s scores for the selected look */
+    var sRes = await _sb.from('scores')
+        .select('contestant_id, look_total')
+        .eq('judge_id', window.currentUser.id)
+        .eq('look_category', _currentLook);
+    var scoredMap = {};
+    if (sRes.data) { sRes.data.forEach(function(s) { scoredMap[s.contestant_id] = s.look_total; }); }
+
+    roster.innerHTML = '';
+    cRes.data.forEach(function(c) {
+        var isScored = scoredMap.hasOwnProperty(c.id);
+        var row = document.createElement('div');
+        row.className = 'judging-row' + (isScored ? ' scored' : '');
+        if (!isScored) { row.onclick = function() { window.openScoringModal(c); }; }
+
+        var photoHtml = c.headshot_url
+            ? '<img class="judging-row-photo" src="' + c.headshot_url + '" alt="' + c.full_name + '" loading="lazy">'
+            : '<div class="judging-row-avatar">👤</div>';
+
+        var pillHtml = isScored
+            ? '<div class="judge-status-pill scored">🟢 ' + scoredMap[c.id] + '/50</div>'
+            : '<div class="judge-status-pill pending">⚪ Pending</div>';
+
+        row.innerHTML = photoHtml +
+            '<div class="judging-row-info">' +
+                '<div class="judging-row-name">' + c.full_name + '</div>' +
+                (c.department ? '<div class="judging-row-dept">' + c.department + '</div>' : '') +
+            '</div>' + pillHtml;
+        roster.appendChild(row);
+    });
+};
+
+/* ── Feature 16: Open scoring modal ── */
+window.openScoringModal = function(contestant) {
+    _scoringContestant = contestant;
+    var overlay   = document.getElementById('scoring-overlay');
+    var headerEl  = document.getElementById('scoring-modal-content');
+    var listEl    = document.getElementById('score-criteria-list');
+    var commentEl = document.getElementById('score-comment');
+    var submitBtn = document.getElementById('score-submit-btn');
+
+    /* Reset state */
+    if (commentEl) commentEl.value = '';
+    submitBtn.disabled    = true;
+    submitBtn.textContent = 'Fill in comments to submit';
+
+    var look = _looks[_currentLook];
+
+    /* Header: headshot + name + look badge */
+    var photoHtml = contestant.headshot_url
+        ? '<img class="scoring-headshot" src="' + contestant.headshot_url + '" alt="' + contestant.full_name + '">'
+        : '<div class="scoring-headshot-placeholder">👤</div>';
+    headerEl.innerHTML =
+        photoHtml +
+        '<div class="scoring-contestant-name">' + contestant.full_name + '</div>' +
+        '<div class="scoring-contestant-dept">' + (contestant.department || 'Contestant') + '</div>' +
+        '<div><span class="scoring-look-badge">' + look.label + '</span></div>';
+
+    /* Build 5 sliders (1–10) */
+    listEl.innerHTML = '';
+    look.criteria.forEach(function(crit, i) {
+        var item = document.createElement('div');
+        item.className = 'score-criteria-item';
+        item.innerHTML =
+            '<div class="score-criteria-header">' +
+                '<span class="score-criteria-label">' + crit + '</span>' +
+                '<span class="score-criteria-val" id="val-crit-' + i + '">5</span>' +
+            '</div>' +
+            '<input type="range" class="score-slider" id="slider-crit-' + i + '" min="1" max="10" value="5" oninput="window.updateScoringTotal()">' +
+            '<div class="score-slider-hints"><span>1 — Weak</span><span>5 — Good</span><span>10 — Flawless</span></div>';
+        listEl.appendChild(item);
+    });
+
+    window.updateScoringTotal();
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeScoringModal = function() {
+    document.getElementById('scoring-overlay').classList.add('hidden');
+    document.body.style.overflow = '';
+    _scoringContestant = null;
+};
+
+/* Live subtotal as sliders move */
+window.updateScoringTotal = function() {
+    var look = _looks[_currentLook];
+    var total = 0;
+    look.criteria.forEach(function(crit, i) {
+        var slider = document.getElementById('slider-crit-' + i);
+        var valEl  = document.getElementById('val-crit-' + i);
+        if (slider && valEl) { var v = parseInt(slider.value, 10); valEl.textContent = v; total += v; }
+    });
+    var disp = document.getElementById('score-subtotal-display');
+    if (disp) disp.textContent = total;
+    window.validateSubmitButton();
+};
+
+/* Enable submit only when comment box has content */
+window.validateSubmitButton = function() {
+    var comment = document.getElementById('score-comment');
+    var btn     = document.getElementById('score-submit-btn');
+    if (!btn) return;
+    var filled = comment && comment.value.trim().length >= 5;
+    btn.disabled    = !filled;
+    btn.textContent = filled ? 'Submit Score ✓' : 'Fill in comments to submit';
+};
+
+/* Submit — JSONB payload, unique on (judge, contestant, look) */
+window.submitScore = async function() {
+    if (!_scoringContestant || !_sb || !window.currentUser) return;
+    var btn = document.getElementById('score-submit-btn');
+    btn.disabled    = true;
+    btn.textContent = 'Submitting...';
+
+    var look      = _looks[_currentLook];
+    var breakdown = {};
+    var total     = 0;
+    look.criteria.forEach(function(crit, i) {
+        var slider = document.getElementById('slider-crit-' + i);
+        var v = slider ? parseInt(slider.value, 10) : 5;
+        breakdown[i] = { label: crit, score: v };
+        total += v;
+    });
+
+    var comment = document.getElementById('score-comment');
+    var payload = {
+        judge_id:           window.currentUser.id,
+        contestant_id:      _scoringContestant.id,
+        look_category:      _currentLook,
+        criteria_breakdown: breakdown,
+        look_total:         total,
+        judge_comment:      comment ? comment.value.trim() : ''
+    };
+
+    try {
+        var res = await _sb.from('scores').insert([payload]);
+        if (res.error) throw res.error;
+        btn.textContent = '✓ Submitted!';
+        setTimeout(function() {
+            window.closeScoringModal();
+            window.loadJudgingRoster();
+        }, 900);
+    } catch(e) {
+        btn.disabled    = false;
+        btn.textContent = 'Submit Score ✓';
+        if (e.code === '23505') {
+            alert('You already scored ' + _scoringContestant.full_name + ' for ' + look.label + '.');
+            window.closeScoringModal();
+            window.loadJudgingRoster();
+        } else {
+            alert('Submission failed: ' + (e.message || 'Unknown error'));
+        }
+    }
+};
+
+/* ── Feature 18 / Feature 21: Grand Total leaderboard table (lives in Judging Panel) ── */
+window.loadLiveRankings = async function() {
+    var container = document.getElementById('judge-rankings-list');
+    if (!container) return;
+    container.innerHTML = '<p class="adm-empty">Loading rankings...</p>';
+    if (!_sb) { container.innerHTML = '<p class="adm-empty">No database connection.</p>'; return; }
+
+    var res = await _sb.from('scores').select('contestant_id, look_category, look_total');
+    if (res.error || !res.data || res.data.length === 0) {
+        container.innerHTML = '<p class="adm-empty">No scores yet — rankings will appear here as judges score each Look.</p>';
+        return;
+    }
+
+    /* Aggregate: { contestantId: { professional: [totals], y2k: [...], ... } } */
+    var lookKeys = ['professional', 'y2k', 'trad', 'met_gala'];
+    var lookLabels = ['Professional', 'Y2K', 'Costume Trad', 'OAU Met Gala'];
+    var agg = {};
+    res.data.forEach(function(s) {
+        if (!agg[s.contestant_id]) {
+            agg[s.contestant_id] = { professional: [], y2k: [], trad: [], met_gala: [] };
+        }
+        if (agg[s.contestant_id][s.look_category] !== undefined) {
+            agg[s.contestant_id][s.look_category].push(s.look_total);
+        }
+    });
+
+    /* Fetch names */
+    var ids  = Object.keys(agg);
+    var cRes = await _sb.from('contestants').select('id, full_name').in('id', ids);
+    var names = {};
+    if (cRes.data) { cRes.data.forEach(function(c) { names[c.id] = c.full_name; }); }
+
+    /* Calculate per-look averages and grand total */
+    var ranked = ids.map(function(id) {
+        var avgs = {}; var grand = 0;
+        lookKeys.forEach(function(lk) {
+            var arr = agg[id][lk];
+            if (arr && arr.length > 0) {
+                var avg = arr.reduce(function(a, b) { return a + b; }, 0) / arr.length;
+                avgs[lk] = Math.round(avg * 10) / 10;
+                grand    += avg;
+            } else { avgs[lk] = null; }
+        });
+        return { id: id, name: names[id] || 'Unknown', avgs: avgs, grand: Math.round(grand * 10) / 10 };
+    }).sort(function(a, b) { return b.grand - a.grand; });
+
+    /* Build table */
+    container.innerHTML = '';
+    var wrap  = document.createElement('div');
+    wrap.className = 'lb-table-wrap';
+    var table = document.createElement('table');
+    table.className = 'lb-table';
+
+    /* Header */
+    var thead = '<thead><tr><th>#</th><th>Contestant</th>';
+    lookLabels.forEach(function(lbl, i) {
+        thead += '<th>Look ' + (i + 1) + '<br><span style="font-weight:500;font-size:0.58rem;text-transform:none;letter-spacing:0;">' + lbl + '</span></th>';
+    });
+    thead += '<th>GRAND TOTAL<br><span style="font-weight:500;font-size:0.58rem;text-transform:none;letter-spacing:0;">/200 avg</span></th></tr></thead>';
+    table.innerHTML = thead;
+
+    var tbody = document.createElement('tbody');
+    ranked.forEach(function(entry, i) {
+        var sym = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+        var tr  = document.createElement('tr');
+        var cells = '<td>' + sym + '</td><td>' + entry.name + '</td>';
+        lookKeys.forEach(function(lk) {
+            var v = entry.avgs[lk];
+            cells += '<td class="' + (v !== null ? 'lb-look-score' : 'lb-look-empty') + '">' + (v !== null ? v : '—') + '</td>';
+        });
+        cells += '<td class="lb-grand-total">' + (entry.grand || '—') + '</td>';
+        tr.innerHTML = cells;
+        tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+    container.appendChild(wrap);
+};
+
+/* ── RUN ── */
+boot();
+
+})();
+</script>
+</body>
+</html>
