@@ -373,14 +373,14 @@ html, body {
 .admin-back-btn:hover { background: rgba(255,255,255,0.18); }
 .admin-tabs-bar {
     background: #fff; border-bottom: 1px solid #e5e7eb;
-    display: flex; overflow-x: auto; padding: 0 0.5rem; position: sticky; top: 72px; z-index: 9;
-    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    position: sticky; top: 72px; z-index: 9;
 }
-.admin-tabs-bar::-webkit-scrollbar { display: none; }
 .admin-tab {
-    padding: 0.85rem 0.75rem; border: none; border-bottom: 2px solid transparent;
-    background: transparent; color: #6b7280; font-size: 0.72rem; font-weight: 700;
-    font-family: inherit; cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0;
+    padding: 0.75rem 0.25rem; border: none; border-bottom: 2px solid transparent;
+    background: transparent; color: #6b7280; font-size: 0.65rem; font-weight: 700;
+    font-family: inherit; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    text-align: center; overflow: hidden; text-overflow: ellipsis;
 }
 .admin-tab:hover { color: #374151; background: #f9fafb; }
 .admin-tab.active { border-bottom-color: #9A1A45; color: #9A1A45; }
@@ -2495,43 +2495,6 @@ async function onPaymentSuccess(tierName, amount, reference) {
     alert('Payment successful! Opening your ticket now...');
     window.openWallet();
 }
-
-window.openWallet = async function() {
-    document.getElementById('wallet-overlay').classList.remove('hidden');
-    var content = document.getElementById('wallet-content');
-    content.innerHTML = '<p class="wallet-empty">Loading your tickets...</p>';
-    if (!_sb || !window.currentUser) { content.innerHTML = '<p class="wallet-empty">Please sign in to view your tickets.</p>'; return; }
-    var res = await _sb.from('tickets').select('*').eq('user_id', window.currentUser.id).order('created_at', { ascending: false });
-    if (res.error) { content.innerHTML = '<p class="wallet-empty" style="color:#ff6b9d;">Error loading tickets: ' + res.error.message + '</p>'; return; }
-    if (!res.data || res.data.length === 0) { content.innerHTML = '<p class="wallet-empty">You have no tickets yet. Head to the Tickets tab to get yours.</p>'; return; }
-    content.innerHTML = '';
-    _walletTickets = res.data;
-    res.data.forEach(function(t, idx) {
-        var wrap = document.createElement('div');
-        wrap.className = 'digital-ticket';
-        wrap.innerHTML =
-            '<p class="ticket-brand">Crème De La Style ✦ OAU</p>' +
-            '<h2 class="ticket-event-name">Crème De La Style</h2>' +
-            '<span class="ticket-tier-badge">' + t.tier_name + '</span>' +
-            '<hr class="ticket-divider">' +
-            '<div class="ticket-meta">' +
-                '<div class="ticket-meta-item"><span class="ticket-meta-label">Holder</span><span class="ticket-meta-val">' + window.currentUser.email.split('@')[0] + '</span></div>' +
-                '<div class="ticket-meta-item"><span class="ticket-meta-label">Amount</span><span class="ticket-meta-val">&#8358;' + t.amount.toLocaleString() + '</span></div>' +
-                '<div class="ticket-meta-item"><span class="ticket-meta-label">Status</span><span class="ticket-meta-val" style="color:#4ade80;">' + (t.payment_status === 'paid' ? '&#10003; Paid' : t.payment_status) + '</span></div>' +
-            '</div>' +
-            '<div class="ticket-qr-wrap" id="qr-slot-' + idx + '"></div>' +
-            '<button class="ticket-print-btn" onclick="printTicket(' + idx + ')">&#128424; Print / Save as PDF</button>';
-        content.appendChild(wrap);
-        try {
-            new QRCode(document.getElementById('qr-slot-' + idx), {
-                text: t.entry_token || t.id, width: 140, height: 140,
-                colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H
-            });
-        } catch(e) {}
-    });
-};
-
-window.closeWallet = function() { document.getElementById('wallet-overlay').classList.add('hidden'); };
 
 window.openWallet = async function() {
     document.getElementById('wallet-overlay').classList.remove('hidden');
