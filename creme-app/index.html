@@ -1867,6 +1867,14 @@ html, body {
                             <label>Social Handles * <span style="color:var(--cream-60);font-weight:400;">(Instagram, TikTok, etc.)</span></label>
                             <input type="text" id="rf-social-handles" class="nominate-input" placeholder="e.g. IG: @name, TikTok: @name" oninput="checkRegForm()">
                         </div>
+                        <div class="nominate-field">
+                            <label>About You * <span style="color:var(--cream-60);font-weight:400;">Tell us who you are — 1-3 sentences</span></label>
+                            <textarea id="rf-bio" class="nominate-input nominate-textarea" rows="3" maxlength="400" placeholder="e.g. Engineering student by day, fashion visionary by night. I specialise in contemporary streetwear with bold silhouettes." oninput="checkRegForm()"></textarea>
+                        </div>
+                        <div class="nominate-field">
+                            <label>Your Signature Quote * <span style="color:var(--cream-60);font-weight:400;">A line that defines you</span></label>
+                            <input type="text" id="rf-quote" class="nominate-input" maxlength="200" placeholder='e.g. "Style is the armour in which to survive the reality of everyday life."' oninput="checkRegForm()">
+                        </div>
                     </div>
 
                     <!-- Section 4: Media -->
@@ -3565,18 +3573,20 @@ window.openContestantModal = function(c) {
     var heroHtml = c.fullbody_url ? '<img class="contestant-hero" src="' + c.fullbody_url + '" alt="' + c.full_name + '">' : '<div class="contestant-hero-placeholder">👤</div>';
     var unit = c.stat_unit || 'cm';
     var statsHtml = '';
-    if (c.height) statsHtml += '<div class="contestant-stat"><span class="contestant-stat-label">Height</span><span class="contestant-stat-val">' + c.height + unit + '</span></div>';
-    if (c.waist)  statsHtml += '<div class="contestant-stat"><span class="contestant-stat-label">Waist</span><span class="contestant-stat-val">'  + c.waist  + unit + '</span></div>';
-    if (c.hips)   statsHtml += '<div class="contestant-stat"><span class="contestant-stat-label">Hips</span><span class="contestant-stat-val">'   + c.hips   + unit + '</span></div>';
+    if (c.height)         statsHtml += '<div class="contestant-stat"><span class="contestant-stat-label">Height</span><span class="contestant-stat-val">' + c.height + unit + '</span></div>';
+    if (c.chest)          statsHtml += '<div class="contestant-stat"><span class="contestant-stat-label">Chest/Bust</span><span class="contestant-stat-val">' + c.chest + unit + '</span></div>';
+    if (c.shoulder_width) statsHtml += '<div class="contestant-stat"><span class="contestant-stat-label">Shoulder</span><span class="contestant-stat-val">' + c.shoulder_width + unit + '</span></div>';
+    if (c.inseam)         statsHtml += '<div class="contestant-stat"><span class="contestant-stat-label">Inseam</span><span class="contestant-stat-val">' + c.inseam + unit + '</span></div>';
     var socialsHtml = '';
-    if (c.instagram) socialsHtml += '<span class="contestant-social-tag">&#x1F4F8; ' + c.instagram + '</span>';
-    if (c.tiktok)    socialsHtml += '<span class="contestant-social-tag">&#x1F3B5; ' + c.tiktok    + '</span>';
+    if (c.social_handles) socialsHtml += '<span class="contestant-social-tag">&#x2728; ' + _esc(c.social_handles) + '</span>';
+    var bioText   = c.bio   || c.about_me   || '';
+    var quoteText = c.favorite_quote || c.why_picked || '';
     content.innerHTML = heroHtml + '<div class="contestant-info">' +
-        '<h2 class="contestant-name">' + c.full_name + '</h2>' +
+        '<h2 class="contestant-name">' + _esc(c.full_name) + '</h2>' +
         (statsHtml ? '<div class="contestant-stats">' + statsHtml + '</div>' : '') +
-        (c.about_me   ? '<p class="contestant-bio">' + c.about_me + '</p>' : '') +
-        (c.why_picked ? '<p class="contestant-bio" style="font-style:italic;color:var(--cream-60);">"' + c.why_picked + '"</p>' : '') +
-        (socialsHtml  ? '<div class="contestant-socials">' + socialsHtml + '</div>' : '') +
+        (bioText   ? '<p class="contestant-bio">' + _esc(bioText) + '</p>' : '') +
+        (quoteText ? '<p class="contestant-bio" style="font-style:italic;color:var(--cream-60);">&ldquo;' + _esc(quoteText) + '&rdquo;</p>' : '') +
+        (socialsHtml ? '<div class="contestant-socials">' + socialsHtml + '</div>' : '') +
         '</div>';
     overlay.classList.remove('hidden');
 };
@@ -4160,7 +4170,7 @@ window.checkRegForm = function() {
              get('rf-email').trim() && get('rf-dept').trim() && get('rf-faculty').trim() &&
              get('rf-level') && get('rf-height') && get('rf-chest') && get('rf-shoulder') &&
              get('rf-inseam') && get('rf-clothing') && get('rf-shoe') &&
-             get('rf-social-handles').trim() && _regExperience !== null &&
+             get('rf-social-handles').trim() && get('rf-bio').trim() && get('rf-quote').trim() && _regExperience !== null &&
              _regFilesOk.headshot && _regFilesOk.fullbody && _regFilesOk.video;
     btn.disabled = !ok;
 };
@@ -4223,6 +4233,8 @@ window.onContestantPaymentSuccess = async function(payRef) {
             shoulder_width: parseFloat(document.getElementById('rf-shoulder').value),
             inseam: parseFloat(document.getElementById('rf-inseam').value),
             experience: _regExperience === 'yes' ? (document.getElementById('rf-experience-detail').value.trim() || 'Yes') : 'None',
+            bio: document.getElementById('rf-bio').value.trim(),
+            favorite_quote: document.getElementById('rf-quote').value.trim(),
             video_url: vidUrl, payment_ref: payRef, is_approved: false
         }]);
         if (res.error) throw new Error(res.error.message);
