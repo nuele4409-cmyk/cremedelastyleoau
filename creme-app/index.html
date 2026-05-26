@@ -206,6 +206,16 @@ html, body {
 .dispatch-item.no-border { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
 .dispatch-item p { font-size: 0.88rem; color: var(--cream); line-height: 1.55; }
 .dispatch-time { font-size: 0.72rem; color: var(--cream-40); font-weight: 600; display: block; margin-top: 0.4rem; }
+.dispatch-tag { display: inline-block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 999px; margin-bottom: 0.3rem; }
+.dispatch-tag.announcement { background: rgba(212,175,55,0.18); color: var(--gold); }
+.dispatch-tag.media        { background: rgba(154,26,69,0.22);  color: #f472b6; }
+.dispatch-tag.update       { background: rgba(99,212,134,0.18); color: #4ade80; }
+.dispatch-tag.urgent       { background: rgba(239,68,68,0.18);  color: #f87171; }
+/* vote progress bars */
+.vote-progress-wrap { flex: 1; margin: 0 0.5rem; }
+.vote-progress-track { background: rgba(255,255,255,0.08); border-radius: 999px; height: 6px; overflow: hidden; margin-top: 0.25rem; }
+.vote-progress-fill  { height: 100%; background: linear-gradient(90deg, var(--crimson), var(--gold)); border-radius: 999px; transition: width 0.5s ease; }
+.vote-progress-pct   { font-size: 0.65rem; font-weight: 700; color: var(--gold); white-space: nowrap; flex-shrink: 0; min-width: 2.4rem; text-align: right; }
 
 /* PAGE HEADER */
 .page-header { margin-bottom: 1.75rem; }
@@ -415,6 +425,7 @@ html, body {
 }
 /* Candidate Roster table */
 .adm-candidates-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+#adm-candidates-list { overflow-x: auto; }
 .adm-candidates-table th { background: #f9fafb; color: #6b7280; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
 .adm-candidates-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid #f3f4f6; vertical-align: middle; color: #1f2937; }
 .adm-candidates-table tr:last-child td { border-bottom: none; }
@@ -1486,13 +1497,8 @@ html, body {
                 <div class="dispatch-card">
                     <h3 class="dispatch-header"><span class="live-dot"></span> Live Dispatches</h3>
                     <div id="dispatch-list">
-                        <div class="dispatch-item">
-                            <p>Editorial frames refreshed. Contestant lineup updated in Gallery.</p>
-                            <span class="dispatch-time">2 hours ago</span>
-                        </div>
                         <div class="dispatch-item no-border">
-                            <p>Exclusive Judges Panel revealed! Meet the arbiters of taste.</p>
-                            <span class="dispatch-time">5 hours ago</span>
+                            <p style="color:var(--cream-40);font-size:0.82rem;">Loading dispatches…</p>
                         </div>
                     </div>
                 </div>
@@ -2314,7 +2320,7 @@ html, body {
                 <h2><span class="adm-accent">+</span> Post New Dispatch</h2>
                 <div class="adm-form-row">
                     <div class="adm-field"><label>Headline</label><input type="text" id="adm-headline" placeholder="e.g. Runway Times Confirmed"></div>
-                    <div class="adm-field"><label>Tag Type</label><select id="adm-tag"><option>Announcement</option><option>Media</option></select></div>
+                    <div class="adm-field"><label>Tag Type</label><select id="adm-tag"><option value="announcement">Announcement</option><option value="update">Update</option><option value="media">Media</option><option value="urgent">Urgent</option></select></div>
                 </div>
                 <div class="adm-field"><label>Message Content</label><textarea id="adm-message" rows="3" placeholder="Enter details..."></textarea></div>
                 <button class="adm-submit-btn" onclick="postDispatch()">Push Update to Live App</button>
@@ -2728,6 +2734,8 @@ function boot() {
     if (window.supabase) {
         try {
             _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            window.loadDispatches();
+            _subscribeDispatches();
             _sb.auth.onAuthStateChange(function(_e, session) {
                 window.currentUser = session ? session.user : null;
                 window.updateTopBar();
@@ -2803,6 +2811,7 @@ window.switchTab = function(tab) {
     if (tab === 'judging')  { window.loadJudgingRoster(); }
     if (tab === 'register') { window.initRegisterTab(); }
     if (tab === 'vote')     { window.initVoteTab(); }
+    if (tab === 'home')     { window.loadDispatches(); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -2873,18 +2882,28 @@ window.renderVoteList = function() {
         var el = document.createElement('div');
         el.className = 'vote-category';
         var showCounts = window.appSettings && window.appSettings.show_live_results;
+        // compute total votes for this category to calculate percentages
+        var catTotal = 0;
+        if (showCounts && window.voteCounts[cat.id]) {
+            Object.values(window.voteCounts[cat.id]).forEach(function(v) { catTotal += v; });
+        }
         var nomineesHtml = mockNominees.map(function(n) {
             var sel   = window.votes[cat.id] === n.id;
             var dis   = hasVoted && !sel;
             var catQ  = cat.id.replace(/'/g, "\\'");
             var nidQ  = n.id.replace(/'/g, "\\'");
-            var count = showCounts && window.voteCounts[cat.id] ? (window.voteCounts[cat.id][n.id] || 0) : null;
-            var countBadge = count !== null
-                ? '<span class="vote-count-badge">' + count + ' vote' + (count !== 1 ? 's' : '') + '</span>'
-                : '';
+            var voteBar = '';
+            if (showCounts) {
+                var count = window.voteCounts[cat.id] ? (window.voteCounts[cat.id][n.id] || 0) : 0;
+                var pct   = catTotal > 0 ? Math.round(count / catTotal * 100) : 0;
+                voteBar = '<div class="vote-progress-wrap">' +
+                    '<div class="vote-progress-track"><div class="vote-progress-fill" style="width:' + pct + '%"></div></div>' +
+                    '</div>' +
+                    '<span class="vote-progress-pct">' + pct + '%</span>';
+            }
             return '<div class="nominee-row">' +
                 '<span class="nominee-name' + (sel ? ' voted' : '') + '">' + n.name + '</span>' +
-                countBadge +
+                voteBar +
                 '<button class="vote-btn' + (sel ? ' voted-btn' : '') + '" onclick="window.castVote(\'' + catQ + '\',\'' + nidQ + '\')"' + (dis ? ' disabled' : '') + '>' + (sel ? '&#10003; VOTED' : 'VOTE') + '</button>' +
                 '</div>';
         }).join('');
@@ -3038,6 +3057,7 @@ window.switchAdminTab  = function(tab, btn) {
     if (tab !== 'scan') stopScanner(); // stop camera when leaving scan tab
     if (tab === 'controls')   window.loadAdminControls();
     if (tab === 'candidates') window.loadAdminCandidates();
+    if (tab === 'dispatches')  window.loadAdminDispatches();
 };
 
 /* ── QR TICKET SCANNER ── */
@@ -3204,25 +3224,81 @@ function stopScanner() {
 window.toggleScanner = function() {
     if (_scannerActive) { stopScanner(); } else { startScanner(); }
 };
-window.postDispatch = function() {
+window.postDispatch = async function() {
     var headline = document.getElementById('adm-headline').value.trim();
     var message  = document.getElementById('adm-message').value.trim();
+    var tag      = document.getElementById('adm-tag').value || 'announcement';
     var msgEl    = document.getElementById('adm-dispatch-msg');
-    if (!headline || !message) { msgEl.textContent = 'Please fill in headline and message.'; msgEl.style.color = '#E3004F'; msgEl.style.display = 'block'; return; }
-    msgEl.textContent = 'Dispatch posted!'; msgEl.style.color = '#16a34a'; msgEl.style.display = 'block';
-    var list = document.getElementById('dispatch-list');
-    if (list) {
-        var last = list.querySelector('.no-border');
-        if (last) last.classList.remove('no-border');
-        var div = document.createElement('div');
-        div.className = 'dispatch-item no-border';
-        div.innerHTML = '<p><strong>' + headline + ':</strong> ' + message + '</p><span class="dispatch-time">Just now</span>';
-        list.appendChild(div);
+    if (!headline || !message) {
+        msgEl.textContent = 'Please fill in both headline and message.';
+        msgEl.style.color = '#E3004F'; msgEl.style.display = 'block'; return;
     }
+    msgEl.textContent = 'Posting…'; msgEl.style.color = '#6b7280'; msgEl.style.display = 'block';
+    if (!_sb) { msgEl.textContent = 'Supabase not connected.'; msgEl.style.color = '#E3004F'; return; }
+    var res = await _sb.from('dispatches').insert([{ headline: headline, message: message, tag: tag }]);
+    if (res.error) {
+        msgEl.textContent = 'Error: ' + res.error.message; msgEl.style.color = '#E3004F'; return;
+    }
+    msgEl.textContent = '✓ Dispatch pushed live!'; msgEl.style.color = '#16a34a';
     document.getElementById('adm-headline').value = '';
     document.getElementById('adm-message').value  = '';
     setTimeout(function() { msgEl.style.display = 'none'; }, 3000);
+    window.loadAdminDispatches();
+    window.loadDispatches();
 };
+
+/* Admin — load recent dispatches into admin panel list */
+window.loadAdminDispatches = async function() {
+    var list = document.getElementById('adm-dispatches-list');
+    if (!list) return;
+    if (!_sb) { list.innerHTML = '<p class="adm-empty">Supabase not connected.</p>'; return; }
+    var res = await _sb.from('dispatches').select('*').order('created_at', { ascending: false }).limit(20);
+    if (res.error) { list.innerHTML = '<p class="adm-empty" style="color:#ef4444;">Error: ' + res.error.message + '</p>'; return; }
+    if (!res.data || !res.data.length) { list.innerHTML = '<p class="adm-empty">No dispatches yet.</p>'; return; }
+    list.innerHTML = res.data.map(function(d) {
+        var ago = _timeAgo(d.created_at);
+        var tag = (d.tag || 'announcement').toLowerCase();
+        return '<div class="dispatch-item">' +
+            '<span class="dispatch-tag ' + tag + '">' + tag + '</span>' +
+            '<p><strong>' + _esc(d.headline) + ':</strong> ' + _esc(d.message) + '</p>' +
+            '<span class="dispatch-time">' + ago + '</span>' +
+            '</div>';
+    }).join('');
+    // remove no-border on all but last
+    var items = list.querySelectorAll('.dispatch-item');
+    items.forEach(function(el, i) {
+        if (i === items.length - 1) el.classList.add('no-border');
+    });
+};
+
+/* Public — load 5 most recent dispatches into home tab */
+window.loadDispatches = async function() {
+    var list = document.getElementById('dispatch-list');
+    if (!list || !_sb) return;
+    var res = await _sb.from('dispatches').select('*').order('created_at', { ascending: false }).limit(5);
+    if (res.error || !res.data || !res.data.length) return;
+    list.innerHTML = res.data.map(function(d, i) {
+        var isLast = i === res.data.length - 1;
+        var ago    = _timeAgo(d.created_at);
+        var tag    = (d.tag || 'announcement').toLowerCase();
+        return '<div class="dispatch-item' + (isLast ? ' no-border' : '') + '">' +
+            '<span class="dispatch-tag ' + tag + '">' + tag + '</span>' +
+            '<p><strong>' + _esc(d.headline) + ':</strong> ' + _esc(d.message) + '</p>' +
+            '<span class="dispatch-time">' + ago + '</span>' +
+            '</div>';
+    }).join('');
+};
+
+function _esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function _timeAgo(iso) {
+    var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+    if (diff < 60)   return diff + 's ago';
+    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if (diff < 86400)return Math.floor(diff/3600) + 'h ago';
+    return Math.floor(diff/86400) + 'd ago';
+}
 
 function pad(n) { return n < 10 ? '0' + n : '' + n; }
 function tickCountdown() {
@@ -4021,7 +4097,7 @@ window.checkRegForm = function() {
     var ok = get('rf-name').trim() && get('rf-age') && get('rf-gender') && get('rf-phone').trim() &&
              get('rf-email').trim() && get('rf-dept').trim() && get('rf-faculty').trim() &&
              get('rf-level') && get('rf-height') && get('rf-clothing') && get('rf-shoe') &&
-             get('rf-instagram').trim() && _regExperience !== null &&
+             get('rf-social-handles').trim() && _regExperience !== null &&
              _regFilesOk.headshot && _regFilesOk.fullbody && _regFilesOk.video;
     btn.disabled = !ok;
 };
@@ -4072,7 +4148,7 @@ window.onContestantPaymentSuccess = async function(payRef) {
             email: document.getElementById('rf-email').value.trim(),
             phone: document.getElementById('rf-phone').value.trim(),
             department: document.getElementById('rf-dept').value.trim(),
-            instagram: document.getElementById('rf-instagram').value.trim(),
+            social_handles: document.getElementById('rf-social-handles').value.trim(),
             headshot_url: hsUrl, fullbody_url: fbUrl,
             age: parseInt(document.getElementById('rf-age').value),
             gender: document.getElementById('rf-gender').value,
@@ -4155,18 +4231,36 @@ window.loadAdminCandidates = async function() {
     table.className = 'adm-candidates-table';
     table.innerHTML =
         '<thead><tr>' +
-        '<th>#</th><th>Name</th><th>Dept / Level</th><th>Payment Ref</th><th>Status</th><th>Action</th>' +
+        '<th>#</th><th>Name</th><th>Details</th><th>Dept / Level</th>' +
+        '<th>Measurements</th><th>Social</th><th>Payment Ref</th><th>Media</th><th>Status</th><th>Action</th>' +
         '</tr></thead>';
     var tbody = document.createElement('tbody');
     res.data.forEach(function(c, i) {
         var tr = document.createElement('tr');
         var safeId   = c.id.replace(/'/g, "\'");
-        var safeName = c.full_name.replace(/'/g, "\'");
+        var safeName = (c.full_name || '').replace(/'/g, "\'");
+        // media links
+        var mediaLinks = [];
+        if (c.headshot_url)  mediaLinks.push('<a href="' + c.headshot_url + '" target="_blank" style="color:#9A1A45;text-decoration:underline;font-size:0.72rem;">📸 Headshot</a>');
+        if (c.fullbody_url)  mediaLinks.push('<a href="' + c.fullbody_url + '" target="_blank" style="color:#9A1A45;text-decoration:underline;font-size:0.72rem;">🧍 Full Body</a>');
+        if (c.video_url)     mediaLinks.push('<a href="' + c.video_url   + '" target="_blank" style="color:#9A1A45;text-decoration:underline;font-size:0.72rem;">🎬 Video</a>');
+        var mediaCell = mediaLinks.length ? mediaLinks.join('<br>') : '<span style="color:#d1d5db;font-size:0.72rem;">—</span>';
         tr.innerHTML =
             '<td>' + (i + 1) + '</td>' +
-            '<td><strong>' + c.full_name + '</strong><br><span style="font-size:0.72rem;color:#6b7280;">' + (c.email || '') + '</span></td>' +
-            '<td style="font-size:0.8rem;">' + (c.department || '—') + (c.level ? ' · ' + c.level + 'L' : '') + '</td>' +
-            '<td style="font-size:0.7rem;font-family:monospace;color:#6b7280;">' + (c.payment_ref || '—') + '</td>' +
+            '<td><strong>' + _esc(c.full_name) + '</strong><br>' +
+                '<span style="font-size:0.72rem;color:#6b7280;">' + _esc(c.email || '') + '</span><br>' +
+                '<span style="font-size:0.72rem;color:#6b7280;">' + _esc(c.phone || '') + '</span></td>' +
+            '<td style="font-size:0.78rem;">' +
+                (c.age ? c.age + ' yrs' : '—') + ' · ' + (c.gender || '—') + '<br>' +
+                '<span style="font-size:0.7rem;color:#6b7280;">' + (c.experience && c.experience !== 'None' ? '✓ Experience' : 'No experience') + '</span></td>' +
+            '<td style="font-size:0.78rem;">' + _esc(c.department || '—') + (c.level ? ' · ' + c.level + 'L' : '') + '<br>' +
+                '<span style="font-size:0.7rem;color:#6b7280;">' + (c.faculty || '') + '</span></td>' +
+            '<td style="font-size:0.78rem;">' +
+                (c.height ? c.height + ' cm' : '—') + '<br>' +
+                '<span style="font-size:0.7rem;color:#6b7280;">Shoe: ' + (c.shoe_size || '—') + ' · Cloth: ' + _esc(c.clothing_size || '—') + '</span></td>' +
+            '<td style="font-size:0.72rem;color:#6b7280;word-break:break-all;">' + _esc(c.social_handles || c.instagram || '—') + '</td>' +
+            '<td style="font-size:0.68rem;font-family:monospace;color:#6b7280;word-break:break-all;">' + _esc(c.payment_ref || '—') + '</td>' +
+            '<td>' + mediaCell + '</td>' +
             '<td><span class="adm-status-badge ' + (c.is_approved ? 'approved' : 'pending') + '">' +
                 (c.is_approved ? '✓ Approved' : '⏳ Pending') + '</span></td>' +
             '<td>' + (!c.is_approved
@@ -4204,10 +4298,11 @@ window.approveCandidate = async function(id, name) {
     window.loadAdminCandidates(); // Refresh the roster
 };
 
-/* ── RUN ── */
-boot();
-
-})();
-</script>
-</body>
-</html>
+/* ── Live dispatch realtime subscription ── */
+var _dispatchChannel = null;
+function _subscribeDispatches() {
+    if (_dispatchChannel || !_sb) return;
+    _dispatchChannel = _sb.channel('dispatches-realtime')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dispatches' },
+            function() { window.loadDispatches(); })
+        .subscrib

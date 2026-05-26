@@ -521,4 +521,145 @@ create policy "Judges update own scores"
 -- 1. Drop the old individual criteria columns (safe — data loss only if
 --    scores were already entered with the old schema)
 alter table scores drop column if exists catwalk_score;
-alter table scores drop column if exists originalit
+alter table scores drop column if exists originality_score;
+alter table scores drop column if exists confidence_score;
+alter table scores drop column if exists outfit_score;
+alter table scores drop column if exists total_score;
+
+-- 2. Add new Phase 4 columns
+alter table scores add column if not exists criteria_breakdown jsonb;
+alter table scores add column if not exists look_total         int  check (look_total between 0 and 50);
+alter table scores add column if not exists judge_comment      text;
+
+-- ==================================================
+--  MIGRATION -- Phase 9: Fix system_settings UPDATE policy
+-- ==================================================
+
+drop policy if exists "Admin update system_settings"  on system_settings;
+drop policy if exists "Admins can update settings"    on system_settings;
+
+create policy "Admins can update settings"
+    on system_settings for update
+    using (
+        exists (
+            select 1 from user_roles
+            where user_id = auth.uid()
+            and   role    = 'admin'
+        )
+    );
+
+insert into system_settings (
+    event_date, is_registration_open, is_nomination_open,
+    is_voting_open, show_live_results, lineup_revealed
+)
+select '2026-11-26T19:00:00+01:00', true, true, false, false, false
+where not exists (select 1 from system_settings where id = 1);
+
+-- ==================================================
+
+
+-- ==================================================
+--  MIGRATION -- Admin tab visibility toggles
+-- ==================================================
+
+alter table system_settings add column if not exists show_tickets boolean not null default true;
+alter table system_settings add column if not exists show_judges  boolean not null default true;
+alter table system_settings add column if not exists show_team    boolean not null default true;
+alter table system_settings add column if not exists show_lineup  boolean not null default true;
+
+-- ==================================================
+
+
+-- ==================================================
+--  MIGRATION -- Feature 40: Admin Candidate Roster
+-- ==================================================
+
+drop policy if exists "Admins read all contestants" on contestants;
+create policy "Admins read all contestants"
+    on contestants for select
+    using (
+        is_approved = true
+        or auth.uid() = user_id
+        or exists (select 1 from user_roles where user_id = auth.uid() and role = 'admin')
+    );
+
+drop policy if exists "Admins update contestants" on contestants;
+create policy "Admins update contestants"
+    on contestants for update
+    using (exists (select 1 from user_roles where user_id = auth.uid() and role = 'admin'));
+
+grant update on contestants to authenticated;
+
+drop policy if exists "Admins insert notifications" on notifications;
+create policy "Admins insert notifications"
+    on notifications for insert
+    with check (exists (select 1 from user_roles where user_id = auth.uid() and role = 'admin'));
+
+grant insert on notifications to authenticated;
+
+-- ==================================================
+
+
+-- ==================================================
+--  MIGRATION -- Live Dispatches table
+--  Admin-pushed real-time announcements (Home tab feed).
+-- ==================================================
+
+create table if not exists dispatches (
+    id         uuid        primary key default gen_random_uuid(),
+    headline   text        not null,
+    message    text        not null,
+    tag        text        not null default 'announcement'
+                               check (tag in ('announcement','update','media','urgent')),
+    created_at timestamptz not null default now()
+);
+
+alter table dispatches enable row level security;
+
+drop policy if exists "Public read dispatches" on dispatches;
+create policy "Public read dispatches"
+    on dispatches for select
+    using (true);
+
+drop policy if exists "Admins insert dispatches" on dispatches;
+create policy "Admins insert dispatches"
+    on dispatches for insert
+    with check (
+        exists (select 1 from user_roles where user_id = auth.uid() and role = 'admin')
+    );
+
+grant select on dispatches to anon, authenticated;
+grant insert on dispatches to authenticated;
+
+-- Enable Realtime for dispatches
+do $$
+begin
+    if not exists (
+        select 1 from pg_publication_tables
+        where pubname = 'supabase_realtime' and tablename = 'dispatches'
+    ) then
+        alter publication supabase_realtime add table dispatches;
+    end if;
+end $$;
+
+-- ==================================================
+
+
+-- ==================================================
+--  MIGRATION -- Registration: rename instagram -> social_handles
+--  Preserves all existing data.
+-- ==================================================
+
+do $$
+begin
+    if exists (
+        select 1 from information_schema.columns
+        where table_name = 'contestants' and column_name = 'instagram'
+    ) then
+        alter table contestants rename column instagram to social_handles;
+    end if;
+end $$;
+
+alter table contestants alter column social_handles type text;
+
+-- ==================================================
