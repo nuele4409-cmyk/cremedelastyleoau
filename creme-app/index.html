@@ -4382,4 +4382,43 @@ window.approveCandidate = async function(id, name) {
     // Broadcast a public notification
     await _sb.from('notifications').insert([{
         title: '🎉 New Contestant Confirmed!',
-      
+        message: name + ' has officially joined the Crème De La Style lineup. Welcome them!',
+        type: 'update'
+    }]);
+    window.loadAdminCandidates(); // Refresh the roster
+};
+
+window.saveReceiptAsImage = async function() {
+    var card = document.getElementById('reg-receipt-card');
+    var btn  = event && event.target;
+    if (!card) return;
+    if (!window.html2canvas) { alert('Image library still loading — try again in a moment.'); return; }
+    var origText = btn ? btn.textContent : '';
+    if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
+    try {
+        var canvas = await html2canvas(card, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
+        var link = document.createElement('a');
+        link.download = 'CDLS_Receipt_' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } catch(e) { alert('Could not save image: ' + e.message); }
+    if (btn) { btn.textContent = origText; btn.disabled = false; }
+};
+
+/* ── Live dispatch realtime subscription ── */
+var _dispatchChannel = null;
+function _subscribeDispatches() {
+    if (_dispatchChannel || !_sb) return;
+    _dispatchChannel = _sb.channel('dispatches-realtime')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dispatches' },
+            function() { window.loadDispatches(); })
+        .subscribe();
+}
+
+/* ── RUN ── */
+boot();
+
+})();
+</script>
+</body>
+</html>
