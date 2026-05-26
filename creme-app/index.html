@@ -3699,16 +3699,49 @@ window.loadLiveRankings = async function() {
     container.innerHTML = '';
     ranked.forEach(function(r, i) {
         var medals = ['🥇','🥈','🥉'];
-        var posLabel = i < 3 ? medals[i] : (i + 1);
+        var posLabel = i < 3 ? medals[i] : String(i + 1);
+
         var row = document.createElement('div');
         row.className = 'ranking-row';
-        row.innerHTML =
-            '<span class="ranking-pos">' + posLabel + '</span>' +
-            (r.img
-                ? '<img src="' + r.img + '" class="ranking-img" onerror="this.outerHTML=\'<div class=\\\"ranking-avatar-fallback\\\">👤</div>\'">'
-                : '<div class="ranking-avatar-fallback">👤</div>') +
-            '<span class="ranking-name">' + r.name + '</span>' +
-            '<span class="ranking-score">' + r.grand + ' pts</span>';
+
+        // Position badge
+        var pos = document.createElement('span');
+        pos.className = 'ranking-pos';
+        pos.textContent = posLabel;
+        row.appendChild(pos);
+
+        // Avatar — img with clean JS onerror fallback
+        if (r.img) {
+            var img = document.createElement('img');
+            img.className = 'ranking-img';
+            img.src = r.img;
+            img.alt = r.name;
+            img.onerror = function() {
+                var fb = document.createElement('div');
+                fb.className = 'ranking-avatar-fallback';
+                fb.textContent = '👤';
+                this.parentNode.replaceChild(fb, this);
+            };
+            row.appendChild(img);
+        } else {
+            var fb = document.createElement('div');
+            fb.className = 'ranking-avatar-fallback';
+            fb.textContent = '👤';
+            row.appendChild(fb);
+        }
+
+        // Name
+        var name = document.createElement('span');
+        name.className = 'ranking-name';
+        name.textContent = r.name;
+        row.appendChild(name);
+
+        // Score pill
+        var score = document.createElement('span');
+        score.className = 'ranking-score';
+        score.textContent = r.grand + ' pts';
+        row.appendChild(score);
+
         container.appendChild(row);
     });
 };
@@ -3909,16 +3942,4 @@ window.onContestantPaymentSuccess = async function(payRef) {
             phone: document.getElementById('rf-phone').value.trim(),
             department: document.getElementById('rf-dept').value.trim(),
             instagram: document.getElementById('rf-instagram').value.trim(),
-            headshot_url: hsUrl, fullbody_url: fbUrl,
-            age: parseInt(document.getElementById('rf-age').value),
-            gender: document.getElementById('rf-gender').value,
-            level: document.getElementById('rf-level').value,
-            clothing_size: document.getElementById('rf-clothing').value,
-            shoe_size: parseFloat(document.getElementById('rf-shoe').value),
-            height: parseFloat(document.getElementById('rf-height').value),
-            experience: _regExperience === 'yes' ? (document.getElementById('rf-experience-detail').value.trim() || 'Yes') : 'None',
-            video_url: vidUrl, payment_ref: payRef, is_approved: false
-        }]);
-        if (res.error) throw new Error(res.error.message);
-        var bEl = document.getElementById('reg-spot-banner'), wEl = document.getElementById('reg-form-wrap');
-        if (bE
+            headshot_url: hsUrl, fullbody
