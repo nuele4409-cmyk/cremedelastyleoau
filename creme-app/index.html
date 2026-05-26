@@ -2324,15 +2324,22 @@ function processTicketScan(decodedText) {
         try {
             if (!_sb) throw new Error('No database connection');
 
-            /* Query by entry_token first; only fall back to id if token looks like a UUID */
-            var uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-            var query = _sb.from('tickets').select('id, entry_token, tier_name, is_used, user_id');
-            if (uuidPattern.test(token)) {
-                query = query.or('entry_token.eq.' + token + ',id.eq.' + token);
-            } else {
-                query = query.eq('entry_token', token);
+            /* Step 1: always try entry_token first (text column — never causes UUID error) */
+            var res = await _sb.from('tickets')
+                .select('id, entry_token, tier_name, is_used, user_id')
+                .eq('entry_token', token)
+                .maybeSingle();
+
+            /* Step 2: if not found and token looks like a UUID, try matching by id */
+            if (!res.error && !res.data) {
+                var uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+                if (uuidPattern.test(token)) {
+                    res = await _sb.from('tickets')
+                        .select('id, entry_token, tier_name, is_used, user_id')
+                        .eq('id', token)
+                        .maybeSingle();
+                }
             }
-            var res = await query.maybeSingle();
 
             if (res.error) throw res.error;
 
