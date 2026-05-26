@@ -441,3 +441,62 @@ create policy "Judges update own scores"
         and exists (
             select 1 from user_roles
             where user_id = auth.uid()
+            and   role    = 'judge'
+        )
+    );
+
+-- ══════════════════════════════════════════════════════
+
+
+-- ══════════════════════════════════════════════════════
+--  MIGRATION — Features 34–36: App-level control toggles
+--  Adds three admin-controlled on/off switches to
+--  system_settings so the admin panel can open/close
+--  registration, nominations, and voting independently.
+--  Safe to run on an already-populated database.
+-- ══════════════════════════════════════════════════════
+
+alter table system_settings add column if not exists is_registration_open boolean not null default true;
+alter table system_settings add column if not exists is_nomination_open   boolean not null default true;
+alter table system_settings add column if not exists is_voting_open       boolean not null default false;
+
+-- ══════════════════════════════════════════════════════
+
+
+-- ══════════════════════════════════════════════════════
+--  MIGRATION — Judging Panel: look-based scoring
+--  Adds look_category (which runway segment is being
+--  scored) and optional judge notes to the scores table.
+--  Replaces the old unique(judge_id, contestant_id)
+--  constraint with a three-column one so a judge can
+--  submit separate scores per look.
+--  Safe to run on an already-populated database.
+-- ══════════════════════════════════════════════════════
+
+alter table scores add column if not exists look_category text not null default 'professional';
+alter table scores add column if not exists notes         text;
+
+-- Drop the old two-column unique constraint (if it exists)
+alter table scores drop constraint if exists scores_judge_id_contestant_id_key;
+
+-- Add the new three-column unique constraint
+-- (wrapped in a DO block to make it idempotent)
+do $$
+begin
+    if not exists (
+        select 1 from pg_constraint
+        where conname = 'scores_judge_contestant_look_unique'
+    ) then
+        alter table scores
+            add constraint scores_judge_contestant_look_unique
+            unique (judge_id, contestant_id, look_category);
+    end if;
+end;
+$$;
+
+-- Judges need UPDATE access for upserts (ON CONFLICT DO UPDATE)
+drop policy if exists "Judges update own scores" on scores;
+create policy "Judges update own scores"
+    on scores for update
+    using (
+        auth.ui

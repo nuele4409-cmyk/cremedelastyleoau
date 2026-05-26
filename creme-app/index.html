@@ -3616,14 +3616,22 @@ window.submitScore = async function() {
     if (!_sb || !window.currentUser || !_scoringContestant) return;
     var btn = document.getElementById('score-submit-btn');
     if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
+    // Collect 5 slider values
     var vals = [];
-    for (var i = 0; i < 5; i++) { var s = document.getElementById('sc-slider-' + i); vals.push(s ? parseInt(s.value) : 5); }
-    var total = vals.reduce(function(a, b) { return a + b; }, 0);
-    var comment = (document.getElementById('score-comment') || {}).value || '';
+    for (var i = 0; i < 5; i++) { var sl = document.getElementById('sc-slider-' + i); vals.push(sl ? parseInt(sl.value) : 5); }
+    var look_total = vals.reduce(function(a, b) { return a + b; }, 0);
+    var judge_comment = (document.getElementById('score-comment') || {}).value || '';
+    // Build criteria_breakdown JSONB from criterion names
+    var look = _looks[_currentLook];
+    var criteria_breakdown = {};
+    look.criteria.forEach(function(label, i) { criteria_breakdown[label] = vals[i]; });
     var res = await _sb.from('scores').upsert({
-        judge_id: window.currentUser.id, contestant_id: _scoringContestant.id,
-        look_category: _currentLook, catwalk_score: vals[0], originality_score: vals[1],
-        confidence_score: vals[2], outfit_score: vals[3], total_score: total, notes: comment
+        judge_id:           window.currentUser.id,
+        contestant_id:      _scoringContestant.id,
+        look_category:      _currentLook,
+        criteria_breakdown: criteria_breakdown,
+        look_total:         look_total,
+        judge_comment:      judge_comment
     }, { onConflict: 'judge_id,contestant_id,look_category' });
     if (res.error) { if (btn) { btn.textContent = 'Error: ' + res.error.message; btn.disabled = false; } return; }
     window.closeScoringModal();
@@ -3635,14 +3643,14 @@ window.loadLiveRankings = async function() {
     if (!container) return;
     container.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Loading…</p>';
     if (!_sb) return;
-    var res  = await _sb.from('scores').select('contestant_id,total_score,look_category');
+    var res  = await _sb.from('scores').select('contestant_id,look_category,look_total');
     var cRes = await _sb.from('contestants').select('id,full_name,headshot_url').eq('is_approved', true);
     if (res.error || !cRes.data) { container.innerHTML = '<p style="color:#ff6b9d;">Error loading rankings.</p>'; return; }
     var totals = {};
     (res.data || []).forEach(function(s) {
         if (!totals[s.contestant_id]) totals[s.contestant_id] = {};
         if (!totals[s.contestant_id][s.look_category]) totals[s.contestant_id][s.look_category] = { sum: 0, n: 0 };
-        totals[s.contestant_id][s.look_category].sum += s.total_score;
+        totals[s.contestant_id][s.look_category].sum += s.look_total;
         totals[s.contestant_id][s.look_category].n   += 1;
     });
     var ranked = cRes.data.map(function(c) {
@@ -3899,14 +3907,4 @@ function _uploadVideoTUS(file, bucket, objectPath, token) {
             metadata: { bucketName: bucket, objectName: objectPath, contentType: file.type, cacheControl: '3600' },
             chunkSize: 6 * 1024 * 1024,
             onProgress: function(up, tot) { if (bar) bar.style.width = Math.round(up / tot * 100) + '%'; },
-            onSuccess:  function() { if (wrap) wrap.style.display = 'none'; resolve(SUPABASE_URL + '/storage/v1/object/public/' + bucket + '/' + objectPath); },
-            onError:    function(e) { if (wrap) wrap.style.display = 'none'; reject(e); }
-        }).start();
-    });
-}
-
-/* ── RUN ── */
-boot();
-
-})();
-</
+            onSuccess:  function() { if (wrap) wra
