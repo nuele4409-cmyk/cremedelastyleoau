@@ -2286,6 +2286,7 @@ html, body {
                     <div id="scan-log"><p class="adm-empty">No scans yet.</p></div>
                 </div>
             </div>
+        </div><!-- /adm-tab-scan -->
         <!-- CONTROLS PANE -->
         <div id="adm-tab-controls" class="admin-tab-pane">
             <div class="admin-section">
@@ -2338,7 +2339,6 @@ html, body {
 
                 <div id="ctrl-status" style="margin-top:1rem;font-size:0.8rem;color:#6b7280;min-height:1.2rem;"></div>
             </div>
-        </div>
         </div>
     </main>
 </div>
@@ -3529,7 +3529,7 @@ window.selectLook = function(look, btn) {
 };
 
 window.loadJudgingRoster = async function() {
-    var roster = document.getElementById('judge-roster');
+    var roster = document.getElementById('judging-roster');
     if (!roster) return;
     roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;padding:1rem 0;">Loading contestants…</p>';
     if (!_sb || !window.currentUser) { roster.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Please sign in.</p>'; return; }
@@ -3909,6 +3909,4 @@ function _uploadVideoTUS(file, bucket, objectPath, token) {
 boot();
 
 })();
-</script>
-</body>
-</html>
+</
