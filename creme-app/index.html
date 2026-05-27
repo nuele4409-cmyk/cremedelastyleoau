@@ -4785,14 +4785,15 @@ window.submitVolunteerForm = async function() {
     if (res.error) {
         msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'Error: ' + res.error.message;
     } else {
-        // Switch to status view
+        // Persist email so status can be checked even without login
+        localStorage.setItem('vol_submitted_email', email);
         window.checkVolunteerStatus(email);
     }
 };
 
 window.checkVolunteerStatus = async function(overrideEmail) {
     if (!_sb) return;
-    var email = overrideEmail || (window.currentUser && window.currentUser.email) || null;
+    var email = overrideEmail || (window.currentUser && window.currentUser.email) || localStorage.getItem('vol_submitted_email') || null;
     var formSection   = document.getElementById('vol-form-section');
     var statusSection = document.getElementById('vol-status-section');
     var statusCard    = document.getElementById('vol-status-card');
@@ -4837,7 +4838,8 @@ window.checkVolunteerStatus = async function(overrideEmail) {
             '<div style="text-align:center;padding:2rem 0;">' +
             '<div style="font-size:3rem;margin-bottom:0.75rem;">&#9203;</div>' +
             '<h3 style="color:#d97706;margin-bottom:0.5rem;font-size:1.2rem;">Application Under Review</h3>' +
-            '<p style="color:#6b7280;font-size:0.88rem;line-height:1.6;">Your application for the <strong>' + v.team_preference + '</strong> team is being reviewed. You will be notified once approved.</p>' +
+            '<p style="color:#6b7280;font-size:0.88rem;margin-bottom:1.5rem;line-height:1.6;">Your application for the <strong>' + v.team_preference + '</strong> team is being reviewed. You will be notified once approved.</p>' +
+            '<button onclick="window.checkVolunteerStatus()" style="background:transparent;border:1.5px solid #d97706;color:#d97706;font-weight:600;padding:0.6rem 1.5rem;border-radius:50px;cursor:pointer;font-size:0.85rem;">&#8635; Check for Updates</button>' +
             '</div>';
     }
 };
@@ -4883,7 +4885,14 @@ window.loadAdminVolunteers = async function() {
 
 window.toggleVolunteerApproval = async function(id, value) {
     if (!_sb) return;
-    await _sb.from('volunteers').update({ is_approved: value }).eq('id', id);
+    var res = await _sb.from('volunteers').update({ is_approved: value }).eq('id', id);
+    var statusEl = document.getElementById('ctrl-status');
+    if (res.error) {
+        if (statusEl) { statusEl.textContent = 'Error updating volunteer: ' + res.error.message; statusEl.style.color = '#dc2626'; }
+        console.error('[Volunteer toggle]', res.error);
+    } else {
+        if (statusEl) { statusEl.textContent = value ? '✓ Volunteer approved' : '✓ Approval removed'; statusEl.style.color = '#16a34a'; setTimeout(function(){ statusEl.textContent=''; }, 3000); }
+    }
 };
 
 /* ── RUN ── */
