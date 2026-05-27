@@ -2994,6 +2994,8 @@ function boot() {
                 window.currentUser = (res.data && res.data.session) ? res.data.session.user : null;
                 window.updateTopBar();
             }).catch(function() {});
+            // Polls: listen for realtime + show any poll already active
+            setTimeout(function() { window.initPollListener(); window.checkActivePoll(); }, 1500);
         } catch(e) { console.warn('Supabase init error:', e); }
     }
     window.updateTopBar();
@@ -5167,6 +5169,13 @@ window.showPollModal = function(poll) {
         '<button onclick="document.getElementById(\'poll-modal-overlay\').remove()" style="display:block;width:100%;margin-top:0.25rem;background:transparent;border:none;color:#9ca3af;font-size:0.78rem;cursor:pointer;padding:0.5rem;">Skip</button></div>';
     document.body.appendChild(ov);
 };
+window.checkActivePoll = async function() {
+    if (!_sb) return;
+    var res = await _sb.from('urgent_polls').select('*').eq('is_active', true).maybeSingle();
+    if (res.error || !res.data) return;
+    window.showPollModal(res.data);
+};
+
 window.castPollVote = async function(pollId, btn) {
     var option = btn.getAttribute('data-opt');
     btn.style.background='#9A1A45'; btn.style.color='#fff'; btn.style.borderColor='#9A1A45'; btn.disabled=true;
@@ -5229,7 +5238,7 @@ window.addEventListener('load', function() {
             setTimeout(function(){ splash.style.display='none'; }, 750);
         }, 3000);
     }
-    setTimeout(window.initPollListener, 2500);
+    // poll listener now started in boot() after _sb ready
 });
 
 /* ── RUN ── */
