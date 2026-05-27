@@ -172,6 +172,13 @@ html, body {
 .poll-opt-btn:hover:not(:disabled) { background:rgba(255,255,255,0.24); }
 .poll-opt-btn.voted { background:rgba(255,255,255,0.9); color:#C0392B; border-color:#fff; opacity:1 !important; }
 .poll-banner-skip { font-size:0.7rem; color:rgba(255,255,255,0.45); background:none; border:none; cursor:pointer; margin-top:0.5rem; padding:0; font-family:inherit; }
+.poll-result-row { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; }
+.poll-result-label { font-size:0.78rem; color:#fff; width:34%; flex-shrink:0; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.poll-result-label.poll-result-voted { color:#FFD700; font-weight:900; }
+.poll-result-bar-wrap { flex:1; background:rgba(255,255,255,0.18); border-radius:20px; height:9px; overflow:hidden; }
+.poll-result-bar { height:100%; background:#fff; border-radius:20px; transition:width 0.7s ease; min-width:2px; }
+.poll-result-bar.my-vote { background:#FFD700; }
+.poll-result-pct { font-size:0.75rem; color:#fff; font-weight:700; min-width:2.8rem; text-align:right; flex-shrink:0; }
 .gold { color: var(--gold); }
 /* big hero */
 .home-hero { text-align: center; padding: 1.75rem 0 1.5rem; }
@@ -5223,6 +5230,30 @@ window.initPollListener = function() {
             else { var bn=document.getElementById('home-poll-banner'); if(bn) bn.style.display='none'; }
         }).subscribe(function(status){ console.log('[Poll] Realtime status:', status); });
 };
+window.renderPollResults = async function(pollId, opts, optsEl, descEl, myVote) {
+    if (!optsEl) return;
+    optsEl.innerHTML = '<p style="color:rgba(255,255,255,0.6);font-size:0.78rem;">Loading results…</p>';
+    var counts = {};
+    opts.forEach(function(o){ counts[o] = 0; });
+    if (_sb) {
+        var res = await _sb.from('poll_votes').select('option').eq('poll_id', pollId);
+        if (res.data) res.data.forEach(function(r){ if(counts[r.option]!==undefined) counts[r.option]++; });
+    }
+    var total = opts.reduce(function(a,o){ return a+(counts[o]||0); },0);
+    if (descEl) descEl.textContent = myVote ? '✅ You voted! Live results:' : '📊 Live results:';
+    optsEl.innerHTML = opts.map(function(o){
+        var n=counts[o]||0;
+        var pct=total>0?Math.round(n/total*100):0;
+        var isMe=o===myVote;
+        return '<div class="poll-result-row">'
+            +'<div class="poll-result-label'+(isMe?' poll-result-voted':'')+'">'+o+(isMe?' ✓':'')+'</div>'
+            +'<div class="poll-result-bar-wrap"><div class="poll-result-bar'+(isMe?' my-vote':'')
+            +'" style="width:'+pct+'%"></div></div>'
+            +'<div class="poll-result-pct">'+pct+'%<br><small style="font-weight:400;opacity:0.7;">'+n+(n===1?' vote':' votes')+'</small></div>'
+            +'</div>';
+    }).join('');
+};
+
 window.showPollModal = function(poll) {
     var old = document.getElementById('poll-modal-overlay'); if(old) old.remove();
     var banner  = document.getElementById('home-poll-banner');
@@ -5232,13 +5263,19 @@ window.showPollModal = function(poll) {
     if (!banner) return;
     var opts = Array.isArray(poll.options) ? poll.options : JSON.parse(poll.options||'[]');
     if(titleEl) titleEl.textContent = poll.title;
-    if(descEl)  descEl.textContent  = poll.description;
-    if(optsEl)  optsEl.innerHTML = opts.map(function(o){
-        return '<button class="poll-opt-btn" data-opt="'+o.replace(/"/g,'&quot;')+'" onclick="window.castPollVote(&quot;'+poll.id+'&quot;,this)">'+o+'</button>';
-    }).join('');
     banner.style.display = 'block';
     var main = document.querySelector('.main-content');
     if(main) main.scrollTop = 0;
+    var votedKey = 'cdls_poll_' + poll.id;
+    var myVote = localStorage.getItem(votedKey);
+    if (myVote) {
+        window.renderPollResults(poll.id, opts, optsEl, descEl, myVote);
+        return;
+    }
+    if(descEl) descEl.textContent = poll.description;
+    if(optsEl) optsEl.innerHTML = opts.map(function(o){
+        return '<button class="poll-opt-btn" data-opt="'+o.replace(/"/g,'&quot;')+'" onclick="window.castPollVote(&quot;'+poll.id+'&quot;,this)">'+o+'</button>';
+    }).join('');
 };
 window.checkActivePoll = async function() {
     if (!_sb) {
@@ -5269,13 +5306,18 @@ window.testPollBanner = function() {
 };
 
 window.castPollVote = async function(pollId, btn) {
+    var votedKey = 'cdls_poll_' + pollId;
+    if (localStorage.getItem(votedKey)) return;
     var option = btn.getAttribute('data-opt');
-    btn.classList.add('voted'); btn.disabled = true;
-    btn.parentNode.querySelectorAll('button').forEach(function(b){ if(b!==btn) b.disabled=true; });
-    if(_sb) await _sb.from('poll_votes').insert({poll_id:pollId,option:option});
+    var optsEl = document.getElementById('poll-banner-opts');
     var descEl = document.getElementById('poll-banner-desc');
-    if(descEl) descEl.textContent = '✅ Vote received — thank you!';
-    setTimeout(function(){ var bn=document.getElementById('home-poll-banner'); if(bn) bn.style.display='none'; }, 2200);
+    var opts = [];
+    if (optsEl) optsEl.querySelectorAll('.poll-opt-btn').forEach(function(b){ opts.push(b.getAttribute('data-opt')); });
+    btn.classList.add('voted'); btn.disabled = true;
+    if (optsEl) optsEl.querySelectorAll('button').forEach(function(b){ b.disabled=true; });
+    localStorage.setItem(votedKey, option);
+    if (_sb) await _sb.from('poll_votes').insert({poll_id:pollId, option:option});
+    window.renderPollResults(pollId, opts, optsEl, descEl, option);
 };
 
 /* ════ F53 – Candidate PDF Export ════ */
@@ -5341,4 +5383,4 @@ boot();
 })();
 </script>
 </body>
-</h
+</html>
