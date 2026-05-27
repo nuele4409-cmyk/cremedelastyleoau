@@ -5184,8 +5184,9 @@ window.deployPoll = async function() {
     show('✅ Poll deployed to all users!',false);
     ['poll-title','poll-desc','poll-options'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
     window.loadAdminPolls();
-    // also show banner on this device immediately
-    window.checkActivePoll();
+    // show banner immediately on this device
+    var opts2 = raw.split('\n').map(function(s){return s.trim();}).filter(Boolean).slice(0,6);
+    window.showPollModal({id: (res.data&&res.data[0]&&res.data[0].id)||'local', title:title, description:desc, options:opts2, is_active:true});
 };
 window.loadAdminPolls = async function() {
     var list = document.getElementById('adm-polls-list');
@@ -5213,9 +5214,10 @@ window.initPollListener = function() {
     _pollChannel = _sb.channel('urgent_polls_live')
         .on('postgres_changes',{event:'*',schema:'public',table:'urgent_polls'}, function(payload){
             var row = payload.new || {};
+            console.log('[Poll] Realtime event:', row.is_active, row.title);
             if (row.is_active) window.showPollModal(row);
             else { var bn=document.getElementById('home-poll-banner'); if(bn) bn.style.display='none'; }
-        }).subscribe();
+        }).subscribe(function(status){ console.log('[Poll] Realtime status:', status); });
 };
 window.showPollModal = function(poll) {
     var old = document.getElementById('poll-modal-overlay'); if(old) old.remove();
@@ -5247,11 +5249,11 @@ window.checkActivePoll = async function() {
         setTimeout(window.checkActivePoll, 2000);
         return;
     }
-    var res = await _sb.from('urgent_polls').select('*').eq('is_active', true).maybeSingle();
+    var res = await _sb.from('urgent_polls').select('*').eq('is_active', true).order('created_at', {ascending: false}).limit(1);
     if (res.error) { console.error('[Poll] checkActivePoll error:', res.error.message); return; }
-    if (!res.data) { console.log('[Poll] No active poll in DB'); return; }
-    console.log('[Poll] Active poll found:', res.data.title);
-    window.showPollModal(res.data);
+    if (!res.data || res.data.length === 0) { console.log('[Poll] No active poll in DB'); return; }
+    console.log('[Poll] Active poll found:', res.data[0].title);
+    window.showPollModal(res.data[0]);
 };
 
 window.testPollBanner = function() {
