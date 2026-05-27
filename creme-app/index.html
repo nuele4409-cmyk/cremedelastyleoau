@@ -236,6 +236,37 @@ html, body {
 .apply-runway-btn:hover { background: linear-gradient(135deg, #9A1A45, #c0235a); }
 
 /* PAGE HEADER */
+/* ── SPLASH SCREEN (F56) ── */
+#splash-screen {
+    position: fixed; inset: 0; z-index: 99999;
+    background: #6B0022;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: opacity 0.7s ease;
+}
+#splash-screen.fade-out { opacity: 0; pointer-events: none; }
+.splash-logo-ring {
+    width: 130px; height: 130px; border-radius: 50%;
+    border: 3px dotted rgba(255,255,255,0.45);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.6rem;
+    animation: splashPulse 1.8s ease-in-out infinite;
+}
+.splash-logo-ring img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; }
+.splash-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.2rem; font-weight: 900; letter-spacing: 0.08em;
+    color: #fff; text-align: center; line-height: 1.15;
+    text-transform: uppercase;
+}
+.splash-sub { color: rgba(255,255,255,0.6); font-size: 0.78rem; letter-spacing: 0.25em; text-transform: uppercase; margin-top: 0.5rem; }
+@keyframes splashPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.15); }
+    50%      { box-shadow: 0 0 0 14px rgba(255,255,255,0); }
+}
+.home-mini-logo { display: flex; align-items: center; justify-content: center; gap: 0.55rem; margin-bottom: 0.6rem; }
+.home-mini-logo img { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.25); object-fit: cover; }
+.home-mini-logo span { font-family: 'Playfair Display', Georgia, serif; font-size: 0.72rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.55); text-transform: uppercase; }
 .page-header { margin-bottom: 1.75rem; }
 .page-title { font-size: 1.8rem; font-weight: 800; color: var(--cream); }
 .page-sub { font-size: 0.85rem; color: var(--cream-60); margin-top: 0.35rem; }
@@ -1456,7 +1487,9 @@ html, body {
     border-left: 2px solid #fde68a; background: inherit;
 }
 
+.gallery-item-wrap { display:flex; flex-direction:column; }
 .gallery-img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; cursor:pointer; display:block; transition:transform .2s; }
+.gallery-caption { font-size:0.72rem; color:rgba(255,255,255,0.6); text-align:center; margin:3px 0 0; line-height:1.3; padding:0 2px; }
 .gallery-img:hover { transform:scale(1.03); }
 .gallery-empty-note { text-align:center; }
 .adm-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
@@ -1466,6 +1499,16 @@ html, body {
 </style>
 </head>
 <body>
+<!-- SPLASH SCREEN (F56) -->
+<div id="splash-screen">
+    <div class="splash-logo-ring">
+        <img src="https://raw.githubusercontent.com/nuele4409-cmyk/cremedelastyleoau/main/creme-app/logo.png"
+             onerror="this.style.display='none';this.parentNode.innerHTML='<span style=&quot;font-size:3.5rem;&quot;>&#128081;</span>'"
+             alt="Creme de la Style Logo">
+    </div>
+    <div class="splash-title">Crème De La<br>Style OAU</div>
+    <div class="splash-sub">❖ OAU Official Hub ❖</div>
+</div>
 <!-- AUTH MODAL -->
 <div id="auth-overlay" class="auth-overlay hidden">
     <div class="auth-box">
@@ -1517,6 +1560,10 @@ html, body {
         <!-- RUNWAY -->
         <div id="tab-home" class="tab-screen active">
             <div class="home-hero">
+                <div class="home-mini-logo">
+                    <img src="https://raw.githubusercontent.com/nuele4409-cmyk/cremedelastyleoau/main/creme-app/logo.png" onerror="this.style.display='none'" alt="Logo">
+                    <span>Crème De La Style OAU</span>
+                </div>
                 <h1 class="hero-title">Crème De La Style <span class="gold">✨</span></h1>
                 <p class="hero-subtitle">✦ OAU Official Hub ✦</p>
                 <p class="hero-desc">Where culture meets the runway. Where boldness becomes legacy.</p>
@@ -1832,8 +1879,6 @@ html, body {
                                 <option value="100">100 Level</option>
                                 <option value="200">200 Level</option>
                                 <option value="300">300 Level</option>
-                                <option value="400">400 Level</option>
-                                <option value="500">500 Level</option>
                             </select>
                         </div>
                     </div>
@@ -2434,6 +2479,8 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('controls', this)">🎛️ Controls</button>
         <button class="admin-tab" onclick="switchAdminTab('candidates', this)">👥 Candidates</button>
         <button class="admin-tab" onclick="switchAdminTab('volunteers', this)">🙋 Volunteers</button>
+        <button class="admin-tab" onclick="switchAdminTab('polls', this)">📣 Polls</button>
+        <button class="admin-tab" onclick="switchAdminTab('messages', this)">✉️ Messages</button>
     </nav>
     <main class="admin-body">
         <div id="adm-tab-dispatches" class="admin-tab-pane active">
@@ -2465,7 +2512,7 @@ html, body {
         <div id="adm-tab-gallery" class="admin-tab-pane">
             <div class="admin-section">
                 <h2>📸 Upload to Gallery</h2>
-                <div class="adm-field" style="margin-bottom:1rem;">
+                <div class="adm-field" style="margin-bottom:0.75rem;">
                     <label>Category</label>
                     <select id="gallery-upload-category" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:0.9rem;">
                         <option value="photos">📸 Photos</option>
@@ -2473,6 +2520,7 @@ html, body {
                         <option value="livefeed">📡 Live Feed</option>
                     </select>
                 </div>
+                <div class="adm-field" style="margin-bottom:1rem;"><label>Caption <span style="color:#9ca3af;font-weight:400;">(optional)</span></label><input type="text" id="gallery-caption" placeholder="Add a caption…" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:0.9rem;box-sizing:border-box;"></div>
                 <div class="gallery-dropzone" id="gallery-dropzone"
                     onclick="document.getElementById('gallery-file-input').click()"
                     ondragover="event.preventDefault();this.classList.add('drag-over');"
@@ -2481,8 +2529,8 @@ html, body {
                     ondrop="event.preventDefault();this.classList.remove('drag-over');window.galleryHandleDrop(event);">
                     <span id="gallery-dz-icon">📁</span>
                     <p id="gallery-dz-text">Click to select or drag &amp; drop an image here</p>
-                    <small>PNG, JPG, GIF or SVG (max 5 MB)</small>
-                    <input type="file" id="gallery-file-input" accept="image/*" style="display:none;"
+                    <small>Images (PNG/JPG/GIF) or Videos (MP4/MOV) — max 50 MB</small>
+                    <input type="file" id="gallery-file-input" accept="image/*,video/*" style="display:none;"
                         onchange="window.galleryPreviewFile(this.files[0])">
                 </div>
                 <div id="gallery-preview-wrap">
@@ -2626,7 +2674,10 @@ html, body {
             <div class="admin-section">
                 <div class="adm-rankings-header" style="margin-bottom:1.2rem;">
                     <h2>👥 Registered Candidates</h2>
-                    <button class="adm-refresh-btn" onclick="window.loadAdminCandidates()">↻ Refresh</button>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="adm-refresh-btn" onclick="window.loadAdminCandidates()">↻ Refresh</button>
+                        <button class="adm-refresh-btn" onclick="window.exportCandidatesPDF()" style="background:#9A1A45;color:#fff;border-color:#9A1A45;">⬇ PDF</button>
+                    </div>
                 </div>
                 <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All applicants who have paid the ₦3,000 registration fee. Approve a candidate to add them to the public lineup.</p>
                 <div id="adm-candidates-list"><p class="adm-empty">Click Refresh to load candidates.</p></div>
@@ -2642,6 +2693,32 @@ html, body {
                 </div>
                 <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All volunteer applicants. Toggle the switch to approve them for the team.</p>
                 <div id="adm-volunteers-list"><p class="adm-empty">Click Refresh to load applications.</p></div>
+            </div>
+        </div>
+
+        <!-- URGENT POLLS PANE (F52) -->
+        <div id="adm-tab-polls" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2>📣 Deploy Urgent Poll</h2>
+                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">Create a live poll that instantly pops up on every user's screen via realtime.</p>
+                <div class="adm-field" style="margin-bottom:0.75rem;"><label>Poll Title</label><input type="text" id="poll-title" class="nominate-input" placeholder="e.g. Best Dressed Audience Member" style="width:100%;box-sizing:border-box;"></div>
+                <div class="adm-field" style="margin-bottom:0.75rem;"><label>Description / Question</label><input type="text" id="poll-desc" class="nominate-input" placeholder="Vote for who slayed the most!" style="width:100%;box-sizing:border-box;"></div>
+                <div class="adm-field" style="margin-bottom:0.75rem;"><label>Options <small style="color:#9ca3af;">(one per line, min 2, max 6)</small></label><textarea id="poll-options" class="nominate-input nominate-textarea" rows="4" placeholder="Option A&#10;Option B&#10;Option C" style="width:100%;box-sizing:border-box;"></textarea></div>
+                <button class="adm-submit-btn" onclick="window.deployPoll()" style="background:#9A1A45;">🚀 Deploy Poll to All Users</button>
+                <div id="poll-deploy-msg" style="display:none;margin-top:10px;font-size:0.88rem;text-align:center;"></div>
+            </div>
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1rem;"><h2>📊 Active &amp; Past Polls</h2><button class="adm-refresh-btn" onclick="window.loadAdminPolls()">&#8635; Refresh</button></div>
+                <div id="adm-polls-list"><p class="adm-empty">Click Refresh to load polls.</p></div>
+            </div>
+        </div>
+
+        <!-- MESSAGES PANE (F55) -->
+        <div id="adm-tab-messages" class="admin-tab-pane">
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1.2rem;"><h2>✉️ Contact Messages</h2><button class="adm-refresh-btn" onclick="window.loadAdminMessages()">&#8635; Refresh</button></div>
+                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All messages submitted via the public Contact form.</p>
+                <div id="adm-messages-list"><p class="adm-empty">Click Refresh to load messages.</p></div>
             </div>
         </div>
 
@@ -3205,7 +3282,7 @@ window.submitRegistration = async function() {
     document.getElementById('contestant-fields').classList.remove('visible');
 };
 
-window.submitContact = function() {
+window.submitContact = async function() {
     var name  = document.getElementById('contact-name').value.trim();
     var email = document.getElementById('contact-email').value.trim();
     var msg   = document.getElementById('contact-message').value.trim();
@@ -3213,6 +3290,7 @@ window.submitContact = function() {
     var suc   = document.getElementById('contact-success');
     err.style.display = 'none'; suc.style.display = 'none';
     if (!name || !email || !msg) { err.textContent = 'Please fill out all required fields.'; err.style.display = 'block'; return; }
+    if (_sb) { await _sb.from('contact_messages').insert({ sender_name: name, email: email, subject: (document.getElementById('contact-subject')||{}).value||'', message: msg }); }
     suc.style.display = 'flex';
     ['contact-name','contact-email','contact-subject','contact-message'].forEach(function(id) { document.getElementById(id).value = ''; });
 };
@@ -3233,6 +3311,8 @@ window.switchAdminTab  = function(tab, btn) {
     if (tab === 'candidates') window.loadAdminCandidates();
     if (tab === 'dispatches') window.loadAdminDispatches();
     if (tab === 'gallery')    window.loadAdminGallery();
+    if (tab === 'polls')      window.loadAdminPolls();
+    if (tab === 'messages')   window.loadAdminMessages();
     if (tab === 'volunteers') window.loadAdminVolunteers();
 };
 
@@ -4681,12 +4761,28 @@ window.loadGallery = async function() {
         } else {
             if (note) note.style.display = 'none';
             filtered.forEach(function(item) {
-                var img = document.createElement('img');
-                img.src = item.image_url;
-                img.className = 'gallery-img';
-                img.alt = 'Gallery image';
-                img.onclick = function() { window.openGalleryLightbox(item.image_url); };
-                grid.appendChild(img);
+                var isVideo = /\.(mp4|mov|webm|ogg)$/i.test(item.image_url);
+                var wrap = document.createElement('div');
+                wrap.className = 'gallery-item-wrap';
+                if (isVideo) {
+                    var vid = document.createElement('video');
+                    vid.src = item.image_url; vid.className = 'gallery-img';
+                    vid.controls = true; vid.preload = 'metadata';
+                    wrap.appendChild(vid);
+                } else {
+                    var img = document.createElement('img');
+                    img.src = item.image_url; img.className = 'gallery-img';
+                    img.alt = item.caption || 'Gallery image';
+                    img.onclick = function() { window.openGalleryLightbox(item.image_url); };
+                    wrap.appendChild(img);
+                }
+                if (item.caption) {
+                    var cap = document.createElement('p');
+                    cap.className = 'gallery-caption';
+                    cap.textContent = item.caption;
+                    wrap.appendChild(cap);
+                }
+                grid.appendChild(wrap);
             });
         }
     });
@@ -4714,15 +4810,22 @@ window.galleryPreviewFile = function(file) {
     var icon = document.getElementById('gallery-dz-icon');
     var txt  = document.getElementById('gallery-dz-text');
     if (wrap && img && name) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            img.src = e.target.result;
-            wrap.style.display = '';
-            if (icon) icon.textContent = '✅';
-            if (txt)  txt.textContent  = 'File ready — click Upload & Publish';
-            if (name) name.textContent = file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
-        };
-        reader.readAsDataURL(file);
+        if (/video/i.test(file.type)) {
+            img.style.display = 'none'; wrap.style.display = '';
+            if (icon) icon.textContent = '🎬';
+            if (txt)  txt.textContent  = 'Video ready — click Upload & Publish';
+            if (name) name.textContent = file.name + ' (' + (file.size/1048576).toFixed(1) + ' MB)';
+        } else {
+            img.style.display = '';
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result; wrap.style.display = '';
+                if (icon) icon.textContent = '✅';
+                if (txt)  txt.textContent  = 'File ready — click Upload & Publish';
+                if (name) name.textContent = file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+            };
+            reader.readAsDataURL(file);
+        }
     }
     // clear previous upload message
     var msg = document.getElementById('gallery-upload-msg');
@@ -4771,10 +4874,8 @@ window.uploadGalleryImage = async function() {
         showMsg('Please select or drop an image first.', true);
         return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-        showMsg('File is too large (max 5MB).', true);
-        return;
-    }
+    var maxSize = /video/i.test(file.type) ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxSize) { showMsg('File too large (images max 5 MB, videos max 50 MB).', true); return; }
     var btn = document.querySelector('#adm-tab-gallery .adm-submit-btn');
     var orig = btn ? btn.textContent : 'Upload & Publish';
     if (btn) { btn.textContent = 'Uploading…'; btn.disabled = true; }
@@ -4789,11 +4890,14 @@ window.uploadGalleryImage = async function() {
         var pub = _sb.storage.from('gallery-media').getPublicUrl(path);
         var image_url = pub.data.publicUrl;
         console.log('[Gallery Upload] public URL:', image_url);
-        var ins = await _sb.from('gallery_media').insert({ image_url: image_url, category: category });
+        var captionEl = document.getElementById('gallery-caption');
+        var caption = captionEl ? captionEl.value.trim() : '';
+        var ins = await _sb.from('gallery_media').insert({ image_url: image_url, category: category, caption: caption || null });
         if (ins.error) throw new Error('DB error: ' + ins.error.message);
         showMsg('✅ Uploaded successfully!', false);
         if (fileInput) fileInput.value = '';
         window._galleryDroppedFile = null;
+        if (captionEl) captionEl.value = '';
         // reset dropzone preview
         var wrap = document.getElementById('gallery-preview-wrap');
         var icon = document.getElementById('gallery-dz-icon');
@@ -4999,6 +5103,134 @@ window.toggleVolunteerApproval = async function(id, value) {
         if (statusEl) { statusEl.textContent = value ? '✓ Volunteer approved' : '✓ Approval removed'; statusEl.style.color = '#16a34a'; setTimeout(function(){ statusEl.textContent=''; }, 3000); }
     }
 };
+
+
+/* ════ F52 – Urgent Polls ════ */
+window.deployPoll = async function() {
+    var msgEl = document.getElementById('poll-deploy-msg');
+    var show = function(t, err) { if (!msgEl) return; msgEl.style.display=''; msgEl.style.color=err?'#dc2626':'#16a34a'; msgEl.textContent=t; };
+    if (!_sb) { show('Not connected.',true); return; }
+    var title = (document.getElementById('poll-title')||{}).value.trim();
+    var desc  = (document.getElementById('poll-desc') ||{}).value.trim();
+    var raw   = (document.getElementById('poll-options')||{}).value.trim();
+    if (!title||!desc||!raw) { show('Fill in title, description, and at least 2 options.',true); return; }
+    var options = raw.split('\n').map(function(s){return s.trim();}).filter(Boolean).slice(0,6);
+    if (options.length < 2) { show('Please enter at least 2 options.',true); return; }
+    await _sb.from('urgent_polls').update({is_active:false}).eq('is_active',true);
+    var res = await _sb.from('urgent_polls').insert({title:title,description:desc,options:options,is_active:true});
+    if (res.error) { show('Error: '+res.error.message,true); return; }
+    show('✅ Poll deployed to all users!',false);
+    ['poll-title','poll-desc','poll-options'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+    window.loadAdminPolls();
+};
+window.loadAdminPolls = async function() {
+    var list = document.getElementById('adm-polls-list');
+    if (!list||!_sb) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('urgent_polls').select('*').order('created_at',{ascending:false});
+    if (res.error||!res.data||!res.data.length) { list.innerHTML='<p class="adm-empty">No polls yet.</p>'; return; }
+    var html='';
+    res.data.forEach(function(p){
+        html += '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:0.9rem;margin-bottom:0.75rem;background:#fff;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">' +
+            '<strong style="font-size:0.9rem;">'+p.title+'</strong>' +
+            '<span style="font-size:0.7rem;padding:2px 8px;border-radius:20px;background:'+(p.is_active?'#dcfce7':'#f3f4f6')+';color:'+(p.is_active?'#16a34a':'#6b7280')+';">'+(p.is_active?'● LIVE':'Ended')+'</span>' +
+            '</div><p style="font-size:0.78rem;color:#6b7280;margin:0 0 0.4rem;">'+p.description+'</p>' +
+            '<p style="font-size:0.72rem;color:#9ca3af;">Options: '+(Array.isArray(p.options)?p.options.join(' · '):p.options)+'</p>' +
+            (p.is_active?'<button onclick="window.closePoll(\''+p.id+'\')" style="margin-top:0.5rem;font-size:0.75rem;background:#dc2626;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">End Poll</button>':'') +
+            '</div>';
+    });
+    list.innerHTML = html;
+};
+window.closePoll = async function(id) { if(!_sb) return; await _sb.from('urgent_polls').update({is_active:false}).eq('id',id); window.loadAdminPolls(); };
+var _pollChannel = null;
+window.initPollListener = function() {
+    if (!_sb || _pollChannel) return;
+    _pollChannel = _sb.channel('urgent_polls_live')
+        .on('postgres_changes',{event:'*',schema:'public',table:'urgent_polls'}, function(payload){
+            var row = payload.new || {};
+            if (row.is_active) window.showPollModal(row);
+            else { var ov=document.getElementById('poll-modal-overlay'); if(ov) ov.remove(); }
+        }).subscribe();
+};
+window.showPollModal = function(poll) {
+    var existing = document.getElementById('poll-modal-overlay'); if(existing) existing.remove();
+    var opts = Array.isArray(poll.options) ? poll.options : JSON.parse(poll.options||'[]');
+    var btns = opts.map(function(o){ return '<button onclick="window.castPollVote(\''+poll.id+'\',this)" data-opt="'+o.replace(/"/g,'&quot;')+'" style="display:block;width:100%;text-align:left;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:8px;padding:0.65rem 1rem;margin-bottom:0.5rem;cursor:pointer;font-size:0.88rem;font-weight:600;">'+o+'</button>'; }).join('');
+    var ov = document.createElement('div'); ov.id='poll-modal-overlay';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:88888;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    ov.innerHTML='<div style="background:#fff;border-radius:16px;padding:1.5rem;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.4);">' +
+        '<div style="text-align:center;margin-bottom:1rem;"><span style="font-size:2rem;">📣</span>' +
+        '<h3 style="font-size:1.1rem;font-weight:800;color:#111;margin:0.4rem 0 0.25rem;">'+poll.title+'</h3>' +
+        '<p style="font-size:0.82rem;color:#6b7280;line-height:1.5;">'+poll.description+'</p></div>' +
+        btns +
+        '<button onclick="document.getElementById(\'poll-modal-overlay\').remove()" style="display:block;width:100%;margin-top:0.25rem;background:transparent;border:none;color:#9ca3af;font-size:0.78rem;cursor:pointer;padding:0.5rem;">Skip</button></div>';
+    document.body.appendChild(ov);
+};
+window.castPollVote = async function(pollId, btn) {
+    var option = btn.getAttribute('data-opt');
+    btn.style.background='#9A1A45'; btn.style.color='#fff'; btn.style.borderColor='#9A1A45'; btn.disabled=true;
+    var all = btn.parentNode.querySelectorAll('button');
+    all.forEach(function(b){if(b!==btn){b.disabled=true;b.style.opacity='0.45';}});
+    if (_sb) await _sb.from('poll_votes').insert({poll_id:pollId,option:option});
+};
+
+/* ════ F53 – Candidate PDF Export ════ */
+window.exportCandidatesPDF = async function() {
+    if (!_sb) { alert('Not connected to database.'); return; }
+    if (!window.jspdf) {
+        await new Promise(function(resolve,reject){
+            var s1=document.createElement('script');
+            s1.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            s1.onload=function(){ var s2=document.createElement('script'); s2.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'; s2.onload=resolve; s2.onerror=reject; document.head.appendChild(s2); };
+            s1.onerror=reject; document.head.appendChild(s1);
+        });
+    }
+    var res = await _sb.from('contestants').select('*').eq('paid',true).order('created_at',{ascending:true});
+    if (res.error||!res.data||!res.data.length) { alert('No paid candidates found.'); return; }
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+    doc.setFontSize(16); doc.setFont('helvetica','bold');
+    doc.text('Crème De La Style OAU – Registered Candidates',14,16);
+    doc.setFontSize(9); doc.setFont('helvetica','normal');
+    doc.text('Generated: '+new Date().toLocaleString(),14,22);
+    var rows=res.data.map(function(c,i){return[i+1,c.full_name||'—',c.department||'—',(c.level||'—')+'L',c.phone||'—',c.height||'—',c.chest||'—',c.shoulder||'—',c.waist||'—',c.hips||'—'];});
+    doc.autoTable({startY:26,head:[['#','Full Name','Department','Level','Phone','Height','Chest','Shoulder','Waist','Hips']],body:rows,styles:{fontSize:8,cellPadding:2},headStyles:{fillColor:[106,0,34],textColor:255,fontStyle:'bold'},alternateRowStyles:{fillColor:[253,242,248]},margin:{left:14,right:14}});
+    doc.save('CDLS-Candidates-'+new Date().toISOString().slice(0,10)+'.pdf');
+};
+
+/* ════ F55 – Admin Messages ════ */
+window.loadAdminMessages = async function() {
+    var list = document.getElementById('adm-messages-list');
+    if (!list||!_sb) return;
+    list.innerHTML='<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('contact_messages').select('*').order('created_at',{ascending:false});
+    if (res.error) { list.innerHTML='<p class="adm-empty" style="color:#dc2626;">Error: '+res.error.message+'</p>'; return; }
+    if (!res.data||!res.data.length) { list.innerHTML='<p class="adm-empty">No messages yet.</p>'; return; }
+    var html='';
+    res.data.forEach(function(m){
+        var d=new Date(m.created_at).toLocaleString();
+        html+='<div style="border:1px solid #e5e7eb;border-radius:10px;padding:1rem;margin-bottom:0.75rem;background:#fff;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.4rem;">' +
+            '<strong style="font-size:0.88rem;color:#111;">'+(m.sender_name||'—')+'</strong>' +
+            '<span style="font-size:0.7rem;color:#9ca3af;">'+d+'</span></div>' +
+            '<p style="font-size:0.75rem;color:#9A1A45;margin:0 0 0.5rem;">'+(m.email||'—')+(m.subject?' · '+m.subject:'')+'</p>' +
+            '<p style="font-size:0.82rem;color:#374151;line-height:1.6;margin:0;">'+(m.message||'')+'</p></div>';
+    });
+    list.innerHTML=html;
+};
+
+/* ════ F56 – Splash dismiss + Poll listener init ════ */
+window.addEventListener('load', function() {
+    var splash = document.getElementById('splash-screen');
+    if (splash) {
+        setTimeout(function(){
+            splash.classList.add('fade-out');
+            setTimeout(function(){ splash.style.display='none'; }, 750);
+        }, 3000);
+    }
+    setTimeout(window.initPollListener, 2500);
+});
 
 /* ── RUN ── */
 boot();
