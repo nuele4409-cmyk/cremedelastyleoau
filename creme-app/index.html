@@ -538,6 +538,10 @@ html, body {
     text-align: center; cursor: pointer; margin-bottom: 1rem; transition: all 0.2s; background: #f9fafb;
 }
 .gallery-dropzone:hover { border-color: #9A1A45; background: #fff5f7; }
+.gallery-dropzone.drag-over { border-color: #9A1A45; background: #fff0f4; transform: scale(1.02); }
+#gallery-preview-wrap { margin-bottom: 0.75rem; display: none; }
+#gallery-preview-wrap img { max-height: 160px; border-radius: 10px; object-fit: contain; border: 2px solid #9A1A45; display: block; margin: 0 auto; }
+#gallery-preview-name { text-align:center; font-size:0.78rem; color:#6b7280; margin-top:4px; }
 .gallery-dropzone span { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
 
 /* ── SCANNER TAB ── */
@@ -2469,11 +2473,23 @@ html, body {
                         <option value="livefeed">📡 Live Feed</option>
                     </select>
                 </div>
-                <div class="gallery-dropzone" onclick="document.getElementById('gallery-file-input').click()">
-                    <span>📁</span><p>Click to upload or drag & drop</p><small>SVG, PNG, JPG or GIF (max. 5MB)</small>
-                    <input type="file" id="gallery-file-input" accept="image/*" style="display:none;">
+                <div class="gallery-dropzone" id="gallery-dropzone"
+                    onclick="document.getElementById('gallery-file-input').click()"
+                    ondragover="event.preventDefault();this.classList.add('drag-over');"
+                    ondragenter="event.preventDefault();this.classList.add('drag-over');"
+                    ondragleave="this.classList.remove('drag-over');"
+                    ondrop="event.preventDefault();this.classList.remove('drag-over');window.galleryHandleDrop(event);">
+                    <span id="gallery-dz-icon">📁</span>
+                    <p id="gallery-dz-text">Click to select or drag &amp; drop an image here</p>
+                    <small>PNG, JPG, GIF or SVG (max 5 MB)</small>
+                    <input type="file" id="gallery-file-input" accept="image/*" style="display:none;"
+                        onchange="window.galleryPreviewFile(this.files[0])">
                 </div>
-                <button class="adm-submit-btn" onclick="uploadGalleryImage()">Upload & Publish</button>
+                <div id="gallery-preview-wrap">
+                    <img id="gallery-preview-img" src="" alt="preview">
+                    <p id="gallery-preview-name"></p>
+                </div>
+                <button class="adm-submit-btn" id="gallery-upload-btn" onclick="uploadGalleryImage()">Upload &amp; Publish</button>
                 <div id="gallery-upload-msg" style="display:none;text-align:center;margin-top:10px;font-size:0.88rem;"></div>
             </div>
             <div class="admin-section">
@@ -4689,6 +4705,46 @@ window.openGalleryLightbox = function(url) {
     ov.style.display = 'flex';
 };
 
+/* ── Gallery drag-drop + preview helpers ── */
+window.galleryPreviewFile = function(file) {
+    if (!file) return;
+    var wrap = document.getElementById('gallery-preview-wrap');
+    var img  = document.getElementById('gallery-preview-img');
+    var name = document.getElementById('gallery-preview-name');
+    var icon = document.getElementById('gallery-dz-icon');
+    var txt  = document.getElementById('gallery-dz-text');
+    if (wrap && img && name) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            img.src = e.target.result;
+            wrap.style.display = '';
+            if (icon) icon.textContent = '✅';
+            if (txt)  txt.textContent  = 'File ready — click Upload & Publish';
+            if (name) name.textContent = file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+        };
+        reader.readAsDataURL(file);
+    }
+    // clear previous upload message
+    var msg = document.getElementById('gallery-upload-msg');
+    if (msg) msg.style.display = 'none';
+};
+
+window.galleryHandleDrop = function(event) {
+    var files = event.dataTransfer && event.dataTransfer.files;
+    if (!files || !files[0]) return;
+    var fileInput = document.getElementById('gallery-file-input');
+    // assign dropped file to the input via DataTransfer
+    try {
+        var dt = new DataTransfer();
+        dt.items.add(files[0]);
+        fileInput.files = dt.files;
+    } catch(e) {
+        // fallback: store on window
+        window._galleryDroppedFile = files[0];
+    }
+    window.galleryPreviewFile(files[0]);
+};
+
 window.uploadGalleryImage = async function() {
     var showMsg = function(text, isError) {
         var msg = document.getElementById('gallery-upload-msg');
@@ -4710,11 +4766,11 @@ window.uploadGalleryImage = async function() {
     var fileInput = document.getElementById('gallery-file-input');
     var catEl = document.getElementById('gallery-upload-category');
     var category = catEl ? catEl.value : 'photos';
-    if (!fileInput || !fileInput.files || !fileInput.files[0]) {
-        showMsg('Please select a file first.', true);
+    var file = (fileInput && fileInput.files && fileInput.files[0]) || window._galleryDroppedFile || null;
+    if (!file) {
+        showMsg('Please select or drop an image first.', true);
         return;
     }
-    var file = fileInput.files[0];
     if (file.size > 5 * 1024 * 1024) {
         showMsg('File is too large (max 5MB).', true);
         return;
@@ -4735,10 +4791,18 @@ window.uploadGalleryImage = async function() {
         console.log('[Gallery Upload] public URL:', image_url);
         var ins = await _sb.from('gallery_media').insert({ image_url: image_url, category: category });
         if (ins.error) throw new Error('DB error: ' + ins.error.message);
-        showMsg('Uploaded successfully!', false);
-        fileInput.value = '';
+        showMsg('✅ Uploaded successfully!', false);
+        if (fileInput) fileInput.value = '';
+        window._galleryDroppedFile = null;
+        // reset dropzone preview
+        var wrap = document.getElementById('gallery-preview-wrap');
+        var icon = document.getElementById('gallery-dz-icon');
+        var txt  = document.getElementById('gallery-dz-text');
+        if (wrap) wrap.style.display = 'none';
+        if (icon) icon.textContent = '📁';
+        if (txt)  txt.textContent  = 'Click to select or drag & drop an image here';
         loadAdminGallery();
-        window.loadGallery(); // refresh public gallery too
+        window.loadGallery();
     } catch(e) {
         showMsg('Upload failed: ' + (e.message || String(e)), true);
     }
