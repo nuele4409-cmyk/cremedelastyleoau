@@ -1572,28 +1572,6 @@ html, body {
             </div>
         </div>
 
-        <!-- HONORARY VOTE -->
-        <div id="tab-honorary-vote" class="tab-screen">
-            <div class="page-header">
-                <h2 class="page-title">Honorary Awards Vote</h2>
-                <p class="page-sub">Vote for outstanding campus personalities across all categories.</p>
-            </div>
-            <!-- Sign-in gate -->
-            <div id="honorary-vote-signin-gate" class="tab-signin-gate">
-                <div class="tab-gate-icon">🔒</div>
-                <p class="tab-gate-msg">You must be signed in to cast your honorary vote.</p>
-                <button class="nominate-submit-btn" onclick="openAuthModal()">Sign In to Access ✦</button>
-            </div>
-            <!-- Lock banner -->
-            <div id="honorary-vote-lock-banner" class="tab-lock-banner" style="display:none;">
-                <span class="tab-lock-banner-icon">🔐</span>
-                <p><strong>Honorary Awards Voting is currently closed.</strong> The Administrator has not yet opened this section. Check back for updates.</p>
-            </div>
-            <!-- Content -->
-            <div id="honorary-vote-content" style="display:none;">
-                <div id="vote-list"></div>
-            </div>
-        </div>
 
         <!-- NOMINATE -->
         <div id="tab-nominate" class="tab-screen">
@@ -1670,7 +1648,7 @@ html, body {
                 <button class="explore-card" onclick="switchTab('register')"><span class="explore-icon">📝</span><span class="explore-label">Register</span></button>
                 <button class="explore-card" onclick="switchTab('nominate')"><span class="explore-icon">✨</span><span class="explore-label">Nominate</span></button>
                 <button class="explore-card" onclick="switchTab('vote')"><span class="explore-icon">🗳️</span><span class="explore-label">Vote</span></button>
-                <button class="explore-card" onclick="switchTab('honorary-vote')"><span class="explore-icon">🏅</span><span class="explore-label">Honorary Vote</span></button>
+
                 <button class="explore-card" onclick="switchTab('judges')"><span class="explore-icon">⚖️</span><span class="explore-label">Judges</span></button>
                 <button class="explore-card" onclick="switchTab('gallery')"><span class="explore-icon">📸</span><span class="explore-label">Gallery</span></button>
                 <button class="explore-card" onclick="switchTab('team')"><span class="explore-icon">👥</span><span class="explore-label">Team</span></button>
@@ -2311,10 +2289,6 @@ html, body {
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             <span>NOMINATE</span>
         </button>
-        <button class="nav-btn" data-tab="honorary-vote" onclick="switchTab('honorary-vote')">
-            <span style="font-size:1.3rem;line-height:1;">🏅</span>
-            <span>HONORARY</span>
-        </button>
         <button class="nav-btn" data-tab="lineup" onclick="switchTab('lineup')">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             <span>LINEUP</span>
@@ -2516,16 +2490,6 @@ html, body {
                     </label>
                 </div>
 
-                <div class="ctrl-row">
-                    <div class="ctrl-info">
-                        <div class="ctrl-label">Honorary Awards Voting</div>
-                        <div class="ctrl-desc">Open or close the Honorary campus categories vote.</div>
-                    </div>
-                    <label class="ctrl-toggle">
-                        <input type="checkbox" id="ctrl-honorary-voting" onchange="saveAppControl('is_honorary_voting_open', this.checked)">
-                        <span class="ctrl-slider"></span>
-                    </label>
-                </div>
 
                 <div class="ctrl-row">
                     <div class="ctrl-info">
@@ -2834,7 +2798,6 @@ window.loadAdminControls = async function() {
         'ctrl-registration': 'is_registration_open',
         'ctrl-nominations':  'is_nomination_open',
         'ctrl-voting':       'is_voting_open',
-        'ctrl-honorary-voting': 'is_honorary_voting_open',
         'ctrl-liveresults':  'show_live_results',
         'ctrl-tickets':      'show_tickets',
         'ctrl-judges':       'show_judges',
@@ -2928,7 +2891,6 @@ window.switchTab = function(tab) {
     if (tab === 'judging')  { window.loadJudgingRoster(); }
     if (tab === 'register') { window.initRegisterTab(); }
     if (tab === 'vote')          { window.initVoteTab(); }
-    if (tab === 'honorary-vote') { window.initHonoraryVoteTab(); }
     if (tab === 'home')          { window.loadDispatches(); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
@@ -2999,7 +2961,7 @@ window.renderVoteList = function() {
         var isExpanded = window.expandedCategory === cat.id;
         var el = document.createElement('div');
         el.className = 'vote-category';
-        var showCounts = window.appSettings && window.appSettings.show_live_results;
+        var showCounts = true; // always show live percentage bars on fan vote
         // compute total votes for this category to calculate percentages
         var catTotal = 0;
         if (showCounts && window.voteCounts[cat.id]) {
@@ -3854,24 +3816,6 @@ function applyTabGates(loggedIn) {
         if (nomContent) nomContent.style.display  = 'block';
     }
 
-    // ── Honorary Vote: sign-in + admin lock ──
-    var honGate    = document.getElementById('honorary-vote-signin-gate');
-    var honLock    = document.getElementById('honorary-vote-lock-banner');
-    var honContent = document.getElementById('honorary-vote-content');
-    var honOpen    = settings.is_honorary_voting_open === true; // default CLOSED
-    if (!loggedIn) {
-        if (honGate)    honGate.style.display    = 'flex';
-        if (honLock)    honLock.style.display     = 'none';
-        if (honContent) honContent.style.display  = 'none';
-    } else if (!honOpen) {
-        if (honGate)    honGate.style.display    = 'none';
-        if (honLock)    honLock.style.display     = 'flex';
-        if (honContent) honContent.style.display  = 'none';
-    } else {
-        if (honGate)    honGate.style.display    = 'none';
-        if (honLock)    honLock.style.display     = 'none';
-        if (honContent) honContent.style.display  = 'block';
-    }
 
     // ── Simple on/off tabs: Tickets, Judges, Team, Lineup ──
     // No sign-in required — just show lock banner when admin disables
@@ -4143,7 +4087,6 @@ window.initVoteTab = async function() {
                 async function() {
                     await window.fetchVoteCounts();
                     window.renderContestantVoteList();
-                    window.renderVoteList();
                 })
             .subscribe();
     }
@@ -4207,28 +4150,7 @@ window.castContestantVote = async function(contestantId) {
     }
 };
 
-/* ── Honorary vote tab ── */
-var _honoraryChannel = null;
-window.initHonoraryVoteTab = async function() {
-    if (!_sb) return;
-    if (window.currentUser) {
-        try {
-            var vRes = await _sb.from('votes').select('category_id,nominee_id').eq('user_id', window.currentUser.id);
-            if (vRes.data) vRes.data.forEach(function(r) { window.votes[r.category_id] = r.nominee_id; });
-        } catch(e) {}
-    }
-    await window.fetchVoteCounts();
-    if (!_honoraryChannel && _sb) {
-        _honoraryChannel = _sb.channel('honorary-votes-realtime')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' },
-                async function() {
-                    await window.fetchVoteCounts();
-                    window.renderVoteList();
-                })
-            .subscribe();
-    }
-    window.renderVoteList();
-};
+
 
 window.castVote = async function(categoryId, nomineeId) {
     if (!window.currentUser) { window.openAuthModal(); return; }
@@ -4248,7 +4170,6 @@ window.castVote = async function(categoryId, nomineeId) {
     }, 700);
 };
 
-/* renderVoteList targets #vote-list which now lives in tab-honorary-vote */
 
 /* ════════════════════════════════════
    FEATURE 22 - Contestant Registration Gateway
