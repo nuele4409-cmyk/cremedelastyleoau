@@ -1568,7 +1568,8 @@ html, body {
             </div>
             <!-- Main content -->
             <div id="vote-content" style="display:none;">
-                <div id="contestant-vote-list"></div>
+                <p id="vote-error-msg" style="display:none;color:#f87171;font-size:0.82rem;text-align:center;padding:0.5rem 0;margin:0;"></p>
+            <div id="contestant-vote-list"></div>
             </div>
         </div>
 
@@ -4054,45 +4055,64 @@ window.switchGalleryFilter = function(filter, btn) {
 };
 
 /* ════════════════════════════════════
-   FEATURE 23 - Live Voting (DB + Realtime)
+   FEATURE 23 - Fan Favourite Vote
 ════════════════════════════════════ */
 var _voteChannel = null;
-
 window._approvedContestants = [];
 
+/* ── Load vote tab ── */
 window.initVoteTab = async function() {
     if (!_sb) return;
+
+    // 1. Show/hide live banner
     try {
-        var sRes = await _sb.from('system_settings').select('show_live_results,is_voting_open').limit(1).single();
-        if (sRes.data) {
-            var banner = document.getElementById('vote-live-banner');
-            if (banner) banner.style.display = sRes.data.show_live_results ? 'flex' : 'none';
-        }
+        var sRes = await _sb.from('system_settings').select('show_live_results').limit(1).single();
+        var banner = document.getElementById('vote-live-banner');
+        if (banner) banner.style.display = (sRes.data && sRes.data.show_live_results) ? 'flex' : 'none';
     } catch(e) {}
+
+    // 2. Restore user's existing vote from DB (persists across refresh)
     if (window.currentUser) {
         try {
-            var vRes = await _sb.from('votes').select('category_id,nominee_id').eq('user_id', window.currentUser.id);
-            if (vRes.data) vRes.data.forEach(function(r) { window.votes[r.category_id] = r.nominee_id; });
+            var vRes = await _sb.from('votes')
+                .select('nominee_id')
+                .eq('user_id', window.currentUser.id)
+                .eq('category_id', 'fan_favourite')
+                .maybeSingle();
+            if (vRes.data && vRes.data.nominee_id) {
+                window.votes['fan_favourite'] = vRes.data.nominee_id;
+            }
         } catch(e) {}
     }
-    // Fetch approved contestants for the fan favourite vote
+
+    // 3. Load approved contestants
     try {
-        var cRes = await _sb.from('contestants').select('id,full_name,headshot_url').eq('is_approved', true).order('full_name');
+        var cRes = await _sb.from('contestants')
+            .select('id,full_name,headshot_url')
+            .eq('is_approved', true)
+            .order('full_name');
         window._approvedContestants = cRes.data || [];
     } catch(e) { window._approvedContestants = []; }
+
+    // 4. Fetch real vote counts
     await window.fetchVoteCounts();
+
+    // 5. Realtime subscription (filter to fan_favourite only)
     if (!_voteChannel && _sb) {
-        _voteChannel = _sb.channel('votes-realtime')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' },
+        _voteChannel = _sb.channel('fan-votes-rt')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'votes',
+                filter: 'category_id=eq.fan_favourite' },
                 async function() {
                     await window.fetchVoteCounts();
                     window.renderContestantVoteList();
                 })
             .subscribe();
     }
+
     window.renderContestantVoteList();
 };
 
+/* ── Render the contestant vote list ── */
 window.renderContestantVoteList = function() {
     var container = document.getElementById('contestant-vote-list');
     if (!container) return;
@@ -4101,66 +4121,84 @@ window.renderContestantVoteList = function() {
         container.innerHTML = '<p style="text-align:center;color:var(--cream-60);font-size:0.88rem;padding:2rem 1rem;">The contestant lineup has not been revealed yet. Check back closer to the event.</p>';
         return;
     }
-    var catId = 'fan_favourite';
-    var hasVoted = window.votes[catId] !== undefined;
-    var catTotal = 0;
-    if (window.voteCounts[catId]) {
-        Object.values(window.voteCounts[catId]).forEach(function(v) { catTotal += v; });
-    }
+    var catId    = 'fan_favourite';
+    var myVote   = window.votes[catId];
+    var hasVoted = myVote !== undefined;
+    var counts   = window.voteCounts[catId] || {};
+    var catTotal = Object.values(counts).reduce(function(a, v) { return a + v; }, 0);
+
     container.innerHTML = '';
     contestants.forEach(function(c) {
-        var sel   = window.votes[catId] === c.id;
-        var dis   = hasVoted && !sel;
-        var cnt   = (window.voteCounts[catId] && window.voteCounts[catId][c.id]) ? window.voteCounts[catId][c.id] : 0;
-        var pct   = catTotal > 0 ? Math.round(cnt / catTotal * 100) : 0;
+        var sel  = myVote === c.id;
+        var dis  = hasVoted && !sel;
+        var cnt  = counts[c.id] || 0;
+        var pct  = catTotal > 0 ? Math.round(cnt / catTotal * 100) : 0;
+
         var avatarHtml = c.headshot_url
             ? '<img class="cvr-img" src="' + c.headshot_url + '" alt="' + _esc(c.full_name) + '">'
             : '<div class="cvr-avatar">' + _esc((c.full_name || '?')[0].toUpperCase()) + '</div>';
-        var barHtml = '<div class="vote-progress-wrap"><div class="vote-progress-track"><div class="vote-progress-fill" style="width:' + pct + '%"></div></div></div>' +
-            '<span class="vote-progress-pct">' + (cnt > 0 ? pct + '%' : '') + '</span>';
+
+        var barHtml =
+            '<div class="vote-progress-wrap">' +
+                '<div class="vote-progress-track">' +
+                    '<div class="vote-progress-fill" style="width:' + pct + '%"></div>' +
+                '</div>' +
+            '</div>' +
+            '<span class="vote-progress-pct">' + (catTotal > 0 ? pct + '%' : '') + '</span>';
+
         var safeId = c.id.replace(/'/g, "\'");
         var row = document.createElement('div');
         row.className = 'contestant-vote-row';
-        row.innerHTML = avatarHtml +
+        row.innerHTML =
+            avatarHtml +
             '<span class="cvr-name' + (sel ? ' voted' : '') + '">' + _esc(c.full_name) + '</span>' +
             barHtml +
-            '<button class="vote-btn' + (sel ? ' voted-btn' : '') + '" onclick="window.castContestantVote(\'' + safeId + '\')"' + (dis ? ' disabled' : '') + '>' +
+            '<button class="vote-btn' + (sel ? ' voted-btn' : '') + '"' +
+                ' onclick="window.castContestantVote(\'' + safeId + '\')"' +
+                (dis ? ' disabled' : '') + '>' +
             (sel ? '&#10003; VOTED' : 'VOTE') + '</button>';
         container.appendChild(row);
     });
 };
 
+/* ── Cast a fan favourite vote ── */
 window.castContestantVote = async function(contestantId) {
     if (!window.currentUser) { window.openAuthModal(); return; }
     var catId = 'fan_favourite';
-    // ── Optimistic update: show result INSTANTLY, never wipe it ──
+
+    // Optimistic: update local state immediately
     var prev = window.votes[catId];
     window.votes[catId] = contestantId;
     if (!window.voteCounts[catId]) window.voteCounts[catId] = {};
     if (prev && window.voteCounts[catId][prev] > 0) window.voteCounts[catId][prev]--;
     window.voteCounts[catId][contestantId] = (window.voteCounts[catId][contestantId] || 0) + 1;
     window.renderContestantVoteList();
-    // ── Background save via DB function (atomic, bypasses RLS complexity) ──
-    if (_sb) {
-        (async function() {
-            try {
-                var r = await _sb.rpc('cast_fan_vote', { p_contestant_id: contestantId });
-                if (r.error) {
-                    // Fallback: direct delete+insert
-                    await _sb.from('votes').delete()
-                        .eq('user_id', window.currentUser.id)
-                        .eq('category_id', catId);
-                    await _sb.from('votes').insert({
-                        user_id: window.currentUser.id,
-                        category_id: catId,
-                        nominee_id: contestantId
-                    });
-                }
-                await window.fetchVoteCounts();
-                window.renderContestantVoteList();
-            } catch(e) { /* optimistic state stays visible */ }
-        })();
+
+    if (!_sb) return;
+
+    // Save via RPC (atomic upsert, security definer bypasses RLS)
+    var saved = false;
+    try {
+        var r = await _sb.rpc('cast_fan_vote', { p_contestant_id: contestantId });
+        if (!r.error) saved = true;
+    } catch(e) {}
+
+    if (!saved) {
+        // Show error, revert optimistic
+        window.votes[catId] = prev;
+        if (prev && window.voteCounts[catId][prev] !== undefined) {
+            window.voteCounts[catId][prev] = (window.voteCounts[catId][prev] || 0) + 1;
+        }
+        if (window.voteCounts[catId][contestantId] > 0) window.voteCounts[catId][contestantId]--;
+        window.renderContestantVoteList();
+        var errEl = document.getElementById('vote-error-msg');
+        if (errEl) { errEl.textContent = 'Could not save vote. Please try again.'; errEl.style.display = 'block'; setTimeout(function(){ errEl.style.display='none'; }, 4000); }
+        return;
     }
+
+    // Fetch real counts from DB and render with accurate percentages
+    await window.fetchVoteCounts();
+    window.renderContestantVoteList();
 };
 
 
@@ -4407,14 +4445,13 @@ window.fetchVoteCounts = async function() {
     if (!_sb) return;
     try {
         var res = await _sb.from('votes').select('category_id,nominee_id');
-        if (res.error) { console.warn('[votes] select error:', res.error.message); return; }
+        if (res.error) return;
         var counts = {};
         (res.data || []).forEach(function(v) {
             if (!counts[v.category_id]) counts[v.category_id] = {};
             counts[v.category_id][v.nominee_id] = (counts[v.category_id][v.nominee_id] || 0) + 1;
         });
-        // Only overwrite if we got real data back
-        if (res.data && res.data.length > 0) window.voteCounts = counts;
+        window.voteCounts = counts;
     } catch(e) {}
 };
 
