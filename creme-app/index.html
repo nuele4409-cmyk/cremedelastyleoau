@@ -4116,8 +4116,8 @@ window.renderContestantVoteList = function() {
         var avatarHtml = c.headshot_url
             ? '<img class="cvr-img" src="' + c.headshot_url + '" alt="' + _esc(c.full_name) + '">'
             : '<div class="cvr-avatar">' + _esc((c.full_name || '?')[0].toUpperCase()) + '</div>';
-        var barHtml = '<div class="vote-progress-wrap"><div class="vote-progress-track"><div class="vote-progress-fill" style="width:' + pct + '%"></div></div></div>' +
-            '<span class="vote-progress-pct">' + (catTotal > 0 ? pct + '%' : '–') + '</span>';
+        var barHtml = '<div class="vote-progress-wrap"><div class="vote-progress-track"><div class="vote-progress-fill" style="width:' + (catTotal >= 2 ? pct : 0) + '%"></div></div></div>' +
+            '<span class="vote-progress-pct">' + (catTotal >= 2 ? pct + '%' : '–') + '</span>';
         var safeId = c.id.replace(/'/g, "\'");
         var row = document.createElement('div');
         row.className = 'contestant-vote-row';
@@ -4395,27 +4395,16 @@ function _uploadVideoTUS(file, bucket, objectPath, token) {
 /* Fetch aggregate vote counts from DB for live leaderboard */
 window.fetchVoteCounts = async function() {
     if (!_sb) return;
-    var buildCounts = function(rows) {
+    try {
+        var res = await _sb.from('votes').select('category_id,nominee_id');
         var counts = {};
-        (rows || []).forEach(function(v) {
+        (res.data || []).forEach(function(v) {
             if (!counts[v.category_id]) counts[v.category_id] = {};
             counts[v.category_id][v.nominee_id] = (counts[v.category_id][v.nominee_id] || 0) + 1;
         });
-        // Always seed current user's own known votes so their bar shows
-        // even if RLS restricts reading other users' rows
-        Object.keys(window.votes || {}).forEach(function(catId) {
-            var nId = window.votes[catId];
-            if (!nId) return;
-            if (!counts[catId]) counts[catId] = {};
-            if (!counts[catId][nId]) counts[catId][nId] = 1;
-        });
-        return counts;
-    };
-    try {
-        var res = await _sb.from('votes').select('category_id,nominee_id');
-        window.voteCounts = buildCounts(res.data || []);
+        window.voteCounts = counts;
     } catch(e) {
-        window.voteCounts = buildCounts([]);
+        window.voteCounts = {};
     }
 };
 
