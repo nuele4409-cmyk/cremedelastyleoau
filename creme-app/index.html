@@ -4133,30 +4133,30 @@ window.renderContestantVoteList = function() {
 window.castContestantVote = async function(contestantId) {
     if (!window.currentUser) { window.openAuthModal(); return; }
     var catId = 'fan_favourite';
-    // Optimistic update: record vote and bump local count immediately
+    // ── Optimistic update: show result INSTANTLY, never wipe it ──
     var prev = window.votes[catId];
     window.votes[catId] = contestantId;
     if (!window.voteCounts[catId]) window.voteCounts[catId] = {};
     if (prev && window.voteCounts[catId][prev] > 0) window.voteCounts[catId][prev]--;
     window.voteCounts[catId][contestantId] = (window.voteCounts[catId][contestantId] || 0) + 1;
-    var optimisticCounts = JSON.parse(JSON.stringify(window.voteCounts)); // snapshot
     window.renderContestantVoteList();
+    // ── Background save — does NOT touch voteCounts or re-render on failure ──
     if (_sb) {
-        try {
-            // Delete old vote first (requires votes_delete RLS policy)
-            await _sb.from('votes').delete()
-                .eq('user_id', window.currentUser.id)
-                .eq('category_id', catId);
-            await _sb.from('votes').insert(
-                { user_id: window.currentUser.id, category_id: catId, nominee_id: contestantId }
-            );
-        } catch(e) {}
-        // Refresh from DB — fall back to optimistic counts if DB returns nothing yet
-        await window.fetchVoteCounts();
-        var catCounts = window.voteCounts[catId];
-        var hasRealData = catCounts && Object.keys(catCounts).length > 0;
-        if (!hasRealData) window.voteCounts = optimisticCounts;
-        window.renderContestantVoteList();
+        (async function() {
+            try {
+                await _sb.from('votes').delete()
+                    .eq('user_id', window.currentUser.id)
+                    .eq('category_id', catId);
+                await _sb.from('votes').insert({
+                    user_id: window.currentUser.id,
+                    category_id: catId,
+                    nominee_id: contestantId
+                });
+                // Only fetch + re-render if Realtime didn't already handle it
+                await window.fetchVoteCounts();
+                window.renderContestantVoteList();
+            } catch(e) { /* optimistic state stays as-is */ }
+        })();
     }
 };
 
