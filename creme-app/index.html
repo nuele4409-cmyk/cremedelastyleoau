@@ -3215,7 +3215,9 @@ window.switchAdminTab  = function(tab, btn) {
     if (tab !== 'scan') stopScanner(); // stop camera when leaving scan tab
     if (tab === 'controls')   window.loadAdminControls();
     if (tab === 'candidates') window.loadAdminCandidates();
-    if (tab === 'dispatches')  window.loadAdminDispatches();
+    if (tab === 'dispatches') window.loadAdminDispatches();
+    if (tab === 'gallery')    window.loadAdminGallery();
+    if (tab === 'volunteers') window.loadAdminVolunteers();
 };
 
 /* ── QR TICKET SCANNER ── */
@@ -4690,8 +4692,19 @@ window.openGalleryLightbox = function(url) {
 window.uploadGalleryImage = async function() {
     var showMsg = function(text, isError) {
         var msg = document.getElementById('gallery-upload-msg');
-        if (msg) { msg.style.display = ''; msg.style.color = isError ? '#dc2626' : '#16a34a'; msg.textContent = text; }
+        if (msg) {
+            msg.style.display = '';
+            msg.style.color = isError ? '#dc2626' : '#16a34a';
+            msg.style.fontWeight = isError ? '600' : 'normal';
+            msg.style.fontSize = isError ? '0.95rem' : '0.88rem';
+            msg.style.padding = isError ? '8px 12px' : '4px';
+            msg.style.background = isError ? '#fef2f2' : 'transparent';
+            msg.style.borderRadius = isError ? '6px' : '0';
+            msg.style.border = isError ? '1px solid #fca5a5' : 'none';
+            msg.textContent = text;
+        }
         if (isError) console.error('[Gallery Upload]', text);
+        else console.log('[Gallery Upload]', text);
     };
     if (!_sb) { showMsg('Not connected to database. Please refresh the page.', true); return; }
     var fileInput = document.getElementById('gallery-file-input');
@@ -4715,7 +4728,7 @@ window.uploadGalleryImage = async function() {
         var ext = file.name.split('.').pop().toLowerCase();
         var path = 'gallery/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
         console.log('[Gallery Upload] uploading to path:', path, 'category:', category);
-        var up = await _sb.storage.from('gallery-media').upload(path, file, { cacheControl: '3600', upsert: false });
+        var up = await _sb.storage.from('gallery-media').upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
         if (up.error) throw new Error('Storage error: ' + up.error.message);
         var pub = _sb.storage.from('gallery-media').getPublicUrl(path);
         var image_url = pub.data.publicUrl;
@@ -4733,13 +4746,18 @@ window.uploadGalleryImage = async function() {
 };
 
 window.loadAdminGallery = async function() {
-    if (!_sb) return;
+    if (!_sb) { console.warn('[Gallery] _sb not ready'); return; }
     var list = document.getElementById('adm-gallery-list');
     if (!list) return;
     list.innerHTML = '<p class="adm-empty">Loading…</p>';
     var res = await _sb.from('gallery_media').select('*').order('created_at', { ascending: false });
-    if (res.error || !res.data || res.data.length === 0) {
-        list.innerHTML = '<p class="adm-empty">No media uploaded yet.</p>';
+    if (res.error) {
+        console.error('[Gallery] DB error:', res.error.message);
+        list.innerHTML = '<p class="adm-empty" style="color:#dc2626;">⚠️ Database error: ' + res.error.message + '<br><small>Make sure you ran the SQL setup in Supabase.</small></p>';
+        return;
+    }
+    if (!res.data || res.data.length === 0) {
+        list.innerHTML = '<p class="adm-empty">No media uploaded yet. Upload something above to get started.</p>';
         return;
     }
     var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:0.75rem;">';
