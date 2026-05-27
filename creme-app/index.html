@@ -5213,12 +5213,48 @@ window.loadAdminPolls = async function() {
             '<span style="font-size:0.7rem;padding:2px 8px;border-radius:20px;background:'+(p.is_active?'#dcfce7':'#f3f4f6')+';color:'+(p.is_active?'#16a34a':'#6b7280')+';">'+(p.is_active?'● LIVE':'Ended')+'</span>' +
             '</div><p style="font-size:0.78rem;color:#6b7280;margin:0 0 0.4rem;">'+p.description+'</p>' +
             '<p style="font-size:0.72rem;color:#9ca3af;">Options: '+(Array.isArray(p.options)?p.options.join(' · '):p.options)+'</p>' +
-            (p.is_active?'<button onclick="window.closePoll(\''+p.id+'\')" style="margin-top:0.5rem;font-size:0.75rem;background:#dc2626;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">End Poll</button>':'') +
+            (p.is_active?'<button onclick="window.closePoll(\''+p.id+'\')" style="margin-top:0.5rem;font-size:0.75rem;background:#dc2626;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">End Poll</button> ':'') +
+            '<button onclick="window.viewAdminPollResults(\''+p.id+'\',this)" style="margin-top:0.5rem;font-size:0.75rem;background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;">📊 Results</button>' +
+            '<div id="poll-results-'+p.id+'" style="margin-top:0.75rem;"></div>' +
             '</div>';
     });
     list.innerHTML = html;
 };
 window.closePoll = async function(id) { if(!_sb) return; await _sb.from('urgent_polls').update({is_active:false}).eq('id',id); window.loadAdminPolls(); };
+window.viewAdminPollResults = async function(pollId, btn) {
+    var container = document.getElementById('poll-results-'+pollId);
+    if (!container || !_sb) return;
+    if (container.dataset.loaded === '1') { container.style.display = container.style.display==='none'?'':'none'; return; }
+    btn.textContent = 'Loading…'; btn.disabled = true;
+    var res = await _sb.from('poll_votes').select('option').eq('poll_id', pollId);
+    btn.textContent = '📊 Results'; btn.disabled = false;
+    if (res.error) { container.innerHTML='<p style="color:#dc2626;font-size:0.78rem;">Error: '+res.error.message+'</p>'; return; }
+    var data = res.data || [];
+    // Get options from the poll row already in the DOM (text nearby) — or count from votes
+    var counts = {};
+    data.forEach(function(r){ counts[r.option] = (counts[r.option]||0)+1; });
+    var opts = Object.keys(counts);
+    var total = data.length;
+    if (total === 0) { container.innerHTML='<p style="color:#6b7280;font-size:0.78rem;">No votes recorded yet.</p>'; return; }
+    var html = '<div style="border-top:1px solid #e5e7eb;padding-top:0.6rem;margin-top:0.2rem;">'
+        +'<p style="font-size:0.72rem;color:#6b7280;margin-bottom:0.5rem;">Total votes: '+total+'</p>';
+    // Sort by votes desc
+    opts.sort(function(a,b){ return (counts[b]||0)-(counts[a]||0); });
+    opts.forEach(function(o){
+        var n=counts[o]||0;
+        var pct=Math.round(n/total*100);
+        html += '<div style="margin-bottom:0.4rem;">'
+            +'<div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:2px;">'
+            +'<span style="font-weight:600;">'+o+'</span>'
+            +'<span style="color:#6b7280;">'+n+' vote'+(n===1?'':'s')+' ('+pct+'%)</span></div>'
+            +'<div style="background:#e5e7eb;border-radius:20px;height:8px;overflow:hidden;">'
+            +'<div style="background:#9A1A45;height:100%;border-radius:20px;width:'+pct+'%;transition:width 0.5s;"></div></div>'
+            +'</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+    container.dataset.loaded = '1';
+};
 var _pollChannel = null;
 window.initPollListener = function() {
     if (!_sb || _pollChannel) return;
@@ -5240,6 +5276,8 @@ window.renderPollResults = async function(pollId, opts, optsEl, descEl, myVote) 
         if (res.data) res.data.forEach(function(r){ if(counts[r.option]!==undefined) counts[r.option]++; });
     }
     var total = opts.reduce(function(a,o){ return a+(counts[o]||0); },0);
+    // Optimistic: if SELECT on poll_votes is blocked and user just voted, show their vote
+    if (myVote && total === 0 && counts[myVote] !== undefined) { counts[myVote] = 1; total = 1; }
     if (descEl) descEl.textContent = myVote ? '✅ You voted! Live results:' : '📊 Live results:';
     optsEl.innerHTML = opts.map(function(o){
         var n=counts[o]||0;
