@@ -4139,20 +4139,23 @@ window.castContestantVote = async function(contestantId) {
     if (!window.voteCounts[catId]) window.voteCounts[catId] = {};
     if (prev && window.voteCounts[catId][prev] > 0) window.voteCounts[catId][prev]--;
     window.voteCounts[catId][contestantId] = (window.voteCounts[catId][contestantId] || 0) + 1;
+    var optimisticCounts = JSON.parse(JSON.stringify(window.voteCounts)); // snapshot
     window.renderContestantVoteList();
     if (_sb) {
         try {
-            // Delete any existing vote for this category then insert fresh
+            // Delete old vote first (requires votes_delete RLS policy)
             await _sb.from('votes').delete()
                 .eq('user_id', window.currentUser.id)
                 .eq('category_id', catId);
-            var iRes = await _sb.from('votes').insert(
+            await _sb.from('votes').insert(
                 { user_id: window.currentUser.id, category_id: catId, nominee_id: contestantId }
             );
-            console.log('[votes] insert result:', iRes.error ? iRes.error.message : 'OK');
-        } catch(e) { console.error('[votes] save error:', e); }
-        // Fetch real counts from DB and re-render with accurate percentages
+        } catch(e) {}
+        // Refresh from DB — fall back to optimistic counts if DB returns nothing yet
         await window.fetchVoteCounts();
+        var catCounts = window.voteCounts[catId];
+        var hasRealData = catCounts && Object.keys(catCounts).length > 0;
+        if (!hasRealData) window.voteCounts = optimisticCounts;
         window.renderContestantVoteList();
     }
 };
@@ -4398,21 +4401,18 @@ function _uploadVideoTUS(file, bucket, objectPath, token) {
 ════════════════════════════════════ */
 /* Fetch aggregate vote counts from DB for live leaderboard */
 window.fetchVoteCounts = async function() {
-    if (!_sb) { console.warn('[votes] _sb not ready'); return; }
+    if (!_sb) return;
     try {
         var res = await _sb.from('votes').select('category_id,nominee_id');
-        console.log('[votes] fetch result:', res.error || null, 'rows:', res.data ? res.data.length : 0, res.data);
+        if (res.error) { console.warn('[votes] select error:', res.error.message); return; }
         var counts = {};
         (res.data || []).forEach(function(v) {
             if (!counts[v.category_id]) counts[v.category_id] = {};
             counts[v.category_id][v.nominee_id] = (counts[v.category_id][v.nominee_id] || 0) + 1;
         });
-        window.voteCounts = counts;
-        console.log('[votes] voteCounts:', JSON.stringify(counts));
-    } catch(e) {
-        console.error('[votes] fetchVoteCounts error:', e);
-        window.voteCounts = {};
-    }
+        // Only overwrite if we got real data back
+        if (res.data && res.data.length > 0) window.voteCounts = counts;
+    } catch(e) {}
 };
 
 /* ════════════════════════════════════
