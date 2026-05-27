@@ -2641,6 +2641,16 @@ html, body {
 var SUPABASE_URL = 'https://nfoeltjcmemcpwdwewbq.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mb2VsdGpjbWVtY3B3ZHdld2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzc5MDgsImV4cCI6MjA5NTE1MzkwOH0.YIp_5dRhsSYCdwpNy51RRqmKtzx4qZY5yHXfbBlnxMk';
 var PAYSTACK_KEY = 'pk_test_1a022423120fb68879a89f257cecb2a4e668b59c';
+var TEAM_WHATSAPP_LINKS = {
+    'Publicity':             'https://chat.whatsapp.com/LUGT8JDQqPs5U31wDjPHtY',
+    'Media Team':            'https://chat.whatsapp.com/Dcf28Dv51CnEIFJ8pmS7ht',
+    'Welfare':               'https://chat.whatsapp.com/Exk28d1l0bTEdOoLBnR3TV',
+    'Logistics':             'https://chat.whatsapp.com/BSu6JPYU2WnEwRytld7sFD',
+    'Ushering and Protocol': 'https://chat.whatsapp.com/GPYUX0MEvmdLF3QflkIztn',
+    'Registration':          'https://chat.whatsapp.com/CAeTiguVr5fARNwURnlqOf',
+    'Technical':             'https://chat.whatsapp.com/FKM3DGVGQiAC1jgQiaXmjl'
+};
+var VOLUNTEER_GENERAL_LINK = 'https://chat.whatsapp.com/GxESsKpFCom7oERmblOQFl';
 var _sb = null;
 var _statUnit = 'cm';
 var _eventDate = new Date('2026-11-26T19:00:00+01:00');
@@ -4789,34 +4799,62 @@ window.checkVolunteerStatus = async function(overrideEmail) {
     if (!email) return;
     var res = await _sb.from('volunteers').select('*').eq('email', email).maybeSingle();
     if (!res.data) {
-        // No application found — show form
         if (formSection)   formSection.style.display   = '';
         if (statusSection) statusSection.style.display = 'none';
         return;
     }
     var v = res.data;
-    // Has applied — hide form, show status card
     if (formSection)   formSection.style.display   = 'none';
     if (statusSection) statusSection.style.display = '';
     if (!statusCard) return;
     if (v.is_approved) {
-        var link = (typeof TEAM_WHATSAPP_LINKS !== 'undefined' && TEAM_WHATSAPP_LINKS[v.team_preference]) ? TEAM_WHATSAPP_LINKS[v.team_preference] : '#';
-        statusCard.innerHTML =
-            '<div style="text-align:center;padding:2rem 0;">' +
+        var teamLink    = (TEAM_WHATSAPP_LINKS && TEAM_WHATSAPP_LINKS[v.team_preference]) || '#';
+        var generalLink = VOLUNTEER_GENERAL_LINK || '#';
+        var teamKey     = 'vol_joined_team_'    + v.id;
+        var generalKey  = 'vol_joined_general_' + v.id;
+        var joinedTeam    = localStorage.getItem(teamKey)    === '1';
+        var joinedGeneral = localStorage.getItem(generalKey) === '1';
+        var html = '<div style="text-align:center;padding:2rem 0;">' +
             '<div style="font-size:3rem;margin-bottom:0.75rem;">&#127881;</div>' +
-            '<h3 style="color:#16a34a;margin-bottom:0.5rem;font-size:1.2rem;">You have been approved!</h3>' +
-            '<p style="color:#6b7280;font-size:0.88rem;margin-bottom:1.75rem;line-height:1.6;">Welcome to the <strong>' + v.team_preference + '</strong> team. Click below to join your team WhatsApp group.</p>' +
-            '<a href="' + link + '" target="_blank" rel="noopener" style="display:inline-block;background:#25D366;color:#fff;font-weight:700;padding:0.85rem 2rem;border-radius:50px;text-decoration:none;font-size:0.95rem;">&#128172; Join ' + v.team_preference + ' Group &rarr;</a>' +
-            '</div>';
+            '<h3 style="color:#16a34a;margin-bottom:0.5rem;font-size:1.2rem;">Congratulations, you have been approved!</h3>' +
+            '<p style="color:#6b7280;font-size:0.88rem;margin-bottom:0.5rem;line-height:1.6;">Welcome to the <strong>' + v.team_preference + '</strong> team. Join your WhatsApp groups below.</p>' +
+            '<p style="color:#9ca3af;font-size:0.75rem;margin-bottom:1.75rem;">Buttons will be marked done once you join.</p>' +
+            '<div style="display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;">' +
+            '<button id="vol-btn-team" data-url="' + teamLink + '" data-key="' + teamKey + '"' +
+              (joinedTeam ? ' disabled style="background:#6b7280;color:#fff;font-weight:700;padding:0.8rem 1.4rem;border-radius:50px;border:none;font-size:0.88rem;cursor:default;"' :
+                            ' style="background:#25D366;color:#fff;font-weight:700;padding:0.8rem 1.4rem;border-radius:50px;border:none;font-size:0.88rem;cursor:pointer;" onclick="joinVolunteerGroup(this)"') + '>' +
+              (joinedTeam ? '&#10003; Joined ' + v.team_preference : '&#128172; Join ' + v.team_preference + ' Group &rarr;') +
+            '</button>' +
+            '<button id="vol-btn-general" data-url="' + generalLink + '" data-key="' + generalKey + '"' +
+              (joinedGeneral ? ' disabled style="background:#6b7280;color:#fff;font-weight:700;padding:0.8rem 1.4rem;border-radius:50px;border:none;font-size:0.88rem;cursor:default;"' :
+                               ' style="background:#075E54;color:#fff;font-weight:700;padding:0.8rem 1.4rem;border-radius:50px;border:none;font-size:0.88rem;cursor:pointer;" onclick="joinVolunteerGroup(this)"') + '>' +
+              (joinedGeneral ? '&#10003; Joined General Group' : '&#128172; Join General Volunteers &rarr;') +
+            '</button>' +
+            '</div></div>';
+        statusCard.innerHTML = html;
     } else {
         statusCard.innerHTML =
             '<div style="text-align:center;padding:2rem 0;">' +
             '<div style="font-size:3rem;margin-bottom:0.75rem;">&#9203;</div>' +
             '<h3 style="color:#d97706;margin-bottom:0.5rem;font-size:1.2rem;">Application Under Review</h3>' +
-            '<p style="color:#6b7280;font-size:0.88rem;line-height:1.6;">Your application for the <strong>' + v.team_preference + '</strong> team has been received and is being reviewed. We will notify you once a decision has been made.</p>' +
+            '<p style="color:#6b7280;font-size:0.88rem;line-height:1.6;">Your application for the <strong>' + v.team_preference + '</strong> team is being reviewed. You will be notified once approved.</p>' +
             '</div>';
     }
 };
+
+window.joinVolunteerGroup = function(btn) {
+    var url = btn.getAttribute('data-url');
+    var key = btn.getAttribute('data-key');
+    if (!url || url === '#') return;
+    window.open(url, '_blank', 'noopener');
+    localStorage.setItem(key, '1');
+    btn.disabled = true;
+    btn.style.background = '#6b7280';
+    btn.style.cursor = 'default';
+    btn.removeAttribute('onclick');
+    btn.innerHTML = '&#10003; Joined';
+};
+
 
 window.loadAdminVolunteers = async function() {
     if (!_sb) return;
