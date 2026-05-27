@@ -5186,17 +5186,19 @@ window.deployPoll = async function() {
     var options = raw.split('\n').map(function(s){return s.trim();}).filter(Boolean).slice(0,6);
     if (options.length < 2) { show('Please enter at least 2 options.',true); return; }
     await _sb.from('urgent_polls').update({is_active:false}).eq('is_active',true);
-    var res = await _sb.from('urgent_polls').insert({title:title,description:desc,options:options,is_active:true});
+    var res = await _sb.from('urgent_polls').insert({title:title,description:desc,options:options,is_active:true}).select();
     if (res.error) { show('Error: '+res.error.message,true); return; }
+    var realId = (res.data && res.data[0] && res.data[0].id) || null;
+    if (!realId) { show('Deployed but could not get poll ID — refresh may be needed.',false); return; }
     show('✅ Poll deployed to all users!',false);
     ['poll-title','poll-desc','poll-options'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
     window.loadAdminPolls();
-    // close admin + show banner on homepage
-    var opts2 = raw.split('\n').map(function(s){return s.trim();}).filter(Boolean).slice(0,6);
+    // close admin + show banner on homepage with real UUID
+    var opts2 = options;
     window.closeAdminPanel();
     window.switchTab('home');
     setTimeout(function() {
-        window.showPollModal({id:(res.data&&res.data[0]&&res.data[0].id)||'local', title:title, description:desc, options:opts2, is_active:true});
+        window.showPollModal({id:realId, title:title, description:desc, options:opts2, is_active:true});
     }, 300);
 };
 window.loadAdminPolls = async function() {
