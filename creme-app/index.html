@@ -4116,8 +4116,8 @@ window.renderContestantVoteList = function() {
         var avatarHtml = c.headshot_url
             ? '<img class="cvr-img" src="' + c.headshot_url + '" alt="' + _esc(c.full_name) + '">'
             : '<div class="cvr-avatar">' + _esc((c.full_name || '?')[0].toUpperCase()) + '</div>';
-        var barHtml = '<div class="vote-progress-wrap"><div class="vote-progress-track"><div class="vote-progress-fill" style="width:' + (catTotal >= 2 ? pct : 0) + '%"></div></div></div>' +
-            '<span class="vote-progress-pct">' + (catTotal >= 2 ? pct + '%' : '–') + '</span>';
+        var barHtml = '<div class="vote-progress-wrap"><div class="vote-progress-track"><div class="vote-progress-fill" style="width:' + pct + '%"></div></div></div>' +
+            '<span class="vote-progress-pct">' + (cnt > 0 ? pct + '%' : '') + '</span>';
         var safeId = c.id.replace(/'/g, "\'");
         var row = document.createElement('div');
         row.className = 'contestant-vote-row';
