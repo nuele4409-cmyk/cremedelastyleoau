@@ -4673,37 +4673,45 @@ window.openGalleryLightbox = function(url) {
 };
 
 window.uploadGalleryImage = async function() {
-    if (!_sb) return;
+    var showMsg = function(text, isError) {
+        var msg = document.getElementById('gallery-upload-msg');
+        if (msg) { msg.style.display = ''; msg.style.color = isError ? '#dc2626' : '#16a34a'; msg.textContent = text; }
+        if (isError) console.error('[Gallery Upload]', text);
+    };
+    if (!_sb) { showMsg('Not connected to database. Please refresh the page.', true); return; }
     var fileInput = document.getElementById('gallery-file-input');
-    var category = document.getElementById('gallery-upload-category').value;
-    var msg = document.getElementById('gallery-upload-msg');
-    if (!fileInput.files || !fileInput.files[0]) {
-        msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'Please select a file first.';
+    var catEl = document.getElementById('gallery-upload-category');
+    var category = catEl ? catEl.value : 'photos';
+    if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+        showMsg('Please select a file first.', true);
         return;
     }
     var file = fileInput.files[0];
     if (file.size > 5 * 1024 * 1024) {
-        msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'File is too large (max 5MB).';
+        showMsg('File is too large (max 5MB).', true);
         return;
     }
     var btn = document.querySelector('#adm-tab-gallery .adm-submit-btn');
     var orig = btn ? btn.textContent : 'Upload & Publish';
     if (btn) { btn.textContent = 'Uploading…'; btn.disabled = true; }
-    msg.style.display = 'none';
+    var msgEl = document.getElementById('gallery-upload-msg');
+    if (msgEl) msgEl.style.display = 'none';
     try {
-        var ext = file.name.split('.').pop();
+        var ext = file.name.split('.').pop().toLowerCase();
         var path = 'gallery/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+        console.log('[Gallery Upload] uploading to path:', path, 'category:', category);
         var up = await _sb.storage.from('gallery-media').upload(path, file, { cacheControl: '3600', upsert: false });
-        if (up.error) throw up.error;
+        if (up.error) throw new Error('Storage error: ' + up.error.message);
         var pub = _sb.storage.from('gallery-media').getPublicUrl(path);
         var image_url = pub.data.publicUrl;
+        console.log('[Gallery Upload] public URL:', image_url);
         var ins = await _sb.from('gallery_media').insert({ image_url: image_url, category: category });
-        if (ins.error) throw ins.error;
-        msg.style.display = ''; msg.style.color = '#16a34a'; msg.textContent = 'Uploaded successfully!';
+        if (ins.error) throw new Error('DB error: ' + ins.error.message);
+        showMsg('Uploaded successfully!', false);
         fileInput.value = '';
         loadAdminGallery();
     } catch(e) {
-        msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'Error: ' + (e.message || e);
+        showMsg('Upload failed: ' + (e.message || String(e)), true);
     }
     if (btn) { btn.textContent = orig; btn.disabled = false; }
 };
