@@ -148,23 +148,55 @@ html, body {
 .tab-screen.active { display: block; }
 
 /* HOME */
-.home-hero { text-align: center; padding: 1.5rem 0 2rem; }
-.hero-title {
-    font-size: clamp(2rem, 8vw, 3.2rem); font-weight: 900; color: var(--cream);
-    letter-spacing: -0.02em; line-height: 1.1; text-shadow: 0 2px 20px rgba(0,0,0,0.4);
-}
+/* ── HOME REDESIGN ── */
+.home-header { padding: 1.2rem 0 0.6rem; display: flex; align-items: center; gap: 0.9rem; }
+.home-header-logo { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(227,0,79,0.5); flex-shrink: 0; }
+.home-header-text { flex: 1; min-width: 0; }
+.home-header-title { font-size: 1.15rem; font-weight: 900; color: var(--cream); line-height: 1.1; }
+.home-header-sub { font-size: 0.7rem; color: var(--cream-60); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
+.home-tagline-row { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(227,0,79,0.7); margin: 0.2rem 0 1rem; }
 .gold { color: var(--gold); }
-.hero-subtitle {
-    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.25em;
-    text-transform: uppercase; color: var(--cream-60); margin-top: 0.75rem;
+/* keep old classes alive so other tabs don't break */
+.home-hero { display: none; }
+.hero-title { font-size: 1.4rem; font-weight: 900; color: var(--cream); }
+.hero-subtitle, .hero-desc, .hero-tagline { display: none; }
+.home-grid { display: none; }
+/* Feature card grid */
+.home-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
 }
-.hero-desc { font-size: 1rem; font-style: italic; color: var(--cream-60); margin-top: 0.9rem; line-height: 1.6; }
-.hero-tagline {
-    font-size: 0.7rem; font-weight: 800; letter-spacing: 0.3em;
-    text-transform: uppercase; color: rgba(227,0,79,0.75); margin-top: 1rem;
+@media (min-width: 500px) { .home-cards-grid { grid-template-columns: repeat(2, 1fr); } }
+.hcard {
+    background: rgba(28, 4, 16, 0.72);
+    border: 1px solid rgba(154,26,69,0.28);
+    border-radius: 16px;
+    padding: 1.1rem 0.9rem 1rem;
+    display: flex; flex-direction: column; align-items: flex-start;
+    cursor: pointer;
+    transition: border-color 0.18s, transform 0.15s, background 0.18s;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    position: relative; overflow: hidden;
 }
-.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-@media (max-width: 600px) { .home-grid { grid-template-columns: 1fr; } }
+.hcard:hover, .hcard:active { border-color: rgba(227,0,79,0.55); background: rgba(74,0,28,0.6); transform: translateY(-2px); }
+.hcard-icon { font-size: 1.75rem; margin-bottom: 0.55rem; line-height: 1; }
+.hcard-title { font-size: 0.88rem; font-weight: 800; color: var(--cream); margin-bottom: 0.25rem; line-height: 1.2; }
+.hcard-desc { font-size: 0.7rem; color: var(--cream-60); line-height: 1.45; }
+.hcard-badge {
+    position: absolute; top: 0.55rem; right: 0.6rem;
+    font-size: 0.58rem; font-weight: 800; letter-spacing: 0.06em;
+    background: rgba(227,0,79,0.18); color: #ff3377;
+    border: 1px solid rgba(227,0,79,0.35); border-radius: 20px;
+    padding: 1px 7px; text-transform: uppercase;
+}
+.hcard-badge.gold-badge { background: rgba(255,215,0,0.12); color: var(--gold); border-color: rgba(255,215,0,0.3); }
+/* Dispatch + countdown section */
+.home-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.25rem; }
+@media (max-width: 480px) { .home-bottom-row { grid-template-columns: 1fr; } }
 
 .ticket-card {
     background: linear-gradient(135deg, rgba(154,26,69,0.45), rgba(227,0,79,0.2));
@@ -1559,17 +1591,21 @@ html, body {
 
         <!-- RUNWAY -->
         <div id="tab-home" class="tab-screen active">
-            <div class="home-hero">
-                <div class="home-mini-logo">
-                    <img src="https://raw.githubusercontent.com/nuele4409-cmyk/cremedelastyleoau/main/creme-app/logo.png" onerror="this.style.display='none'" alt="Logo">
-                    <span>Crème De La Style OAU</span>
+
+            <!-- Header row: logo + title -->
+            <div class="home-header">
+                <img class="home-header-logo"
+                     src="https://raw.githubusercontent.com/nuele4409-cmyk/cremedelastyleoau/main/creme-app/logo.png"
+                     onerror="this.style.display='none'" alt="Logo">
+                <div class="home-header-text">
+                    <div class="home-header-title">Crème De La Style <span class="gold">✨</span></div>
+                    <div class="home-header-sub">OAU Official Hub</div>
                 </div>
-                <h1 class="hero-title">Crème De La Style <span class="gold">✨</span></h1>
-                <p class="hero-subtitle">✦ OAU Official Hub ✦</p>
-                <p class="hero-desc">Where culture meets the runway. Where boldness becomes legacy.</p>
-                <p class="hero-tagline">ONE NIGHT. ONE STAGE. ONE CROWN.</p>
             </div>
-            <div class="countdown-widget">
+            <div class="home-tagline-row">ONE NIGHT · ONE STAGE · ONE CROWN</div>
+
+            <!-- Countdown -->
+            <div class="countdown-widget" style="margin-bottom:1rem;">
                 <p class="countdown-event-label">✦ Event Countdown ✦</p>
                 <div class="countdown-boxes" id="countdown-boxes">
                     <div class="countdown-box"><div class="countdown-num" id="cd-days">--</div><div class="countdown-label">Days</div></div>
@@ -1579,29 +1615,72 @@ html, body {
                 </div>
             </div>
 
-            <!-- Quick-nav shortcuts -->
-            <div class="event-nav-btns" style="margin-top:1rem;">
-                <button class="event-nav-btn" onclick="switchTab('judges')">⚖️ Meet the Judges</button>
-                <button class="event-nav-btn" onclick="switchTab('lineup')">👗 Meet the Contestants</button>
+            <!-- Feature cards grid -->
+            <div class="home-cards-grid">
+
+                <div class="hcard" onclick="switchTab('tickets')">
+                    <span class="hcard-badge gold-badge">Limited</span>
+                    <div class="hcard-icon">🎟️</div>
+                    <div class="hcard-title">Get Tickets</div>
+                    <div class="hcard-desc">Secure your seat for the runway. Satins, Oppulents &amp; Coutured tiers.</div>
+                </div>
+
+                <div class="hcard" onclick="switchTab('vote')">
+                    <span class="hcard-badge">Live</span>
+                    <div class="hcard-icon">🗳️</div>
+                    <div class="hcard-title">Fan Vote</div>
+                    <div class="hcard-desc">Cast your vote for the People's Choice. One vote per contestant.</div>
+                </div>
+
+                <div class="hcard" onclick="switchTab('lineup')">
+                    <div class="hcard-icon">👗</div>
+                    <div class="hcard-title">The Lineup</div>
+                    <div class="hcard-desc">Meet the contestants competing for the ultimate style crown.</div>
+                </div>
+
+                <div class="hcard" onclick="switchTab('judges')">
+                    <div class="hcard-icon">⚖️</div>
+                    <div class="hcard-title">The Judges</div>
+                    <div class="hcard-desc">Meet the panel shaping the night's verdict on the runway.</div>
+                </div>
+
+                <div class="hcard" onclick="switchTab('gallery')">
+                    <div class="hcard-icon">📸</div>
+                    <div class="hcard-title">Gallery</div>
+                    <div class="hcard-desc">Photos, BTS moments &amp; live feed from the event.</div>
+                </div>
+
+                <div class="hcard" onclick="switchTab('register')">
+                    <span class="hcard-badge">Apply</span>
+                    <div class="hcard-icon">📝</div>
+                    <div class="hcard-title">Join Runway</div>
+                    <div class="hcard-desc">100L – 300L students only. Apply to compete on the runway.</div>
+                </div>
+
+                <div class="hcard" onclick="switchTab('volunteer')">
+                    <div class="hcard-icon">🙋</div>
+                    <div class="hcard-title">Volunteer</div>
+                    <div class="hcard-desc">Join the team that makes Crème de la Style possible.</div>
+                </div>
+
+                <div class="hcard" onclick="switchTab('schedule')">
+                    <div class="hcard-icon">📅</div>
+                    <div class="hcard-title">Schedule</div>
+                    <div class="hcard-desc">Full programme — what's happening and when on the night.</div>
+                </div>
+
             </div>
 
-            <div class="home-grid">
-                <div class="ticket-card">
-                    <div class="ticket-glow"></div>
-                    <h2 class="ticket-title">The Runway Awakens</h2>
-                    <p class="ticket-desc">Where the most stylish students of OAU compete for the ultimate crown. Seats are limited and the doors will not stay open forever.</p>
-                    <button class="ticket-btn" onclick="switchTab('tickets')">SECURE YOUR SEAT →</button>
-                    <button class="apply-runway-btn" onclick="switchTab('register')">📝 Apply for the Runway</button>
-                </div>
-                <div class="dispatch-card">
-                    <h3 class="dispatch-header"><span class="live-dot"></span> Live Dispatches</h3>
-                    <div id="dispatch-list">
-                        <div class="dispatch-item no-border">
-                            <p style="color:var(--cream-40);font-size:0.82rem;">Loading dispatches…</p>
-                        </div>
+            <!-- Dispatches -->
+            <div class="dispatch-card" style="margin-bottom:1.5rem;">
+                <h3 class="dispatch-header"><span class="live-dot"></span> Live Dispatches</h3>
+                <div id="dispatch-list">
+                    <div class="dispatch-item no-border">
+                        <p style="color:var(--cream-40);font-size:0.82rem;">Loading dispatches…</p>
                     </div>
                 </div>
             </div>
+
         </div>
 
         <!-- VOTE -->
