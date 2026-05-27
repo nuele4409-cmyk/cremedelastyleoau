@@ -5236,7 +5236,7 @@ window.showPollModal = function(poll) {
     if(optsEl)  optsEl.innerHTML = opts.map(function(o){
         return '<button class="poll-opt-btn" data-opt="'+o.replace(/"/g,'&quot;')+'" onclick="window.castPollVote(&quot;'+poll.id+'&quot;,this)">'+o+'</button>';
     }).join('');
-    banner.style.display = '';
+    banner.style.display = 'block';
     var main = document.querySelector('.main-content');
     if(main) main.scrollTop = 0;
 };
@@ -5341,4 +5341,4 @@ boot();
 })();
 </script>
 </body>
-</html>
+</h
