@@ -601,9 +601,13 @@ html, body {
 .adm-field label { font-size: 0.72rem; font-weight: 800; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
 .adm-field input, .adm-field select, .adm-field textarea {
     width: 100%; padding: 0.65rem 0.85rem; border: 1.5px solid #d1d5db;
-    border-radius: 8px; font-size: 0.88rem; font-family: inherit; outline: none; transition: border-color 0.2s; background: transparent;
+    border-radius: 8px; font-size: 0.88rem; font-family: inherit; outline: none; transition: border-color 0.2s; background: #fff; color: #111827;
 }
-.adm-field input:focus, .adm-field select:focus, .adm-field textarea:focus { border-color: #9A1A45; }
+.adm-field input::placeholder, .adm-field textarea::placeholder { color: #9ca3af; }
+.adm-field input:focus, .adm-field select:focus, .adm-field textarea:focus { border-color: #9A1A45; outline: none; }
+.admin-panel .nominate-input { background: #fff; color: #111827; border-color: #d1d5db; }
+.admin-panel .nominate-input::placeholder { color: #9ca3af; }
+.admin-panel .nominate-input:focus { border-color: #9A1A45; }
 .adm-field textarea { resize: vertical; }
 .adm-submit-btn {
     width: 100%; padding: 0.8rem; background: #140006; color: #fff; border: none;
