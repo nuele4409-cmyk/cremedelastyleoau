@@ -5184,9 +5184,13 @@ window.deployPoll = async function() {
     show('✅ Poll deployed to all users!',false);
     ['poll-title','poll-desc','poll-options'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
     window.loadAdminPolls();
-    // show banner immediately on this device
+    // close admin + show banner on homepage
     var opts2 = raw.split('\n').map(function(s){return s.trim();}).filter(Boolean).slice(0,6);
-    window.showPollModal({id: (res.data&&res.data[0]&&res.data[0].id)||'local', title:title, description:desc, options:opts2, is_active:true});
+    window.closeAdminPanel();
+    window.switchTab('home');
+    setTimeout(function() {
+        window.showPollModal({id:(res.data&&res.data[0]&&res.data[0].id)||'local', title:title, description:desc, options:opts2, is_active:true});
+    }, 300);
 };
 window.loadAdminPolls = async function() {
     var list = document.getElementById('adm-polls-list');
@@ -5233,13 +5237,6 @@ window.showPollModal = function(poll) {
         return '<button class="poll-opt-btn" data-opt="'+o.replace(/"/g,'&quot;')+'" onclick="window.castPollVote(&quot;'+poll.id+'&quot;,this)">'+o+'</button>';
     }).join('');
     banner.style.display = '';
-    // if not on home tab, switch to it
-    var homeTab = document.getElementById('tab-home');
-    if (homeTab && !homeTab.classList.contains('active')) {
-        document.querySelectorAll('.tab-screen').forEach(function(s){ s.classList.remove('active'); });
-        homeTab.classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.toggle('active', b.dataset && b.dataset.tab==='home'); });
-    }
     var main = document.querySelector('.main-content');
     if(main) main.scrollTop = 0;
 };
@@ -5257,15 +5254,18 @@ window.checkActivePoll = async function() {
 };
 
 window.testPollBanner = function() {
-    window.showPollModal({
-        id: 'test-123',
-        title: 'Best Dressed Tonight?',
-        description: 'Cast your vote — who is serving the most on the runway right now?',
-        options: ['Contestant A', 'Contestant B', 'Contestant C'],
-        is_active: true
-    });
-    // switch to home tab so banner is visible
+    // close admin panel so banner is visible
+    window.closeAdminPanel();
     window.switchTab('home');
+    setTimeout(function() {
+        window.showPollModal({
+            id: 'test-123',
+            title: 'Best Dressed Tonight?',
+            description: 'Cast your vote — who is serving the most on the runway right now?',
+            options: ['Contestant A', 'Contestant B', 'Contestant C'],
+            is_active: true
+        });
+    }, 300);
 };
 
 window.castPollVote = async function(pollId, btn) {
