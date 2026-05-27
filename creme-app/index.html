@@ -4774,9 +4774,18 @@ window.submitVolunteerForm = async function() {
     btn.textContent = 'Checking…'; btn.disabled = true;
     // Prevent duplicate applications by email
     var existing = await _sb.from('volunteers').select('id').eq('email', email).maybeSingle();
+    if (existing.error) {
+        // Query itself failed (e.g. table does not exist yet)
+        btn.textContent = orig; btn.disabled = false;
+        msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'DB error: ' + existing.error.message;
+        return;
+    }
     if (existing.data) {
         btn.textContent = orig; btn.disabled = false;
-        msg.style.display = ''; msg.style.color = '#d97706'; msg.textContent = 'An application with this email already exists.';
+        // Save email so checkVolunteerStatus can look it up
+        localStorage.setItem('vol_submitted_email', email);
+        msg.innerHTML = '<span style="color:#d97706;">You already have an application with this email.</span> <button onclick="window.checkVolunteerStatus(\'' + email + '\')" style="background:none;border:none;color:#E3004F;font-weight:700;cursor:pointer;text-decoration:underline;font-size:inherit;padding:0;">View status &rarr;</button>';
+        msg.style.display = '';
         return;
     }
     btn.textContent = 'Submitting…';
