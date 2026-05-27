@@ -4142,11 +4142,15 @@ window.castContestantVote = async function(contestantId) {
     window.renderContestantVoteList();
     if (_sb) {
         try {
-            await _sb.from('votes').upsert(
-                { user_id: window.currentUser.id, category_id: catId, nominee_id: contestantId },
-                { onConflict: 'user_id,category_id' }
+            // Delete any existing vote for this category then insert fresh
+            await _sb.from('votes').delete()
+                .eq('user_id', window.currentUser.id)
+                .eq('category_id', catId);
+            var iRes = await _sb.from('votes').insert(
+                { user_id: window.currentUser.id, category_id: catId, nominee_id: contestantId }
             );
-        } catch(e) {}
+            console.log('[votes] insert result:', iRes.error ? iRes.error.message : 'OK');
+        } catch(e) { console.error('[votes] save error:', e); }
         // Fetch real counts from DB and re-render with accurate percentages
         await window.fetchVoteCounts();
         window.renderContestantVoteList();
@@ -4394,16 +4398,19 @@ function _uploadVideoTUS(file, bucket, objectPath, token) {
 ════════════════════════════════════ */
 /* Fetch aggregate vote counts from DB for live leaderboard */
 window.fetchVoteCounts = async function() {
-    if (!_sb) return;
+    if (!_sb) { console.warn('[votes] _sb not ready'); return; }
     try {
         var res = await _sb.from('votes').select('category_id,nominee_id');
+        console.log('[votes] fetch result:', res.error || null, 'rows:', res.data ? res.data.length : 0, res.data);
         var counts = {};
         (res.data || []).forEach(function(v) {
             if (!counts[v.category_id]) counts[v.category_id] = {};
             counts[v.category_id][v.nominee_id] = (counts[v.category_id][v.nominee_id] || 0) + 1;
         });
         window.voteCounts = counts;
+        console.log('[votes] voteCounts:', JSON.stringify(counts));
     } catch(e) {
+        console.error('[votes] fetchVoteCounts error:', e);
         window.voteCounts = {};
     }
 };
