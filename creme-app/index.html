@@ -4395,16 +4395,28 @@ function _uploadVideoTUS(file, bucket, objectPath, token) {
 /* Fetch aggregate vote counts from DB for live leaderboard */
 window.fetchVoteCounts = async function() {
     if (!_sb) return;
-    try {
-        var res = await _sb.from('votes').select('category_id,nominee_id');
-        if (!res.data) return;
+    var buildCounts = function(rows) {
         var counts = {};
-        res.data.forEach(function(v) {
+        (rows || []).forEach(function(v) {
             if (!counts[v.category_id]) counts[v.category_id] = {};
             counts[v.category_id][v.nominee_id] = (counts[v.category_id][v.nominee_id] || 0) + 1;
         });
-        window.voteCounts = counts;
-    } catch(e) {}
+        // Always seed current user's own known votes so their bar shows
+        // even if RLS restricts reading other users' rows
+        Object.keys(window.votes || {}).forEach(function(catId) {
+            var nId = window.votes[catId];
+            if (!nId) return;
+            if (!counts[catId]) counts[catId] = {};
+            if (!counts[catId][nId]) counts[catId][nId] = 1;
+        });
+        return counts;
+    };
+    try {
+        var res = await _sb.from('votes').select('category_id,nominee_id');
+        window.voteCounts = buildCounts(res.data || []);
+    } catch(e) {
+        window.voteCounts = buildCounts([]);
+    }
 };
 
 /* ════════════════════════════════════
