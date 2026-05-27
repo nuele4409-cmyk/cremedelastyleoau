@@ -155,6 +155,23 @@ html, body {
 .home-header-title { font-size: 1.15rem; font-weight: 900; color: var(--cream); line-height: 1.1; }
 .home-header-sub { font-size: 0.7rem; color: var(--cream-60); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
 .home-tagline-row { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(227,0,79,0.7); margin: 0.2rem 0 1rem; }
+#home-poll-banner {
+    display: none; background: linear-gradient(135deg, #9B1B1B 0%, #C0392B 100%);
+    border-radius: 16px; padding: 1rem 1.1rem; margin-bottom: 1.1rem;
+    border: 1px solid rgba(255,100,100,0.3);
+    box-shadow: 0 4px 24px rgba(192,57,43,0.35);
+    animation: pollSlideIn 0.35s ease;
+}
+@keyframes pollSlideIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+.poll-banner-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem; }
+.poll-banner-title { font-size:1rem; font-weight:900; color:#fff; flex:1; margin-right:0.75rem; }
+.poll-live-badge { font-size:0.6rem; font-weight:900; letter-spacing:0.12em; background:#fff; color:#C0392B; border-radius:20px; padding:3px 9px; text-transform:uppercase; white-space:nowrap; flex-shrink:0; }
+.poll-banner-desc { font-size:0.78rem; color:rgba(255,255,255,0.82); margin-bottom:0.85rem; line-height:1.45; }
+.poll-banner-opts { display:flex; flex-direction:column; gap:0.45rem; }
+.poll-opt-btn { background:rgba(255,255,255,0.13); border:1.5px solid rgba(255,255,255,0.28); border-radius:10px; padding:0.6rem 0.9rem; color:#fff; font-size:0.85rem; font-weight:700; text-align:left; cursor:pointer; font-family:inherit; transition:background 0.15s; }
+.poll-opt-btn:hover:not(:disabled) { background:rgba(255,255,255,0.24); }
+.poll-opt-btn.voted { background:rgba(255,255,255,0.9); color:#C0392B; border-color:#fff; opacity:1 !important; }
+.poll-banner-skip { font-size:0.7rem; color:rgba(255,255,255,0.45); background:none; border:none; cursor:pointer; margin-top:0.5rem; padding:0; font-family:inherit; }
 .gold { color: var(--gold); }
 /* keep old classes alive so other tabs don't break */
 .home-hero { display: none; }
@@ -1603,6 +1620,17 @@ html, body {
                 </div>
             </div>
             <div class="home-tagline-row">ONE NIGHT · ONE STAGE · ONE CROWN</div>
+
+            <!-- Live Poll Banner -->
+            <div id="home-poll-banner">
+                <div class="poll-banner-top">
+                    <div class="poll-banner-title" id="poll-banner-title"></div>
+                    <span class="poll-live-badge">LIVE NOW</span>
+                </div>
+                <div class="poll-banner-desc" id="poll-banner-desc"></div>
+                <div class="poll-banner-opts" id="poll-banner-opts"></div>
+                <button class="poll-banner-skip" onclick="document.getElementById('home-poll-banner').style.display='none'">Dismiss ✕</button>
+            </div>
 
             <!-- Countdown -->
             <div class="countdown-widget" style="margin-bottom:1.25rem;">
@@ -5194,22 +5222,25 @@ window.initPollListener = function() {
         .on('postgres_changes',{event:'*',schema:'public',table:'urgent_polls'}, function(payload){
             var row = payload.new || {};
             if (row.is_active) window.showPollModal(row);
-            else { var ov=document.getElementById('poll-modal-overlay'); if(ov) ov.remove(); }
+            else { var bn=document.getElementById('home-poll-banner'); if(bn) bn.style.display='none'; }
         }).subscribe();
 };
 window.showPollModal = function(poll) {
-    var existing = document.getElementById('poll-modal-overlay'); if(existing) existing.remove();
+    var old = document.getElementById('poll-modal-overlay'); if(old) old.remove();
+    var banner  = document.getElementById('home-poll-banner');
+    var titleEl = document.getElementById('poll-banner-title');
+    var descEl  = document.getElementById('poll-banner-desc');
+    var optsEl  = document.getElementById('poll-banner-opts');
+    if (!banner) return;
     var opts = Array.isArray(poll.options) ? poll.options : JSON.parse(poll.options||'[]');
-    var btns = opts.map(function(o){ return '<button onclick="window.castPollVote(\''+poll.id+'\',this)" data-opt="'+o.replace(/"/g,'&quot;')+'" style="display:block;width:100%;text-align:left;background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:8px;padding:0.65rem 1rem;margin-bottom:0.5rem;cursor:pointer;font-size:0.88rem;font-weight:600;">'+o+'</button>'; }).join('');
-    var ov = document.createElement('div'); ov.id='poll-modal-overlay';
-    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:88888;display:flex;align-items:center;justify-content:center;padding:1rem;';
-    ov.innerHTML='<div style="background:#fff;border-radius:16px;padding:1.5rem;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.4);">' +
-        '<div style="text-align:center;margin-bottom:1rem;"><span style="font-size:2rem;">📣</span>' +
-        '<h3 style="font-size:1.1rem;font-weight:800;color:#111;margin:0.4rem 0 0.25rem;">'+poll.title+'</h3>' +
-        '<p style="font-size:0.82rem;color:#6b7280;line-height:1.5;">'+poll.description+'</p></div>' +
-        btns +
-        '<button onclick="document.getElementById(\'poll-modal-overlay\').remove()" style="display:block;width:100%;margin-top:0.25rem;background:transparent;border:none;color:#9ca3af;font-size:0.78rem;cursor:pointer;padding:0.5rem;">Skip</button></div>';
-    document.body.appendChild(ov);
+    if(titleEl) titleEl.textContent = poll.title;
+    if(descEl)  descEl.textContent  = poll.description;
+    if(optsEl)  optsEl.innerHTML = opts.map(function(o){
+        return '<button class="poll-opt-btn" data-opt="'+o.replace(/"/g,'&quot;')+'" onclick="window.castPollVote(&quot;'+poll.id+'&quot;,this)">'+o+'</button>';
+    }).join('');
+    banner.style.display = '';
+    var main = document.querySelector('.main-content');
+    if(main) main.scrollTop = 0;
 };
 window.checkActivePoll = async function() {
     if (!_sb) return;
@@ -5220,10 +5251,12 @@ window.checkActivePoll = async function() {
 
 window.castPollVote = async function(pollId, btn) {
     var option = btn.getAttribute('data-opt');
-    btn.style.background='#9A1A45'; btn.style.color='#fff'; btn.style.borderColor='#9A1A45'; btn.disabled=true;
-    var all = btn.parentNode.querySelectorAll('button');
-    all.forEach(function(b){if(b!==btn){b.disabled=true;b.style.opacity='0.45';}});
-    if (_sb) await _sb.from('poll_votes').insert({poll_id:pollId,option:option});
+    btn.classList.add('voted'); btn.disabled = true;
+    btn.parentNode.querySelectorAll('button').forEach(function(b){ if(b!==btn) b.disabled=true; });
+    if(_sb) await _sb.from('poll_votes').insert({poll_id:pollId,option:option});
+    var descEl = document.getElementById('poll-banner-desc');
+    if(descEl) descEl.textContent = '✅ Vote received — thank you!';
+    setTimeout(function(){ var bn=document.getElementById('home-poll-banner'); if(bn) bn.style.display='none'; }, 2200);
 };
 
 /* ════ F53 – Candidate PDF Export ════ */
