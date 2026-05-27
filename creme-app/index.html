@@ -173,10 +173,12 @@ html, body {
 .poll-opt-btn.voted { background:rgba(255,255,255,0.9); color:#C0392B; border-color:#fff; opacity:1 !important; }
 .poll-banner-skip { font-size:0.7rem; color:rgba(255,255,255,0.45); background:none; border:none; cursor:pointer; margin-top:0.5rem; padding:0; font-family:inherit; }
 .gold { color: var(--gold); }
-/* keep old classes alive so other tabs don't break */
-.home-hero { display: none; }
-.hero-title { font-size: 1.4rem; font-weight: 900; color: var(--cream); }
-.hero-subtitle, .hero-desc, .hero-tagline { display: none; }
+/* big hero */
+.home-hero { text-align: center; padding: 1.75rem 0 1.5rem; }
+.hero-title { font-size: clamp(2rem,8vw,3.2rem); font-weight: 900; color: var(--cream); letter-spacing:-0.02em; line-height:1.1; text-shadow:0 2px 20px rgba(0,0,0,0.4); }
+.hero-subtitle { font-size:0.8rem; font-weight:700; letter-spacing:0.25em; text-transform:uppercase; color:var(--cream-60); margin-top:0.75rem; }
+.hero-desc { font-size:1rem; font-style:italic; color:var(--cream-60); margin-top:0.9rem; line-height:1.6; }
+.hero-tagline { font-size:0.7rem; font-weight:800; letter-spacing:0.3em; text-transform:uppercase; color:rgba(227,0,79,0.75); margin-top:1rem; }
 .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom:1.5rem; }
 @media (max-width: 600px) { .home-grid { grid-template-columns: 1fr; } }
 /* Feature card grid */
@@ -1610,17 +1612,12 @@ html, body {
         <!-- RUNWAY -->
         <div id="tab-home" class="tab-screen active">
 
-            <!-- Header row: logo + title -->
-            <div class="home-header">
-                <img class="home-header-logo"
-                     src="https://raw.githubusercontent.com/nuele4409-cmyk/cremedelastyleoau/main/creme-app/logo.png"
-                     onerror="this.style.display='none'" alt="Logo">
-                <div class="home-header-text">
-                    <div class="home-header-title">Crème De La Style <span class="gold">✨</span></div>
-                    <div class="home-header-sub">OAU Official Hub</div>
-                </div>
+            <div class="home-hero">
+                <h1 class="hero-title">Crème De La Style <span class="gold">✨</span></h1>
+                <p class="hero-subtitle">✦ OAU Official Hub ✦</p>
+                <p class="hero-desc">Where culture meets the runway. Where boldness becomes legacy.</p>
+                <p class="hero-tagline">ONE NIGHT. ONE STAGE. ONE CROWN.</p>
             </div>
-            <div class="home-tagline-row">ONE NIGHT · ONE STAGE · ONE CROWN</div>
 
             <!-- Live Poll Banner -->
             <div id="home-poll-banner">
@@ -5187,6 +5184,8 @@ window.deployPoll = async function() {
     show('✅ Poll deployed to all users!',false);
     ['poll-title','poll-desc','poll-options'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
     window.loadAdminPolls();
+    // also show banner on this device immediately
+    window.checkActivePoll();
 };
 window.loadAdminPolls = async function() {
     var list = document.getElementById('adm-polls-list');
@@ -5243,10 +5242,14 @@ window.showPollModal = function(poll) {
     if(main) main.scrollTop = 0;
 };
 window.checkActivePoll = async function() {
-    if (!_sb) { console.warn('[Poll] _sb not ready'); return; }
+    if (!_sb) {
+        console.warn('[Poll] _sb not ready, retrying in 2s');
+        setTimeout(window.checkActivePoll, 2000);
+        return;
+    }
     var res = await _sb.from('urgent_polls').select('*').eq('is_active', true).maybeSingle();
     if (res.error) { console.error('[Poll] checkActivePoll error:', res.error.message); return; }
-    if (!res.data) { console.log('[Poll] No active poll found'); return; }
+    if (!res.data) { console.log('[Poll] No active poll in DB'); return; }
     console.log('[Poll] Active poll found:', res.data.title);
     window.showPollModal(res.data);
 };
