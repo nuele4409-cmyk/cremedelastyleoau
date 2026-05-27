@@ -1451,6 +1451,14 @@ html, body {
     font-weight: 900; color: #9A1A45; font-size: 1rem;
     border-left: 2px solid #fde68a; background: inherit;
 }
+
+.gallery-img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; cursor:pointer; display:block; transition:transform .2s; }
+.gallery-img:hover { transform:scale(1.03); }
+.gallery-empty-note { text-align:center; }
+.adm-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+.adm-table th { text-align:left; padding:0.5rem 0.75rem; background:#f9fafb; border-bottom:2px solid #e5e7eb; color:#374151; font-weight:600; }
+.adm-table td { padding:0.55rem 0.75rem; border-bottom:1px solid #f3f4f6; vertical-align:middle; color:#374151; }
+.adm-table tr:last-child td { border-bottom:none; }
 </style>
 </head>
 <body>
@@ -1657,6 +1665,7 @@ html, body {
                 <button class="explore-card" onclick="switchTab('lineup')"><span class="explore-icon">👗</span><span class="explore-label">The Lineup</span></button>
                 <button class="explore-card" onclick="switchTab('contact')"><span class="explore-icon">✉️</span><span class="explore-label">Contact</span></button>
                 <button class="explore-card" onclick="switchTab('event')"><span class="explore-icon">🎪</span><span class="explore-label">The Event</span></button>
+                <button class="explore-card" onclick="switchTab('volunteer')"><span class="explore-icon">🙋</span><span class="explore-label">Volunteer</span></button>
             </div>
         </div>
 
@@ -1675,37 +1684,37 @@ html, body {
                 <div class="tier-card tier-satins">
                     <div class="tier-badge">EARLY BIRD</div>
                     <h3 class="tier-name">Satins</h3>
-                    <p class="tier-price">₦1,000</p>
+                    <p class="tier-price">₦3,000</p>
                     <ul class="tier-perks">
                         <li>General Admission</li>
                         <li>Runway Access</li>
                         <li>Event Keepsake</li>
                     </ul>
-                    <button class="ticket-btn" onclick="initiateTicketPurchase('Satins', 1000, this)">BUY TICKET →</button>
+                    <button class="ticket-btn" onclick="initiateTicketPurchase('Satins', 3000, this)">BUY TICKET →</button>
                 </div>
                 <div class="tier-card tier-oppulent">
                     <div class="tier-badge">✦ REGULAR</div>
                     <h3 class="tier-name">Oppulents</h3>
-                    <p class="tier-price">₦1,500</p>
+                    <p class="tier-price">₦5,000</p>
                     <ul class="tier-perks">
                         <li>Premium Seating</li>
                         <li>Runway Access</li>
                         <li>Event Keepsake</li>
                         <li>Welcome Refreshment</li>
                     </ul>
-                    <button class="ticket-btn" onclick="initiateTicketPurchase('Oppulents', 1500, this)">BUY TICKET →</button>
+                    <button class="ticket-btn" onclick="initiateTicketPurchase('Oppulents', 5000, this)">BUY TICKET →</button>
                 </div>
                 <div class="tier-card tier-coutured">
                     <div class="tier-badge">✦✦ VIP</div>
                     <h3 class="tier-name">The Coutured</h3>
-                    <p class="tier-price">₦3,000</p>
+                    <p class="tier-price">₦9,000</p>
                     <ul class="tier-perks">
                         <li>Front Row Seating</li>
                         <li>Welcome Cocktail</li>
                         <li>Backstage Meet & Greet</li>
                         <li>Exclusive Gift Bag</li>
                     </ul>
-                    <button class="ticket-btn" onclick="initiateTicketPurchase('The Coutured', 3000, this)">BUY TICKET →</button>
+                    <button class="ticket-btn" onclick="initiateTicketPurchase('The Coutured', 9000, this)">BUY TICKET →</button>
                 </div>
             </div>
             <p class="tickets-note">⚠️ Seats are strictly limited. All sales are final. Tickets must be presented at entry.</p>
@@ -1995,29 +2004,52 @@ html, body {
 
             <!-- Photos pane -->
             <div class="gallery-filter-pane active" id="gallery-pane-photos">
-                <div class="gallery-grid">
-                    <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
-                    <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
-                    <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
-                    <div class="gallery-placeholder"><span>📸</span><p>Coming Soon</p></div>
-                </div>
-                <p class="tickets-note" style="margin-top:1.5rem;">Editorial photos will be posted here as the event approaches.</p>
+                <div class="gallery-grid" id="gallery-grid-photos"></div>
+                <p class="tickets-note gallery-empty-note" id="gallery-empty-photos" style="margin-top:1.5rem;">No photos yet. Check back soon.</p>
             </div>
 
             <!-- BTS Videos pane -->
             <div class="gallery-filter-pane" id="gallery-pane-bts">
-                <div class="gallery-grid">
-                    <div class="gallery-placeholder"><span>🎬</span><p>Coming Soon</p></div>
-                    <div class="gallery-placeholder"><span>🎬</span><p>Coming Soon</p></div>
-                </div>
-                <p class="tickets-note" style="margin-top:1.5rem;">Behind-the-scenes footage drops soon.</p>
+                <div class="gallery-grid" id="gallery-grid-bts"></div>
+                <p class="tickets-note gallery-empty-note" id="gallery-empty-bts" style="margin-top:1.5rem;">No BTS content yet. Check back soon.</p>
             </div>
 
             <!-- Live Feed pane -->
             <div class="gallery-filter-pane" id="gallery-pane-livefeed">
-                <div class="gallery-ig-wrap" id="gallery-ig-feed">
-                    <p class="tickets-note">Live feed goes active on event night. Check back on 26 November 2026.</p>
+                <div class="gallery-grid" id="gallery-grid-livefeed"></div>
+                <p class="tickets-note gallery-empty-note" id="gallery-empty-livefeed" style="margin-top:1.5rem;">Live feed goes active on event night. Check back on 26 November 2026.</p>
+            </div>
+        </div>
+
+        <!-- VOLUNTEER -->
+        <div id="tab-volunteer" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Volunteer</h2>
+                <p class="page-sub">Join the team that makes Crème de la Style possible.</p>
+            </div>
+            <div class="register-form-wrap">
+                <p style="font-size:0.9rem;color:#6b7280;margin-bottom:1.5rem;line-height:1.6;">We are looking for passionate, dedicated individuals to join our volunteer team for the event. Fill out the form below and we will reach out closer to the event date.</p>
+                <div class="adm-form-row">
+                    <div class="adm-field"><label>Full Name</label><input type="text" id="vol-name" placeholder="Your full name"></div>
+                    <div class="adm-field"><label>Email Address</label><input type="email" id="vol-email" placeholder="you@example.com"></div>
                 </div>
+                <div class="adm-form-row">
+                    <div class="adm-field"><label>WhatsApp Number</label><input type="tel" id="vol-whatsapp" placeholder="+234 xxx xxx xxxx"></div>
+                    <div class="adm-field"><label>Preferred Team</label>
+                        <select id="vol-team" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:0.9rem;background:#fff;">
+                            <option value="">Select a team&hellip;</option>
+                            <option value="Publicity">Publicity</option>
+                            <option value="Media Team">Media Team</option>
+                            <option value="Welfare">Welfare</option>
+                            <option value="Logistics">Logistics</option>
+                            <option value="Ushering and Protocol">Ushering and Protocol</option>
+                            <option value="Registration">Registration</option>
+                            <option value="Technical">Technical</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="adm-submit-btn" id="vol-submit-btn" onclick="submitVolunteerForm()" style="margin-top:1rem;width:100%;">Submit Application</button>
+                <div id="vol-submit-msg" style="display:none;text-align:center;margin-top:12px;font-size:0.88rem;"></div>
             </div>
         </div>
 
@@ -2392,6 +2424,7 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('scan', this)">📷 Scan</button>
         <button class="admin-tab" onclick="switchAdminTab('controls', this)">🎛️ Controls</button>
         <button class="admin-tab" onclick="switchAdminTab('candidates', this)">👥 Candidates</button>
+        <button class="admin-tab" onclick="switchAdminTab('volunteers', this)">🙋 Volunteers</button>
     </nav>
     <main class="admin-body">
         <div id="adm-tab-dispatches" class="admin-tab-pane active">
@@ -2423,11 +2456,27 @@ html, body {
         <div id="adm-tab-gallery" class="admin-tab-pane">
             <div class="admin-section">
                 <h2>📸 Upload to Gallery</h2>
+                <div class="adm-field" style="margin-bottom:1rem;">
+                    <label>Category</label>
+                    <select id="gallery-upload-category" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:0.9rem;">
+                        <option value="photos">📸 Photos</option>
+                        <option value="bts">🎬 BTS</option>
+                        <option value="livefeed">📡 Live Feed</option>
+                    </select>
+                </div>
                 <div class="gallery-dropzone" onclick="document.getElementById('gallery-file-input').click()">
                     <span>📁</span><p>Click to upload or drag & drop</p><small>SVG, PNG, JPG or GIF (max. 5MB)</small>
                     <input type="file" id="gallery-file-input" accept="image/*" style="display:none;">
                 </div>
-                <button class="adm-submit-btn">Upload & Publish</button>
+                <button class="adm-submit-btn" onclick="uploadGalleryImage()">Upload & Publish</button>
+                <div id="gallery-upload-msg" style="display:none;text-align:center;margin-top:10px;font-size:0.88rem;"></div>
+            </div>
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1rem;">
+                    <h2>🖼️ Manage Gallery</h2>
+                    <button class="adm-refresh-btn" onclick="loadAdminGallery()">&#8635; Refresh</button>
+                </div>
+                <div id="adm-gallery-list"><p class="adm-empty">Click Refresh to load media.</p></div>
             </div>
         </div>
         <div id="adm-tab-scan" class="admin-tab-pane">
@@ -2560,6 +2609,18 @@ html, body {
                 </div>
                 <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All applicants who have paid the ₦3,000 registration fee. Approve a candidate to add them to the public lineup.</p>
                 <div id="adm-candidates-list"><p class="adm-empty">Click Refresh to load candidates.</p></div>
+            </div>
+        </div>
+
+        <!-- VOLUNTEERS PANE -->
+        <div id="adm-tab-volunteers" class="admin-tab-pane">
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1.2rem;">
+                    <h2>🙋 Volunteer Applications</h2>
+                    <button class="adm-refresh-btn" onclick="window.loadAdminVolunteers()">&#8635; Refresh</button>
+                </div>
+                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All volunteer applicants. Toggle the switch to approve them for the team.</p>
+                <div id="adm-volunteers-list"><p class="adm-empty">Click Refresh to load applications.</p></div>
             </div>
         </div>
 
@@ -2893,6 +2954,7 @@ window.switchTab = function(tab) {
     if (tab === 'register') { window.initRegisterTab(); }
     if (tab === 'vote')          { window.initVoteTab(); }
     if (tab === 'home')          { window.loadDispatches(); }
+    if (tab === 'gallery')       { window.loadGallery(); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -4566,6 +4628,173 @@ function _subscribeDispatches() {
             function() { window.loadDispatches(); })
         .subscribe();
 }
+
+
+/* FEATURE 49 - Dynamic Gallery */
+window.loadGallery = async function() {
+    if (!_sb) return;
+    var cats = ['photos', 'bts', 'livefeed'];
+    var res = await _sb.from('gallery_media').select('*').order('created_at', { ascending: false });
+    if (res.error) return;
+    var items = res.data || [];
+    cats.forEach(function(cat) {
+        var grid = document.getElementById('gallery-grid-' + cat);
+        var note = document.getElementById('gallery-empty-' + cat);
+        if (!grid) return;
+        var filtered = items.filter(function(i) { return i.category === cat; });
+        grid.innerHTML = '';
+        if (filtered.length === 0) {
+            if (note) note.style.display = '';
+        } else {
+            if (note) note.style.display = 'none';
+            filtered.forEach(function(item) {
+                var img = document.createElement('img');
+                img.src = item.image_url;
+                img.className = 'gallery-img';
+                img.alt = 'Gallery image';
+                img.onclick = function() { window.openGalleryLightbox(item.image_url); };
+                grid.appendChild(img);
+            });
+        }
+    });
+};
+
+window.openGalleryLightbox = function(url) {
+    var ov = document.getElementById('gallery-lightbox');
+    if (!ov) {
+        ov = document.createElement('div');
+        ov.id = 'gallery-lightbox';
+        ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:1rem;';
+        document.body.appendChild(ov);
+    }
+    ov.innerHTML = '<img src="' + url + '" style="max-width:92vw;max-height:88vh;border-radius:10px;object-fit:contain;" onclick="event.stopPropagation();"><button onclick="document.getElementById(\'gallery-lightbox\').remove()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:1.2rem;cursor:pointer;">&#10005;</button>';
+    ov.onclick = function() { ov.remove(); };
+    ov.style.display = 'flex';
+};
+
+window.uploadGalleryImage = async function() {
+    if (!_sb) return;
+    var fileInput = document.getElementById('gallery-file-input');
+    var category = document.getElementById('gallery-upload-category').value;
+    var msg = document.getElementById('gallery-upload-msg');
+    if (!fileInput.files || !fileInput.files[0]) {
+        msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'Please select a file first.';
+        return;
+    }
+    var file = fileInput.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+        msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'File is too large (max 5MB).';
+        return;
+    }
+    var btn = document.querySelector('#adm-tab-gallery .adm-submit-btn');
+    var orig = btn ? btn.textContent : 'Upload & Publish';
+    if (btn) { btn.textContent = 'Uploading…'; btn.disabled = true; }
+    msg.style.display = 'none';
+    try {
+        var ext = file.name.split('.').pop();
+        var path = 'gallery/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+        var up = await _sb.storage.from('gallery-media').upload(path, file, { cacheControl: '3600', upsert: false });
+        if (up.error) throw up.error;
+        var pub = _sb.storage.from('gallery-media').getPublicUrl(path);
+        var image_url = pub.data.publicUrl;
+        var ins = await _sb.from('gallery_media').insert({ image_url: image_url, category: category });
+        if (ins.error) throw ins.error;
+        msg.style.display = ''; msg.style.color = '#16a34a'; msg.textContent = 'Uploaded successfully!';
+        fileInput.value = '';
+        loadAdminGallery();
+    } catch(e) {
+        msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'Error: ' + (e.message || e);
+    }
+    if (btn) { btn.textContent = orig; btn.disabled = false; }
+};
+
+window.loadAdminGallery = async function() {
+    if (!_sb) return;
+    var list = document.getElementById('adm-gallery-list');
+    if (!list) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('gallery_media').select('*').order('created_at', { ascending: false });
+    if (res.error || !res.data || res.data.length === 0) {
+        list.innerHTML = '<p class="adm-empty">No media uploaded yet.</p>';
+        return;
+    }
+    var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:0.75rem;">';
+    res.data.forEach(function(item) {
+        html += '<div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;">' +
+            '<img src="' + item.image_url + '" style="width:100%;height:100%;object-fit:cover;" onclick="openGalleryLightbox(\'' + item.image_url + '\')">' +
+            '<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);padding:3px 6px;font-size:0.6rem;color:#fff;text-transform:uppercase;">' + item.category + '</div>' +
+            '<button onclick="deleteGalleryMedia(\'' + item.id + '\')" style="position:absolute;top:4px;right:4px;background:rgba(220,38,38,0.9);border:none;border-radius:50%;width:22px;height:22px;color:#fff;font-size:0.75rem;cursor:pointer;line-height:22px;padding:0;">&#10005;</button>' +
+            '</div>';
+    });
+    html += '</div>';
+    list.innerHTML = html;
+};
+
+window.deleteGalleryMedia = async function(id) {
+    if (!_sb) return;
+    if (!confirm('Delete this image from the gallery?')) return;
+    await _sb.from('gallery_media').delete().eq('id', id);
+    loadAdminGallery();
+};
+
+/* FEATURE 48 - Volunteer Recruitment */
+window.submitVolunteerForm = async function() {
+    if (!_sb) return;
+    var full_name = document.getElementById('vol-name').value.trim();
+    var email = document.getElementById('vol-email').value.trim();
+    var whatsapp_number = document.getElementById('vol-whatsapp').value.trim();
+    var team_preference = document.getElementById('vol-team').value;
+    var msg = document.getElementById('vol-submit-msg');
+    msg.style.display = 'none';
+    if (!full_name || !email || !whatsapp_number || !team_preference) {
+        msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'Please fill in all fields.';
+        return;
+    }
+    var btn = document.getElementById('vol-submit-btn');
+    var orig = btn.textContent;
+    btn.textContent = 'Submitting…'; btn.disabled = true;
+    var res = await _sb.from('volunteers').insert({ full_name: full_name, email: email, whatsapp_number: whatsapp_number, team_preference: team_preference });
+    btn.textContent = orig; btn.disabled = false;
+    if (res.error) {
+        msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'Error: ' + res.error.message;
+    } else {
+        msg.style.display = ''; msg.style.color = '#16a34a'; msg.textContent = 'Application received! We will be in touch soon.';
+        document.getElementById('vol-name').value = '';
+        document.getElementById('vol-email').value = '';
+        document.getElementById('vol-whatsapp').value = '';
+        document.getElementById('vol-team').value = '';
+    }
+};
+
+window.loadAdminVolunteers = async function() {
+    if (!_sb) return;
+    var list = document.getElementById('adm-volunteers-list');
+    if (!list) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('volunteers').select('*').order('created_at', { ascending: false });
+    if (res.error || !res.data || res.data.length === 0) {
+        list.innerHTML = '<p class="adm-empty">No volunteer applications yet.</p>';
+        return;
+    }
+    var html = '<div style="overflow-x:auto;"><table class="adm-table"><thead><tr><th>Name</th><th>Team</th><th>WhatsApp</th><th>Email</th><th>Approved</th></tr></thead><tbody>';
+    res.data.forEach(function(v) {
+        var wa = v.whatsapp_number ? v.whatsapp_number.replace(/\D/g, '') : '';
+        html += '<tr>' +
+            '<td>' + v.full_name + '</td>' +
+            '<td>' + v.team_preference + '</td>' +
+            '<td><a href="https://wa.me/' + wa + '" target="_blank" style="color:#E3004F;">' + v.whatsapp_number + '</a></td>' +
+            '<td>' + v.email + '</td>' +
+            '<td><label class="ctrl-toggle" style="transform:scale(0.8);display:inline-flex;"><input type="checkbox"' + (v.is_approved ? ' checked' : '') + ' onchange="toggleVolunteerApproval(\'' + v.id + '\', this.checked)"><span class="ctrl-slider"></span></label></td>' +
+            '</tr>';
+    });
+    html += '</tbody></table></div>';
+    list.innerHTML = html;
+};
+
+window.toggleVolunteerApproval = async function(id, value) {
+    if (!_sb) return;
+    await _sb.from('volunteers').update({ is_approved: value }).eq('id', id);
+};
 
 /* ── RUN ── */
 boot();
