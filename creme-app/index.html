@@ -1767,7 +1767,14 @@ html, body {
                     <label>Nominee's WhatsApp Number</label>
                     <input type="tel" id="nom-whatsapp" class="nominate-input" placeholder="e.g. 08012345678" maxlength="15" oninput="this.value=this.value.replace(/[^0-9+]/g,'')">
                 </div>
-                <button class="nominate-submit-btn" onclick="submitNomination()">Submit Nomination ✦</button>
+                <div class="nominate-field">
+                    <label>Nominee's Email Address</label>
+                    <input type="email" id="nom-email" class="nominate-input" placeholder="e.g. nominee@gmail.com">
+                </div>
+                <div id="nominate-pay-info" style="background:rgba(154,26,69,0.12);border:1px solid rgba(154,26,69,0.3);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:var(--cream-80);line-height:1.5;">
+                    💳 A non-refundable fee of <strong style="color:var(--gold);">₦200</strong> is required to submit a nomination. Payment is processed securely via Paystack.
+                </div>
+                <button class="nominate-submit-btn" id="nom-pay-btn" onclick="initiateNominationPayment()">Pay ₦200 &amp; Nominate ✦</button>
             </div>
             </div><!-- end nominate-content -->
         </div>
@@ -2554,6 +2561,7 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('scan', this)">📷 Scan</button>
         <button class="admin-tab" onclick="switchAdminTab('controls', this)">🎛️ Controls</button>
         <button class="admin-tab" onclick="switchAdminTab('candidates', this)">👥 Candidates</button>
+        <button class="admin-tab" onclick="switchAdminTab('nominations', this)">📋 Nominations</button>
         <button class="admin-tab" onclick="switchAdminTab('volunteers', this)">🙋 Volunteers</button>
         <button class="admin-tab" onclick="switchAdminTab('polls', this)">📣 Polls</button>
         <button class="admin-tab" onclick="switchAdminTab('messages', this)">✉️ Messages</button>
@@ -2757,6 +2765,18 @@ html, body {
                 </div>
                 <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All applicants who have paid the ₦3,000 registration fee. Approve a candidate to add them to the public lineup.</p>
                 <div id="adm-candidates-list"><p class="adm-empty">Click Refresh to load candidates.</p></div>
+            </div>
+        </div>
+
+        <!-- NOMINATIONS PANE -->
+        <div id="adm-tab-nominations" class="admin-tab-pane">
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1.2rem;">
+                    <h2>📋 Submitted Nominations</h2>
+                    <button class="adm-refresh-btn" onclick="window.loadAdminNominations()">&#8635; Refresh</button>
+                </div>
+                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All nominations submitted with a ₦200 payment. Each entry shows full nominee details.</p>
+                <div id="adm-nominations-list"><p class="adm-empty">Click Refresh to load nominations.</p></div>
             </div>
         </div>
 
@@ -3262,31 +3282,104 @@ window.castVote = function(categoryId, nomineeId) {
     window.renderVoteList();
 };
 
-window.submitNomination = async function() {
+window.initiateNominationPayment = function() {
     var name     = document.getElementById('nom-name').value.trim();
     var cat      = document.getElementById('nom-category').value;
     var handle   = document.getElementById('nom-handle').value.trim();
     var reason   = document.getElementById('nom-reason').value.trim();
     var whatsapp = document.getElementById('nom-whatsapp').value.trim();
+    var email    = document.getElementById('nom-email').value.trim();
     var err      = document.getElementById('nominate-error');
     var suc      = document.getElementById('nominate-success');
     err.style.display = 'none'; suc.style.display = 'none';
-    if (!name) { err.textContent = "Please enter the nominee's name."; err.style.display = 'block'; return; }
-    if (!cat)  { err.textContent = 'Please select a category.'; err.style.display = 'block'; return; }
+    if (!name)  { err.textContent = "Please enter the nominee's name."; err.style.display = 'block'; return; }
+    if (!cat)   { err.textContent = 'Please select a category.'; err.style.display = 'block'; return; }
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { err.textContent = "Please enter the nominee's valid email address."; err.style.display = 'block'; return; }
     if (whatsapp && (whatsapp.replace(/\D/g,'').length < 7 || whatsapp.replace(/\D/g,'').length > 15)) {
         err.textContent = 'Please enter a valid WhatsApp number.'; err.style.display = 'block'; return;
     }
     if (!window.currentUser) { window.openAuthModal(); return; }
-    if (_sb) {
-        var _r = await _sb.from('nominations').insert([{
-            user_id: window.currentUser.id, nominee_name: name, category: cat,
-            social_handle: handle, reason: reason, whatsapp_number: whatsapp || null
-        }]);
-        if (_r.error) { err.textContent = 'Submission failed: ' + _r.error.message; err.style.display = 'block'; return; }
-    }
-    suc.style.display = 'flex';
-    ['nom-name','nom-category','nom-handle','nom-reason','nom-whatsapp'].forEach(function(id) { document.getElementById(id).value = ''; });
+    var btn = document.getElementById('nom-pay-btn');
+    if (btn) { btn.textContent = 'Opening payment…'; btn.disabled = true; }
+    var handler = PaystackPop.setup({
+        key: PAYSTACK_KEY,
+        email: window.currentUser.email,
+        amount: 20000,
+        currency: 'NGN',
+        ref: 'CDLS_NOM_' + Date.now() + '_' + Math.random().toString(36).slice(2,8).toUpperCase(),
+        metadata: { user_id: window.currentUser.id, type: 'nomination', nominee_name: name },
+        callback: function(r) {
+            window.onNominationPaymentSuccess(r.reference, { name:name, cat:cat, handle:handle, reason:reason, whatsapp:whatsapp, email:email });
+        },
+        onClose: function() {
+            if (btn) { btn.textContent = 'Pay \u20a6200 & Nominate \u2726'; btn.disabled = false; }
+        }
+    });
+    handler.openIframe();
 };
+
+window.onNominationPaymentSuccess = async function(payRef, data) {
+    var btn = document.getElementById('nom-pay-btn');
+    var err = document.getElementById('nominate-error');
+    var suc = document.getElementById('nominate-success');
+    if (btn) { btn.textContent = 'Submitting nomination…'; btn.disabled = true; }
+    var _r = await _sb.from('nominations').insert([{
+        user_id: window.currentUser.id,
+        nominee_name: data.name,
+        category: data.cat,
+        social_handle: data.handle || null,
+        reason: data.reason || null,
+        whatsapp_number: data.whatsapp || null,
+        email: data.email,
+        payment_ref: payRef,
+        amount_paid: 200
+    }]);
+    if (_r.error) {
+        if (err) { err.textContent = 'Payment received but submission failed: ' + _r.error.message + '. Ref: ' + payRef; err.style.display = 'block'; }
+        if (btn) { btn.textContent = 'Pay \u20a6200 & Nominate \u2726'; btn.disabled = false; }
+        return;
+    }
+    if (suc) suc.style.display = 'flex';
+    ['nom-name','nom-category','nom-handle','nom-reason','nom-whatsapp','nom-email'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = '';
+    });
+    if (btn) { btn.textContent = 'Pay \u20a6200 & Nominate \u2726'; btn.disabled = false; }
+};
+
+window.loadAdminNominations = async function() {
+    var list = document.getElementById('adm-nominations-list');
+    if (!list || !_sb) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('nominations').select('*').order('created_at', { ascending: false });
+    if (res.error) { list.innerHTML = '<p class="adm-empty" style="color:#dc2626;">Error: ' + res.error.message + '</p>'; return; }
+    if (!res.data || !res.data.length) { list.innerHTML = '<p class="adm-empty">No nominations yet.</p>'; return; }
+    var catLabels = {
+        artist:'Most Fashionable Artist', creator:'Most Fashionable Content Creator',
+        actor:'Most Fashionable Actor', dancer:'Most Fashionable Dancer',
+        entrepreneur:'Most Fashionable Entrepreneur', comedian:'Most Fashionable Comedian',
+        influencer:'Most Fashionable Influencer', student:'Most Fashionable Student Personality'
+    };
+    list.innerHTML = res.data.map(function(n, i) {
+        var date = new Date(n.created_at).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
+        var catLabel = catLabels[n.category] || n.category || '—';
+        return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:1rem;margin-bottom:0.75rem;background:#fafafa;">'
+            +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.6rem;">'
+            +'<div><strong style="font-size:0.95rem;color:#111827;">'+(i+1)+'. '+_esc(n.nominee_name||'—')+'</strong>'
+            +'<span style="display:block;font-size:0.72rem;color:#9A1A45;font-weight:700;margin-top:2px;">'+catLabel+'</span></div>'
+            +'<span style="font-size:0.68rem;color:#6b7280;">'+date+'</span></div>'
+            +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem 1rem;font-size:0.78rem;color:#374151;margin-bottom:0.5rem;">'
+            +'<div><span style="color:#6b7280;">📧 Email:</span> '+_esc(n.email||'—')+'</div>'
+            +'<div><span style="color:#6b7280;">📱 WhatsApp:</span> '+_esc(n.whatsapp_number||'—')+'</div>'
+            +'<div><span style="color:#6b7280;">📲 Handle:</span> '+_esc(n.social_handle||'—')+'</div>'
+            +'<div><span style="color:#6b7280;">💳 Ref:</span> <span style="font-size:0.68rem;">'+_esc(n.payment_ref||'—')+'</span></div>'
+            +'</div>'
+            +(n.reason ? '<div style="font-size:0.78rem;color:#4b5563;background:#f3f4f6;border-radius:6px;padding:0.5rem 0.75rem;">'
+            +'<em>"'+_esc(n.reason)+'"</em></div>' : '')
+            +'</div>';
+    }).join('');
+};
+
+window.submitNomination = window.initiateNominationPayment;
 
 window.toggleContestantFields = function(val) {
     var el = document.getElementById('contestant-fields');
@@ -3388,7 +3481,8 @@ window.switchAdminTab  = function(tab, btn) {
     if (btn)  btn.classList.add('active');
     if (tab !== 'scan') stopScanner(); // stop camera when leaving scan tab
     if (tab === 'controls')   window.loadAdminControls();
-    if (tab === 'candidates') window.loadAdminCandidates();
+    if (tab === 'candidates')  window.loadAdminCandidates();
+    if (tab === 'nominations') window.loadAdminNominations();
     if (tab === 'dispatches') window.loadAdminDispatches();
     if (tab === 'gallery')    window.loadAdminGallery();
     if (tab === 'polls')      window.loadAdminPolls();
