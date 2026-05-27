@@ -4710,6 +4710,7 @@ window.uploadGalleryImage = async function() {
         showMsg('Uploaded successfully!', false);
         fileInput.value = '';
         loadAdminGallery();
+        window.loadGallery(); // refresh public gallery too
     } catch(e) {
         showMsg('Upload failed: ' + (e.message || String(e)), true);
     }
@@ -4760,17 +4761,60 @@ window.submitVolunteerForm = async function() {
     }
     var btn = document.getElementById('vol-submit-btn');
     var orig = btn.textContent;
-    btn.textContent = 'Submitting…'; btn.disabled = true;
+    btn.textContent = 'Checking…'; btn.disabled = true;
+    // Prevent duplicate applications by email
+    var existing = await _sb.from('volunteers').select('id').eq('email', email).maybeSingle();
+    if (existing.data) {
+        btn.textContent = orig; btn.disabled = false;
+        msg.style.display = ''; msg.style.color = '#d97706'; msg.textContent = 'An application with this email already exists.';
+        return;
+    }
+    btn.textContent = 'Submitting…';
     var res = await _sb.from('volunteers').insert({ full_name: full_name, email: email, whatsapp_number: whatsapp_number, team_preference: team_preference });
     btn.textContent = orig; btn.disabled = false;
     if (res.error) {
         msg.style.display = ''; msg.style.color = '#dc2626'; msg.textContent = 'Error: ' + res.error.message;
     } else {
-        msg.style.display = ''; msg.style.color = '#16a34a'; msg.textContent = 'Application received! We will be in touch soon.';
-        document.getElementById('vol-name').value = '';
-        document.getElementById('vol-email').value = '';
-        document.getElementById('vol-whatsapp').value = '';
-        document.getElementById('vol-team').value = '';
+        // Switch to status view
+        window.checkVolunteerStatus(email);
+    }
+};
+
+window.checkVolunteerStatus = async function(overrideEmail) {
+    if (!_sb) return;
+    var email = overrideEmail || (window.currentUser && window.currentUser.email) || null;
+    var formSection   = document.getElementById('vol-form-section');
+    var statusSection = document.getElementById('vol-status-section');
+    var statusCard    = document.getElementById('vol-status-card');
+    if (!email) return;
+    var res = await _sb.from('volunteers').select('*').eq('email', email).maybeSingle();
+    if (!res.data) {
+        // No application found — show form
+        if (formSection)   formSection.style.display   = '';
+        if (statusSection) statusSection.style.display = 'none';
+        return;
+    }
+    var v = res.data;
+    // Has applied — hide form, show status card
+    if (formSection)   formSection.style.display   = 'none';
+    if (statusSection) statusSection.style.display = '';
+    if (!statusCard) return;
+    if (v.is_approved) {
+        var link = (typeof TEAM_WHATSAPP_LINKS !== 'undefined' && TEAM_WHATSAPP_LINKS[v.team_preference]) ? TEAM_WHATSAPP_LINKS[v.team_preference] : '#';
+        statusCard.innerHTML =
+            '<div style="text-align:center;padding:2rem 0;">' +
+            '<div style="font-size:3rem;margin-bottom:0.75rem;">&#127881;</div>' +
+            '<h3 style="color:#16a34a;margin-bottom:0.5rem;font-size:1.2rem;">You have been approved!</h3>' +
+            '<p style="color:#6b7280;font-size:0.88rem;margin-bottom:1.75rem;line-height:1.6;">Welcome to the <strong>' + v.team_preference + '</strong> team. Click below to join your team WhatsApp group.</p>' +
+            '<a href="' + link + '" target="_blank" rel="noopener" style="display:inline-block;background:#25D366;color:#fff;font-weight:700;padding:0.85rem 2rem;border-radius:50px;text-decoration:none;font-size:0.95rem;">&#128172; Join ' + v.team_preference + ' Group &rarr;</a>' +
+            '</div>';
+    } else {
+        statusCard.innerHTML =
+            '<div style="text-align:center;padding:2rem 0;">' +
+            '<div style="font-size:3rem;margin-bottom:0.75rem;">&#9203;</div>' +
+            '<h3 style="color:#d97706;margin-bottom:0.5rem;font-size:1.2rem;">Application Under Review</h3>' +
+            '<p style="color:#6b7280;font-size:0.88rem;line-height:1.6;">Your application for the <strong>' + v.team_preference + '</strong> team has been received and is being reviewed. We will notify you once a decision has been made.</p>' +
+            '</div>';
     }
 };
 
