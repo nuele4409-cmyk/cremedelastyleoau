@@ -2027,7 +2027,12 @@ html, body {
                 <h2 class="page-title">Volunteer</h2>
                 <p class="page-sub">Join the team that makes Crème de la Style possible.</p>
             </div>
-            <div class="register-form-wrap">
+            <!-- Status card: shown after applying / on approval -->
+            <div id="vol-status-section" style="display:none;padding:1rem;">
+                <div id="vol-status-card"></div>
+            </div>
+            <!-- Application form -->
+            <div id="vol-form-section" class="register-form-wrap">
                 <p style="font-size:0.9rem;color:#6b7280;margin-bottom:1.5rem;line-height:1.6;">We are looking for passionate, dedicated individuals to join our volunteer team for the event. Fill out the form below and we will reach out closer to the event date.</p>
                 <div class="adm-form-row">
                     <div class="adm-field"><label>Full Name</label><input type="text" id="vol-name" placeholder="Your full name"></div>
@@ -4803,11 +4808,20 @@ window.submitVolunteerForm = async function() {
 window.checkVolunteerStatus = async function(overrideEmail) {
     if (!_sb) return;
     var email = overrideEmail || (window.currentUser && window.currentUser.email) || localStorage.getItem('vol_submitted_email') || null;
+    // Auto-fill the email field if user is logged in
+    var emailInput = document.getElementById('vol-email');
+    if (emailInput && !emailInput.value && window.currentUser && window.currentUser.email) {
+        emailInput.value = window.currentUser.email;
+    }
     var formSection   = document.getElementById('vol-form-section');
     var statusSection = document.getElementById('vol-status-section');
     var statusCard    = document.getElementById('vol-status-card');
     if (!email) return;
-    var res = await _sb.from('volunteers').select('*').eq('email', email).maybeSingle();
+    var res = await _sb.from('volunteers').select('*').eq('email', email.toLowerCase()).maybeSingle();
+    if (res.error) {
+        console.error('[Volunteer] status check error:', res.error.message);
+        return;
+    }
     if (!res.data) {
         if (formSection)   formSection.style.display   = '';
         if (statusSection) statusSection.style.display = 'none';
