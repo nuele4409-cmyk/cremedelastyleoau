@@ -177,7 +177,8 @@ html, body {
 .home-hero { display: none; }
 .hero-title { font-size: 1.4rem; font-weight: 900; color: var(--cream); }
 .hero-subtitle, .hero-desc, .hero-tagline { display: none; }
-.home-grid { display: none; }
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom:1.5rem; }
+@media (max-width: 600px) { .home-grid { grid-template-columns: 1fr; } }
 /* Feature card grid */
 .home-cards-grid {
     display: grid;
@@ -1644,22 +1645,20 @@ html, body {
             </div>
 
             <!-- Main CTA card -->
-            <div class="ticket-card" style="margin-bottom:1.25rem;">
-                <div class="ticket-glow"></div>
-                <h2 class="ticket-title">The Runway Awakens</h2>
-                <p class="ticket-desc">Where the most stylish students of OAU compete for the ultimate crown. Seats are limited — the doors will not stay open forever.</p>
-                <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+            <div class="home-grid">
+                <div class="ticket-card">
+                    <div class="ticket-glow"></div>
+                    <h2 class="ticket-title">The Runway Awakens</h2>
+                    <p class="ticket-desc">Where the most stylish students of OAU compete for the ultimate crown. Seats are limited — the doors will not stay open forever.</p>
                     <button class="ticket-btn" onclick="switchTab('tickets')">SECURE YOUR SEAT →</button>
-                    <button class="apply-runway-btn" onclick="switchTab('register')">📝 Apply for the Runway</button>
+                    <button class="apply-runway-btn" onclick="switchTab('register')" style="margin-top:0.75rem;">📝 Apply for the Runway</button>
                 </div>
-            </div>
-
-            <!-- Dispatches -->
-            <div class="dispatch-card" style="margin-bottom:1.5rem;">
-                <h3 class="dispatch-header"><span class="live-dot"></span> Live Dispatches</h3>
-                <div id="dispatch-list">
-                    <div class="dispatch-item no-border">
-                        <p style="color:var(--cream-40);font-size:0.82rem;">Loading dispatches…</p>
+                <div class="dispatch-card">
+                    <h3 class="dispatch-header"><span class="live-dot"></span> Live Dispatches</h3>
+                    <div id="dispatch-list">
+                        <div class="dispatch-item no-border">
+                            <p style="color:var(--cream-40);font-size:0.82rem;">Loading dispatches…</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3128,6 +3127,7 @@ window.switchTab = function(tab) {
     if (tab === 'vote')          { window.initVoteTab(); }
     if (tab === 'home')          { window.loadDispatches(); }
     if (tab === 'gallery')       { window.loadGallery(); }
+    if (tab === 'home')          { window.checkActivePoll && window.checkActivePoll(); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -5232,11 +5232,13 @@ window.showPollModal = function(poll) {
         return '<button class="poll-opt-btn" data-opt="'+o.replace(/"/g,'&quot;')+'" onclick="window.castPollVote(&quot;'+poll.id+'&quot;,this)">'+o+'</button>';
     }).join('');
     banner.style.display = '';
-    // ensure home tab is visible
-    document.querySelectorAll('.tab-screen').forEach(function(s){ s.classList.remove('active'); });
+    // if not on home tab, switch to it
     var homeTab = document.getElementById('tab-home');
-    if(homeTab) homeTab.classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab==='home'); });
+    if (homeTab && !homeTab.classList.contains('active')) {
+        document.querySelectorAll('.tab-screen').forEach(function(s){ s.classList.remove('active'); });
+        homeTab.classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.toggle('active', b.dataset && b.dataset.tab==='home'); });
+    }
     var main = document.querySelector('.main-content');
     if(main) main.scrollTop = 0;
 };
