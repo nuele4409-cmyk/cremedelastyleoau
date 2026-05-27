@@ -2775,6 +2775,7 @@ html, body {
                 <div class="adm-field" style="margin-bottom:0.75rem;"><label>Description / Question</label><input type="text" id="poll-desc" class="nominate-input" placeholder="Vote for who slayed the most!" style="width:100%;box-sizing:border-box;"></div>
                 <div class="adm-field" style="margin-bottom:0.75rem;"><label>Options <small style="color:#9ca3af;">(one per line, min 2, max 6)</small></label><textarea id="poll-options" class="nominate-input nominate-textarea" rows="4" placeholder="Option A&#10;Option B&#10;Option C" style="width:100%;box-sizing:border-box;"></textarea></div>
                 <button class="adm-submit-btn" onclick="window.deployPoll()" style="background:#9A1A45;">🚀 Deploy Poll to All Users</button>
+                <button class="adm-refresh-btn" onclick="window.testPollBanner()" style="margin-top:0.5rem;width:100%;">👁 Preview Banner (Test)</button>
                 <div id="poll-deploy-msg" style="display:none;margin-top:10px;font-size:0.88rem;text-align:center;"></div>
             </div>
             <div class="admin-section">
@@ -5239,14 +5240,33 @@ window.showPollModal = function(poll) {
         return '<button class="poll-opt-btn" data-opt="'+o.replace(/"/g,'&quot;')+'" onclick="window.castPollVote(&quot;'+poll.id+'&quot;,this)">'+o+'</button>';
     }).join('');
     banner.style.display = '';
+    // ensure home tab is visible
+    document.querySelectorAll('.tab-screen').forEach(function(s){ s.classList.remove('active'); });
+    var homeTab = document.getElementById('tab-home');
+    if(homeTab) homeTab.classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab==='home'); });
     var main = document.querySelector('.main-content');
     if(main) main.scrollTop = 0;
 };
 window.checkActivePoll = async function() {
-    if (!_sb) return;
+    if (!_sb) { console.warn('[Poll] _sb not ready'); return; }
     var res = await _sb.from('urgent_polls').select('*').eq('is_active', true).maybeSingle();
-    if (res.error || !res.data) return;
+    if (res.error) { console.error('[Poll] checkActivePoll error:', res.error.message); return; }
+    if (!res.data) { console.log('[Poll] No active poll found'); return; }
+    console.log('[Poll] Active poll found:', res.data.title);
     window.showPollModal(res.data);
+};
+
+window.testPollBanner = function() {
+    window.showPollModal({
+        id: 'test-123',
+        title: 'Best Dressed Tonight?',
+        description: 'Cast your vote — who is serving the most on the runway right now?',
+        options: ['Contestant A', 'Contestant B', 'Contestant C'],
+        is_active: true
+    });
+    // switch to home tab so banner is visible
+    window.switchTab('home');
 };
 
 window.castPollVote = async function(pollId, btn) {
