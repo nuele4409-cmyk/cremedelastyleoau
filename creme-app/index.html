@@ -4101,28 +4101,23 @@ window.renderContestantVoteList = function() {
         container.innerHTML = '<p style="text-align:center;color:var(--cream-60);font-size:0.88rem;padding:2rem 1rem;">The contestant lineup has not been revealed yet. Check back closer to the event.</p>';
         return;
     }
-    var showCounts = window.appSettings && window.appSettings.show_live_results;
     var catId = 'fan_favourite';
     var hasVoted = window.votes[catId] !== undefined;
     var catTotal = 0;
-    if (showCounts && window.voteCounts[catId]) {
+    if (window.voteCounts[catId]) {
         Object.values(window.voteCounts[catId]).forEach(function(v) { catTotal += v; });
     }
     container.innerHTML = '';
     contestants.forEach(function(c) {
         var sel   = window.votes[catId] === c.id;
         var dis   = hasVoted && !sel;
-        var pct   = 0;
-        if (showCounts && catTotal > 0) {
-            var cnt = (window.voteCounts[catId] && window.voteCounts[catId][c.id]) ? window.voteCounts[catId][c.id] : 0;
-            pct = Math.round(cnt / catTotal * 100);
-        }
+        var cnt   = (window.voteCounts[catId] && window.voteCounts[catId][c.id]) ? window.voteCounts[catId][c.id] : 0;
+        var pct   = catTotal > 0 ? Math.round(cnt / catTotal * 100) : 0;
         var avatarHtml = c.headshot_url
             ? '<img class="cvr-img" src="' + c.headshot_url + '" alt="' + _esc(c.full_name) + '">'
             : '<div class="cvr-avatar">' + _esc((c.full_name || '?')[0].toUpperCase()) + '</div>';
-        var barHtml = showCounts
-            ? '<div class="vote-progress-wrap"><div class="vote-progress-track"><div class="vote-progress-fill" style="width:' + pct + '%"></div></div></div><span class="vote-progress-pct">' + pct + '%</span>'
-            : '';
+        var barHtml = '<div class="vote-progress-wrap"><div class="vote-progress-track"><div class="vote-progress-fill" style="width:' + pct + '%"></div></div></div>' +
+            '<span class="vote-progress-pct">' + (catTotal > 0 ? pct + '%' : '–') + '</span>';
         var safeId = c.id.replace(/'/g, "\'");
         var row = document.createElement('div');
         row.className = 'contestant-vote-row';
@@ -4138,7 +4133,12 @@ window.renderContestantVoteList = function() {
 window.castContestantVote = async function(contestantId) {
     if (!window.currentUser) { window.openAuthModal(); return; }
     var catId = 'fan_favourite';
+    // Optimistic update: record vote and bump local count immediately
+    var prev = window.votes[catId];
     window.votes[catId] = contestantId;
+    if (!window.voteCounts[catId]) window.voteCounts[catId] = {};
+    if (prev && window.voteCounts[catId][prev] > 0) window.voteCounts[catId][prev]--;
+    window.voteCounts[catId][contestantId] = (window.voteCounts[catId][contestantId] || 0) + 1;
     window.renderContestantVoteList();
     if (_sb) {
         try {
@@ -4147,6 +4147,9 @@ window.castContestantVote = async function(contestantId) {
                 { onConflict: 'user_id,category_id' }
             );
         } catch(e) {}
+        // Fetch real counts from DB and re-render with accurate percentages
+        await window.fetchVoteCounts();
+        window.renderContestantVoteList();
     }
 };
 
@@ -4522,4 +4525,4 @@ boot();
 })();
 </script>
 </body>
-</htm
+</html>
