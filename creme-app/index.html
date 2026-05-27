@@ -4140,22 +4140,25 @@ window.castContestantVote = async function(contestantId) {
     if (prev && window.voteCounts[catId][prev] > 0) window.voteCounts[catId][prev]--;
     window.voteCounts[catId][contestantId] = (window.voteCounts[catId][contestantId] || 0) + 1;
     window.renderContestantVoteList();
-    // ── Background save — does NOT touch voteCounts or re-render on failure ──
+    // ── Background save via DB function (atomic, bypasses RLS complexity) ──
     if (_sb) {
         (async function() {
             try {
-                await _sb.from('votes').delete()
-                    .eq('user_id', window.currentUser.id)
-                    .eq('category_id', catId);
-                await _sb.from('votes').insert({
-                    user_id: window.currentUser.id,
-                    category_id: catId,
-                    nominee_id: contestantId
-                });
-                // Only fetch + re-render if Realtime didn't already handle it
+                var r = await _sb.rpc('cast_fan_vote', { p_contestant_id: contestantId });
+                if (r.error) {
+                    // Fallback: direct delete+insert
+                    await _sb.from('votes').delete()
+                        .eq('user_id', window.currentUser.id)
+                        .eq('category_id', catId);
+                    await _sb.from('votes').insert({
+                        user_id: window.currentUser.id,
+                        category_id: catId,
+                        nominee_id: contestantId
+                    });
+                }
                 await window.fetchVoteCounts();
                 window.renderContestantVoteList();
-            } catch(e) { /* optimistic state stays as-is */ }
+            } catch(e) { /* optimistic state stays visible */ }
         })();
     }
 };
