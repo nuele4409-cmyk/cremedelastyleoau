@@ -2954,6 +2954,38 @@ html, body {
                 </div>
                 <div id="adm-timeline-list"><p class="adm-empty">Click Refresh to load schedule.</p></div>
             </div>
+
+        <!-- SPONSORS PANE -->
+        <div id="adm-tab-sponsors" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2>➕ Add Sponsor</h2>
+                <input type="hidden" id="sp-edit-id">
+                <div class="adm-field"><label>Sponsor Name</label><input type="text" id="sp-name" class="nominate-input" placeholder="e.g. Fenty Beauty Nigeria"></div>
+                <div class="adm-field"><label>Logo URL</label><input type="url" id="sp-logo" class="nominate-input" placeholder="https://... logo URL"></div>
+                <div class="adm-field">
+                    <label>Tier <small style="color:#9ca3af;font-weight:400;">(e.g. Headline Sponsor, Associate, Media Partner)</small></label>
+                    <input type="text" id="sp-tier" class="nominate-input" placeholder="e.g. Headline Sponsor">
+                </div>
+                <div class="adm-field">
+                    <label>Logo Image <small style="color:#9ca3af;font-weight:400;">(optional — upload or paste URL above)</small></label>
+                    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-bottom:0.5rem;">
+                        <img id="sp-logo-preview" src="" style="width:64px;height:48px;object-fit:contain;border-radius:6px;display:none;border:1px solid #e5e7eb;background:#f9f9f9;">
+                        <div>
+                            <input type="file" id="sp-logo-file" accept="image/*" style="display:none;" onchange="window.uploadSponsorLogo(this)">
+                            <button onclick="document.getElementById('sp-logo-file').click()" class="adm-refresh-btn">📷 Upload Logo</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="adm-submit-btn" onclick="window.saveSponsor()">💾 Save Sponsor</button>
+                <div id="sp-form-msg" style="display:none;margin-top:0.75rem;font-size:0.85rem;text-align:center;"></div>
+            </div>
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1rem;">
+                    <h2>🤝 All Sponsors</h2>
+                    <button class="adm-refresh-btn" onclick="window.loadAdminSponsors()">↻ Refresh</button>
+                </div>
+                <div id="adm-sponsors-list"><p class="adm-empty">Click Refresh to load sponsors.</p></div>
+            </div>
         </div>
 
     </main>
@@ -2977,35 +3009,6 @@ html, body {
     <div id="adm-portfolio-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem;"></div>
   </div>
 </div>
-
-        <!-- SPONSORS PANE -->
-        <div id="adm-tab-sponsors" class="admin-tab-pane">
-            <div class="admin-section">
-                <h2>➕ Add Sponsor</h2>
-                <input type="hidden" id="sp-edit-id">
-                <div class="adm-field"><label>Sponsor Name</label><input type="text" id="sp-name" class="nominate-input" placeholder="e.g. Fenty Beauty Nigeria"></div>
-                <div class="adm-field"><label>Logo URL</label><input type="url" id="sp-logo" class="nominate-input" placeholder="https://... logo URL"></div>
-                <div class="adm-field">
-                    <label>Tier</label>
-                    <select id="sp-tier" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:0.9rem;">
-                        <option value="title">Title Sponsor</option>
-                        <option value="gold">Gold</option>
-                        <option value="silver">Silver</option>
-                        <option value="partner">Partner</option>
-                    </select>
-                </div>
-                <button class="adm-submit-btn" onclick="window.saveSponsor()">💾 Save Sponsor</button>
-                <div id="sp-form-msg" style="display:none;margin-top:0.75rem;font-size:0.85rem;text-align:center;"></div>
-            </div>
-            <div class="admin-section">
-                <div class="adm-rankings-header" style="margin-bottom:1rem;">
-                    <h2>🤝 All Sponsors</h2>
-                    <button class="adm-refresh-btn" onclick="window.loadAdminSponsors()">↻ Refresh</button>
-                </div>
-                <div id="adm-sponsors-list"><p class="adm-empty">Click Refresh to load sponsors.</p></div>
-            </div>
-        </div>
-
 
 <!-- Toast notification -->
 <div id="ctrl-toast" class="ctrl-toast">✓ Saved</div>
@@ -3217,6 +3220,14 @@ async function fetchAppSettings() {
         if (res.data) {
             window.appSettings = res.data;
             applyTabGates(!!window.currentUser); // re-fence tabs with fresh data
+            // F66: show winner overlay if winner has been set (non-admin users)
+            if (res.data.winner_id && window.currentUserRole !== 'admin') {
+                _sb.from('contestants').select('full_name,headshot_url').eq('id', res.data.winner_id).single().then(function(cr) {
+                    if (!cr.error && cr.data && !document.getElementById('winner-reveal-overlay')) {
+                        window._showWinnerOverlay(cr.data);
+                    }
+                });
+            }
         }
     } catch(e) { /* use defaults */ }
 }
@@ -6298,6 +6309,27 @@ window.loadPublicSponsors = async function() {
     });
 };
 
+
+window.uploadSponsorLogo = async function(input) {
+    var file = input.files[0];
+    if (!file || !_sb) return;
+    var preview = document.getElementById('sp-logo-preview');
+    var logoField = document.getElementById('sp-logo');
+    var msg = document.getElementById('sp-form-msg');
+    if (msg) { msg.style.display='block'; msg.style.color='#6b7280'; msg.textContent='Uploading logo…'; }
+    try {
+        var sess = await _sb.auth.getSession();
+        var token = sess.data && sess.data.session ? sess.data.session.access_token : SUPABASE_KEY;
+        var path = 'logos/' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+        var url = await _uploadToStorage(file, 'sponsors-media', path, token);
+        if (logoField) logoField.value = url;
+        if (preview) { preview.src = url; preview.style.display = 'block'; }
+        if (msg) { msg.style.color='#16a34a'; msg.textContent='Logo uploaded!'; }
+    } catch(e) {
+        if (msg) { msg.style.color='#E3004F'; msg.textContent='Upload failed: ' + e.message; }
+    }
+};
+
 window.loadAdminSponsors = async function() {
     var list = document.getElementById('adm-sponsors-list');
     if (!list || !_sb) return;
@@ -6321,7 +6353,7 @@ window.editSponsor = function(sp) {
     document.getElementById('sp-edit-id').value = sp.id;
     document.getElementById('sp-name').value = sp.name || '';
     document.getElementById('sp-logo').value = sp.logo_url || '';
-    var t = document.getElementById('sp-tier'); if (t) t.value = sp.tier || 'partner';
+    var t = document.getElementById('sp-tier'); if (t) t.value = sp.tier || '';
 };
 
 window.saveSponsor = async function() {
