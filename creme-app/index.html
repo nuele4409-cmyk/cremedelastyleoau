@@ -5042,12 +5042,17 @@ window.castContestantVote = async function(contestantId) {
 
     if (!_sb) return;
 
-    // Save via RPC (atomic upsert, security definer bypasses RLS)
+    // Save directly to votes table
     var saved = false;
+    var _voteErr = '';
     try {
-        var r = await _sb.rpc('cast_fan_vote', { p_contestant_id: contestantId });
-        if (!r.error) saved = true;
-    } catch(e) {}
+        var r = await _sb.from('votes').upsert(
+            { user_id: window.currentUser.id, category_id: 'fan_favourite', nominee_id: contestantId },
+            { onConflict: 'user_id,category_id' }
+        );
+        if (!r.error) { saved = true; }
+        else { _voteErr = r.error.message || JSON.stringify(r.error); }
+    } catch(e) { _voteErr = e.message || String(e); }
 
     if (!saved) {
         // Show error, revert optimistic
@@ -5058,7 +5063,7 @@ window.castContestantVote = async function(contestantId) {
         if (window.voteCounts[catId][contestantId] > 0) window.voteCounts[catId][contestantId]--;
         window.renderContestantVoteList();
         var errEl = document.getElementById('vote-error-msg');
-        if (errEl) { errEl.textContent = 'Could not save vote. Please try again.'; errEl.style.display = 'block'; setTimeout(function(){ errEl.style.display='none'; }, 4000); }
+        if (errEl) { errEl.textContent = 'Vote error: ' + (_voteErr || 'unknown'); errEl.style.display = 'block'; setTimeout(function(){ errEl.style.display='none'; }, 8000); }
         return;
     }
 
