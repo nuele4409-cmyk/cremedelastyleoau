@@ -1,9 +1,11 @@
 /* Crème De La Style — Service Worker v1 */
-var CACHE = 'creme-v1';
+var CACHE = 'creme-v3';
 var PRECACHE = [
   '/creme-app/',
   '/creme-app/index.html',
-  '/creme-app/manifest.json'
+  '/creme-app/manifest.json',
+  '/creme-app/icon-192.png',
+  '/creme-app/icon-512.png'
 ];
 
 self.addEventListener('install', function(e) {

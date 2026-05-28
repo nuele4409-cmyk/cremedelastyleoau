@@ -2,23 +2,36 @@
   "name": "Crème De La Style",
   "short_name": "CrèmeDLS",
   "description": "OAU Official Fashion Awards Hub",
-  "start_url": "/creme-app/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#050001",
   "theme_color": "#050001",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/icon-512.png",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

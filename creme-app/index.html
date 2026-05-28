@@ -4,11 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crème De La Style ✦ OAU Official Hub</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0d000a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Crème De La Style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -275,13 +270,6 @@ html, body {
 .dispatch-tag.media        { background: rgba(154,26,69,0.22);  color: #f472b6; }
 .dispatch-tag.update       { background: rgba(99,212,134,0.18); color: #4ade80; }
 .dispatch-tag.urgent       { background: rgba(239,68,68,0.18);  color: #f87171; }
-/* Admin panel dispatch overrides — dark-theme colors → readable on white */
-.admin-panel .dispatch-item p { color: #111827; }
-.admin-panel .dispatch-time { color: #6b7280; }
-.admin-panel .dispatch-tag.announcement { background: rgba(212,175,55,0.15); color: #92710a; }
-.admin-panel .dispatch-tag.media        { background: rgba(154,26,69,0.12);  color: #9A1A45; }
-.admin-panel .dispatch-tag.update       { background: rgba(22,163,74,0.12);  color: #15803d; }
-.admin-panel .dispatch-tag.urgent       { background: rgba(220,38,38,0.12);  color: #dc2626; }
 /* vote progress bars */
 .vote-progress-wrap { flex: 1; margin: 0 0.5rem; }
 .vote-progress-track { background: rgba(255,255,255,0.08); border-radius: 999px; height: 6px; overflow: hidden; margin-top: 0.25rem; }
@@ -317,13 +305,13 @@ html, body {
 }
 #splash-screen.fade-out { opacity: 0; pointer-events: none; }
 .splash-logo-ring {
-    width: 140px; height: 140px; border-radius: 50%;
-    border: 3px dotted rgba(255,255,255,0.55);
+    width: 130px; height: 130px; border-radius: 50%;
+    border: 3px dotted rgba(255,255,255,0.45);
     display: flex; align-items: center; justify-content: center;
     margin-bottom: 1.6rem;
     animation: splashPulse 1.8s ease-in-out infinite;
 }
-.splash-logo-ring img { width: 112px; height: 112px; border-radius: 50%; object-fit: contain; background: #fff; }
+.splash-logo-ring img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; }
 .splash-title {
     font-family: 'Playfair Display', Georgia, serif;
     font-size: 2.2rem; font-weight: 900; letter-spacing: 0.08em;
@@ -805,10 +793,9 @@ html, body {
     border-radius: 24px; width: 100%; max-width: 460px;
     max-height: 88vh; overflow-y: auto; position: relative;
 }
-@keyframes winnerFadeIn { from { opacity:0; transform:scale(1.04); } to { opacity:1; transform:scale(1); } }
 .profile-hero {
-    width: 100%; height: auto; max-height: 68vh; object-fit: contain;
-    border-radius: 24px 24px 0 0; display: block; background: #0d000a;
+    width: 100%; height: 260px; object-fit: cover; object-position: top;
+    border-radius: 24px 24px 0 0; display: block;
 }
 .profile-hero-placeholder {
     width: 100%; height: 200px; border-radius: 24px 24px 0 0;
@@ -1578,8 +1565,8 @@ html, body {
 <!-- SPLASH SCREEN (F56) -->
 <div id="splash-screen">
     <div class="splash-logo-ring">
-        <img src="https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/logo.png?v=2"
-             onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','<span style=&quot;font-family:Playfair Display,serif;font-size:2rem;font-weight:900;color:#fff;letter-spacing:0.05em;&quot;>✦</span>')"
+        <img src="https://raw.githubusercontent.com/nuele4409-cmyk/cremedelastyleoau/main/creme-app/logo.png"
+             onerror="this.style.display='none';this.parentNode.innerHTML='<span style=&quot;font-size:3.5rem;&quot;>&#128081;</span>'"
              alt="Creme de la Style Logo">
     </div>
     <div class="splash-title">Crème De La<br>Style OAU</div>
@@ -1637,11 +1624,6 @@ html, body {
         <div id="tab-home" class="tab-screen active">
 
             <div class="home-hero">
-                <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:1.1rem;">
-                    <div style="width:120px;height:120px;border-radius:50%;border:3px dotted rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;animation:splashPulse 2s ease-in-out infinite;margin-bottom:0.5rem;">
-                        <img src="https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/logo.png?v=2" alt="Crème De La Style" style="width:108px;height:108px;border-radius:50%;object-fit:contain;background:#fff;" onerror="this.style.display='none';this.parentElement.style.display='none';">
-                    </div>
-                </div>
                 <h1 class="hero-title">Crème De La Style <span class="gold">✨</span></h1>
                 <p class="hero-subtitle">✦ OAU Official Hub ✦</p>
                 <p class="hero-desc">Where culture meets the runway. Where boldness becomes legacy.</p>
@@ -1767,7 +1749,7 @@ html, body {
                     </select>
                 </div>
                 <div class="nominate-field">
-                    <label>Instagram / Social Handle <span class="required">(*)</span>required</label>
+                    <label>Instagram / Social Handle <span class="optional">(optional)</span></label>
                     <input type="text" id="nom-handle" class="nominate-input" placeholder="@handle">
                 </div>
                 <div class="nominate-field">
@@ -1778,14 +1760,7 @@ html, body {
                     <label>Nominee's WhatsApp Number</label>
                     <input type="tel" id="nom-whatsapp" class="nominate-input" placeholder="e.g. 08012345678" maxlength="15" oninput="this.value=this.value.replace(/[^0-9+]/g,'')">
                 </div>
-                <div class="nominate-field">
-                    <label>Nominee's Email Address</label>
-                    <input type="email" id="nom-email" class="nominate-input" placeholder="e.g. nominee@gmail.com">
-                </div>
-                <div id="nominate-pay-info" style="background:rgba(154,26,69,0.12);border:1px solid rgba(154,26,69,0.3);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:var(--cream-80);line-height:1.5;">
-                    💳 A non-refundable fee of <strong style="color:var(--gold);">₦200</strong> is required to submit a nomination. Payment is processed securely via Paystack.
-                </div>
-                <button class="nominate-submit-btn" id="nom-pay-btn" onclick="initiateNominationPayment()">Pay ₦200 &amp; Nominate ✦</button>
+                <button class="nominate-submit-btn" onclick="submitNomination()">Submit Nomination ✦</button>
             </div>
             </div><!-- end nominate-content -->
         </div>
@@ -2220,14 +2195,14 @@ html, body {
                 <div class="event-info-card">
                     <div class="event-info-icon">🎪</div>
                     <div class="event-info-label">Main Event</div>
-                    <div class="event-info-value">Thurs, 21 Nov 2026</div>
-                    <div class="event-info-sub">6:00 PM WAT</div>
+                    <div class="event-info-value">Thurs, 26 Nov 2026</div>
+                    <div class="event-info-sub">7:00 PM WAT</div>
                 </div>
                 <div class="event-info-card">
                     <div class="event-info-icon">🥂</div>
                     <div class="event-info-label">Pre-Event Mixer</div>
-                    <div class="event-info-value">Sat, 11 July 2026</div>
-                    <div class="event-info-sub">6:00 PM WAT</div>
+                    <div class="event-info-value">Tues, 24 Nov 2026</div>
+                    <div class="event-info-sub">5:00 PM WAT</div>
                 </div>
                 <div class="event-info-card">
                     <div class="event-info-icon">📍</div>
@@ -2241,30 +2216,61 @@ html, body {
                 </div>
             </div>
 
-            <!-- Timeline (dynamic) -->
-            <div class="event-timeline" id="event-timeline-section">
-                <div class="event-tl-label">Event Schedule</div>
-                <div id="timeline-toggle-bar" style="display:flex;gap:0.5rem;margin-bottom:1.25rem;">
-                    <button id="tl-btn-mixer" onclick="window.switchTimeline('mixer')"
-                        style="flex:1;padding:0.55rem 0;border-radius:50px;border:1.5px solid var(--gold);background:var(--gold);color:#0a0005;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;">
-                        🥂 Pre-Event Mixer
-                    </button>
-                    <button id="tl-btn-main" onclick="window.switchTimeline('main')"
-                        style="flex:1;padding:0.55rem 0;border-radius:50px;border:1.5px solid var(--gold);background:transparent;color:var(--gold);font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;">
-                        🎪 Main Event
-                    </button>
+            <!-- Timeline -->
+            <div class="event-timeline">
+                <div class="event-tl-label">Event Timeline</div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">7:00 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Doors Open &amp; Red Carpet</div>
                 </div>
-                <div id="dynamic-timeline-list">
-                    <p style="font-size:0.82rem;color:var(--cream-60);text-align:center;">Loading schedule…</p>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">7:45 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Opening Ceremony</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">8:00 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Runway Show — Look 1</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">8:45 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Runway Show — Look 2</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">9:30 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Live Voting &amp; Interval</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">10:00 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">Awards &amp; Crowning</div>
+                </div>
+                <div class="event-tl-item">
+                    <div class="event-tl-time">10:45 PM</div>
+                    <div class="event-tl-dot"></div>
+                    <div class="event-tl-desc">After-party</div>
                 </div>
             </div>
 
             <!-- Nav buttons (4-up grid) -->
+            <div class="event-nav-btns">
+                <button class="event-nav-btn primary" onclick="switchTab('tickets')">🎟️ Get Tickets</button>
+                <button class="event-nav-btn" onclick="switchTab('register')">📝 Register as Contestant</button>
+                <button class="event-nav-btn" onclick="switchTab('judges')">⚖️ Meet the Judges</button>
+                <button class="event-nav-btn" onclick="switchTab('lineup')">👗 Meet the Contestants</button>
+            </div>
+
             <!-- Sponsors -->
             <div class="sponsors-section">
                 <div class="sponsors-label">Sponsors &amp; Partners</div>
                 <div class="sponsors-grid" id="sponsors-grid">
-                    <div style="color:var(--cream-60);font-size:0.82rem;grid-column:1/-1;text-align:center;padding:0.5rem 0;">Loading sponsors…</div>
+                    <div class="sponsor-card">Coming Soon</div>
+                    <div class="sponsor-card">Coming Soon</div>
+                    <div class="sponsor-card">Coming Soon</div>
                 </div>
             </div>
         </div>
@@ -2374,7 +2380,7 @@ html, body {
             <!-- VIEW: Live Rankings -->
             <div id="judge-rankings-view" style="display:none;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-                    <p id="rankings-denominator-note" style="color:var(--cream-60);font-size:0.8rem;margin:0;">Grand Total = avg Look 1 + avg Look 2 + avg Look 3 + avg Look 4 across all judges (max 200).</p>
+                    <p style="color:var(--cream-60);font-size:0.8rem;margin:0;">Grand Total = avg Look 1 + avg Look 2 + avg Look 3 + avg Look 4 across all judges (max 200).</p>
                     <button onclick="window.loadLiveRankings()" style="margin-left:0.75rem;flex-shrink:0;background:transparent;border:1px solid rgba(255,248,220,0.3);color:rgba(255,248,220,0.7);padding:0.4rem 1rem;border-radius:8px;font-size:0.72rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(255,248,220,0.3)';this.style.color='rgba(255,248,220,0.7)'">↻ Refresh</button>
                 </div>
                 <div id="judge-rankings-list"><p style="color:var(--cream-60);font-size:0.88rem;">Click Refresh to load rankings.</p></div>
@@ -2541,14 +2547,9 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('scan', this)">📷 Scan</button>
         <button class="admin-tab" onclick="switchAdminTab('controls', this)">🎛️ Controls</button>
         <button class="admin-tab" onclick="switchAdminTab('candidates', this)">👥 Candidates</button>
-        <button class="admin-tab" onclick="switchAdminTab('nominations', this)">📋 Nominations</button>
-        <button class="admin-tab" onclick="switchAdminTab('judges', this)">⚖️ Judges</button>
-        <button class="admin-tab" onclick="switchAdminTab('team', this)">🎗️ Team</button>
         <button class="admin-tab" onclick="switchAdminTab('volunteers', this)">🙋 Volunteers</button>
         <button class="admin-tab" onclick="switchAdminTab('polls', this)">📣 Polls</button>
         <button class="admin-tab" onclick="switchAdminTab('messages', this)">✉️ Messages</button>
-        <button class="admin-tab" onclick="switchAdminTab('timeline', this)">📅 Timeline</button>
-        <button class="admin-tab" onclick="switchAdminTab('sponsors', this)">🤝 Sponsors</button>
     </nav>
     <main class="admin-body">
         <div id="adm-tab-dispatches" class="admin-tab-pane active">
@@ -2569,17 +2570,11 @@ html, body {
         </div>
         <div id="adm-tab-analytics" class="admin-tab-pane">
             <div class="admin-section">
-                <div class="adm-rankings-header">
-                    <h2>Platform Overview</h2>
-                    <button class="adm-refresh-btn" onclick="window.loadAdminAnalytics()">↻ Refresh</button>
-                </div>
-                <div class="adm-stats-grid" style="margin-top:1rem;">
-                    <div class="adm-stat-card" style="border-top-color:#3b82f6;"><div class="adm-stat-num" id="stat-tickets">—</div><div class="adm-stat-label">Tickets Sold</div><div class="adm-stat-change" id="stat-tickets-rev">Revenue: —</div></div>
-                    <div class="adm-stat-card" style="border-top-color:#E3004F;"><div class="adm-stat-num" id="stat-votes">—</div><div class="adm-stat-label">Fan Votes Cast</div><div class="adm-stat-change positive" id="stat-votes-sub">Realtime</div></div>
-                    <div class="adm-stat-card" style="border-top-color:#FFD700;"><div class="adm-stat-num" id="stat-nominations">—</div><div class="adm-stat-label">Nominations</div><div class="adm-stat-change" id="stat-noms-rev">Revenue: —</div></div>
-                    <div class="adm-stat-card" style="border-top-color:#16a34a;"><div class="adm-stat-num" id="stat-contestants">—</div><div class="adm-stat-label">Contestants</div><div class="adm-stat-change" id="stat-cont-rev">Revenue: —</div></div>
-                    <div class="adm-stat-card" style="border-top-color:#a855f7;"><div class="adm-stat-num" id="stat-judges">—</div><div class="adm-stat-label">Judges</div><div class="adm-stat-change" id="stat-team-c">Team members: —</div></div>
-                    <div class="adm-stat-card" style="border-top-color:#f97316;"><div class="adm-stat-num" id="stat-sponsors">—</div><div class="adm-stat-label">Sponsors</div><div class="adm-stat-change">Across all tiers</div></div>
+                <h2>Platform Overview</h2>
+                <div class="adm-stats-grid">
+                    <div class="adm-stat-card" style="border-top-color:#3b82f6;"><div class="adm-stat-num">1,204</div><div class="adm-stat-label">Total Users</div><div class="adm-stat-change positive">↑ +14 today</div></div>
+                    <div class="adm-stat-card" style="border-top-color:#E3004F;"><div class="adm-stat-num">8,430</div><div class="adm-stat-label">Votes Cast</div><div class="adm-stat-change positive">↑ Active now</div></div>
+                    <div class="adm-stat-card" style="border-top-color:#FFD700;"><div class="adm-stat-num">24</div><div class="adm-stat-label">Nominees</div><div class="adm-stat-change">8 categories</div></div>
                 </div>
             </div>
         </div>
@@ -2739,54 +2734,6 @@ html, body {
                     </label>
                 </div>
 
-                <div class="ctrl-row">
-                    <div class="ctrl-info">
-                        <div class="ctrl-label">Pre-Event Mixer Schedule</div>
-                        <div class="ctrl-desc">Show or hide the Pre-Event Mixer timeline button.</div>
-                    </div>
-                    <label class="ctrl-toggle">
-                        <input type="checkbox" id="ctrl-pre-event" onchange="saveAppControl('show_pre_event', this.checked)">
-                        <span class="ctrl-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ctrl-row">
-                    <div class="ctrl-info">
-                        <div class="ctrl-label">Main Event Schedule</div>
-                        <div class="ctrl-desc">Show or hide the Main Event timeline button.</div>
-                    </div>
-                    <label class="ctrl-toggle">
-                        <input type="checkbox" id="ctrl-main-event" onchange="saveAppControl('show_main_event', this.checked)">
-                        <span class="ctrl-slider"></span>
-                    </label>
-                </div>
-
-
-                <div class="ctrl-row">
-                    <div class="ctrl-info">
-                        <div class="ctrl-label">Apply Fan Vote Boost</div>
-                        <div class="ctrl-desc">Add public fan votes (scaled to 20 pts max) into the judge rankings score.</div>
-                    </div>
-                    <label class="ctrl-toggle">
-                        <input type="checkbox" id="ctrl-fan-points" onchange="saveAppControl('apply_fan_points', this.checked)">
-                        <span class="ctrl-slider"></span>
-                    </label>
-                </div>
-
-                <div style="margin-top:1.5rem;padding:1.25rem;border:2px solid #E3004F;border-radius:14px;background:rgba(227,0,79,0.06);">
-                    <h3 style="color:#E3004F;margin:0 0 0.5rem;font-size:1rem;">🏆 Grand Finale — Winner Reveal</h3>
-                    <p style="font-size:0.78rem;color:#9ca3af;margin-bottom:0.9rem;line-height:1.5;">Select the winner and TRIGGER to broadcast a realtime fullscreen takeover to every connected device. Press HIDE to dismiss it on all devices.</p>
-                    <label style="font-size:0.8rem;font-weight:600;color:#374151;display:block;margin-bottom:0.4rem;">Select Winner</label>
-                    <select id="finale-winner-select" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:0.9rem;margin-bottom:0.9rem;">
-                        <option value="">— loading contestants —</option>
-                    </select>
-                    <div style="display:flex;gap:0.6rem;">
-                        <button onclick="window.triggerWinnerReveal()" style="flex:1;padding:0.8rem;background:#E3004F;color:#fff;font-weight:900;font-size:0.95rem;border:none;border-radius:10px;cursor:pointer;letter-spacing:0.04em;font-family:inherit;">🎉 TRIGGER REVEAL</button>
-                        <button onclick="window.hideWinnerReveal()" style="flex:0 0 auto;padding:0.8rem 1rem;background:#374151;color:#fff;font-weight:700;font-size:0.85rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;">🚫 HIDE BANNER</button>
-                    </div>
-                    <div id="finale-msg" style="margin-top:0.6rem;font-size:0.8rem;text-align:center;min-height:1rem;"></div>
-                </div>
-
                 <div id="ctrl-status" style="margin-top:1rem;font-size:0.8rem;color:#6b7280;min-height:1.2rem;"></div>
             </div>
         </div>
@@ -2803,93 +2750,6 @@ html, body {
                 </div>
                 <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All applicants who have paid the ₦3,000 registration fee. Approve a candidate to add them to the public lineup.</p>
                 <div id="adm-candidates-list"><p class="adm-empty">Click Refresh to load candidates.</p></div>
-            </div>
-        </div>
-
-        <!-- NOMINATIONS PANE -->
-        <div id="adm-tab-nominations" class="admin-tab-pane">
-            <div class="admin-section">
-                <div class="adm-rankings-header" style="margin-bottom:1.2rem;">
-                    <h2>📋 Submitted Nominations</h2>
-                    <button class="adm-refresh-btn" onclick="window.loadAdminNominations()">&#8635; Refresh</button>
-                </div>
-                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All nominations submitted with a ₦200 payment. Each entry shows full nominee details.</p>
-                <div id="adm-nominations-list"><p class="adm-empty">Click Refresh to load nominations.</p></div>
-            </div>
-        </div>
-
-        <!-- JUDGES PANE -->
-        <div id="adm-tab-judges" class="admin-tab-pane">
-            <div class="admin-section">
-                <h2>➕ Add / Edit Judge</h2>
-                <input type="hidden" id="judge-edit-id">
-                <div class="adm-field">
-                    <label>Photo</label>
-                    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-bottom:0.5rem;">
-                        <img id="judge-photo-preview" src="" style="width:64px;height:76px;object-fit:cover;border-radius:8px;display:none;border:2px solid #e5e7eb;">
-                        <div>
-                            <input type="file" id="judge-photo-file" accept="image/*" style="display:none;" onchange="window.previewPersonPhoto(this,'judge-photo-preview','judge-photo-url')">
-                            <button onclick="document.getElementById('judge-photo-file').click()" class="adm-refresh-btn">📷 Upload Photo</button>
-                            <p style="font-size:0.7rem;color:#9ca3af;margin-top:4px;">or paste a URL below</p>
-                        </div>
-                    </div>
-                    <input type="url" id="judge-photo-url" class="nominate-input" placeholder="https://... photo URL" oninput="window.syncPhotoPreview(this.value,'judge-photo-preview')">
-                </div>
-                <div class="adm-field"><label>Full Name</label><input type="text" id="judge-name" class="nominate-input" placeholder="e.g. Adaeze Okafor"></div>
-                <div class="adm-field"><label>Title / Role</label><input type="text" id="judge-title-input" class="nominate-input" placeholder="e.g. Head Judge · Fashion Designer & Creative Director"></div>
-                <div class="adm-field"><label>Social Media Handles <small style="color:#9ca3af;font-weight:400;">(e.g. IG: @name, TikTok: @name)</small></label><input type="text" id="judge-social" class="nominate-input" placeholder="IG: @judgename · TikTok: @judgename"></div>
-                <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.85rem;">
-                    <input type="checkbox" id="judge-is-head" style="width:17px;height:17px;accent-color:#9A1A45;cursor:pointer;">
-                    <label for="judge-is-head" style="font-size:0.82rem;font-weight:600;color:#374151;cursor:pointer;">Mark as Head Judge</label>
-                </div>
-                <div class="adm-field"><label>Bio Paragraphs <small style="color:#9ca3af;font-weight:400;">(separate paragraphs with a blank line)</small></label>
-                    <textarea id="judge-bios" class="nominate-input nominate-textarea" rows="6" placeholder="First paragraph...&#10;&#10;Second paragraph...&#10;&#10;Third paragraph..."></textarea>
-                </div>
-                <div style="display:flex;gap:0.6rem;">
-                    <button class="adm-submit-btn" onclick="window.saveJudge()" style="flex:1;">💾 Save Judge</button>
-                    <button class="adm-refresh-btn" onclick="window.clearPersonForm('judge')" style="flex-shrink:0;padding:0 1rem;">✕ Clear</button>
-                </div>
-                <div id="judge-form-msg" style="display:none;margin-top:0.6rem;text-align:center;font-size:0.85rem;"></div>
-            </div>
-            <div class="admin-section">
-                <div class="adm-rankings-header" style="margin-bottom:1rem;"><h2>⚖️ Current Judges</h2><button class="adm-refresh-btn" onclick="window.loadAdminJudges()">↻ Refresh</button></div>
-                <div id="adm-judges-list"><p class="adm-empty">Click Refresh to load judges.</p></div>
-            </div>
-        </div>
-
-        <!-- TEAM PANE -->
-        <div id="adm-tab-team" class="admin-tab-pane">
-            <div class="admin-section">
-                <h2>➕ Add / Edit Team Member</h2>
-                <input type="hidden" id="team-edit-id">
-                <div class="adm-field">
-                    <label>Photo</label>
-                    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-bottom:0.5rem;">
-                        <img id="team-photo-preview" src="" style="width:64px;height:76px;object-fit:cover;border-radius:8px;display:none;border:2px solid #e5e7eb;">
-                        <div>
-                            <input type="file" id="team-photo-file" accept="image/*" style="display:none;" onchange="window.previewPersonPhoto(this,'team-photo-preview','team-photo-url')">
-                            <button onclick="document.getElementById('team-photo-file').click()" class="adm-refresh-btn">📷 Upload Photo</button>
-                            <p style="font-size:0.7rem;color:#9ca3af;margin-top:4px;">or paste a URL below</p>
-                        </div>
-                    </div>
-                    <input type="url" id="team-photo-url" class="nominate-input" placeholder="https://... photo URL" oninput="window.syncPhotoPreview(this.value,'team-photo-preview')">
-                </div>
-                <div class="adm-field"><label>Full Name</label><input type="text" id="team-name" class="nominate-input" placeholder="e.g. Oluwanifemi Akangbe"></div>
-                <div class="adm-field"><label>Role / Title</label><input type="text" id="team-title-input" class="nominate-input" placeholder="e.g. Event Director"></div>
-                <div class="adm-field"><label>Social Media Handles <small style="color:#9ca3af;font-weight:400;">(e.g. IG: @name, TikTok: @name)</small></label><input type="text" id="team-social" class="nominate-input" placeholder="IG: @teamname · TikTok: @teamname"></div>
-                <div class="adm-field"><label>Signature Quote <small style="color:#9ca3af;font-weight:400;">(displayed on profile)</small></label><input type="text" id="team-quote" class="nominate-input" placeholder='e.g. "Style is everything."'  maxlength="220"></div>
-                <div class="adm-field"><label>Bio Paragraphs <small style="color:#9ca3af;font-weight:400;">(separate paragraphs with a blank line)</small></label>
-                    <textarea id="team-bios" class="nominate-input nominate-textarea" rows="6" placeholder="Bio paragraph...&#10;&#10;Quote or second paragraph..."></textarea>
-                </div>
-                <div style="display:flex;gap:0.6rem;">
-                    <button class="adm-submit-btn" onclick="window.saveTeamMember()" style="flex:1;">💾 Save Member</button>
-                    <button class="adm-refresh-btn" onclick="window.clearPersonForm('team')" style="flex-shrink:0;padding:0 1rem;">✕ Clear</button>
-                </div>
-                <div id="team-form-msg" style="display:none;margin-top:0.6rem;text-align:center;font-size:0.85rem;"></div>
-            </div>
-            <div class="admin-section">
-                <div class="adm-rankings-header" style="margin-bottom:1rem;"><h2>🎗️ Current Team Members</h2><button class="adm-refresh-btn" onclick="window.loadAdminTeam()">↻ Refresh</button></div>
-                <div id="adm-team-list"><p class="adm-empty">Click Refresh to load team.</p></div>
             </div>
         </div>
 
@@ -2932,92 +2792,8 @@ html, body {
             </div>
         </div>
 
-        <!-- TIMELINE PANE -->
-        <div id="adm-tab-timeline" class="admin-tab-pane">
-            <div class="admin-section">
-                <h2>➕ Add Schedule Item</h2>
-                <input type="hidden" id="tl-edit-id">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-                    <div class="adm-field"><label>Time Label</label><input type="text" id="tl-time" class="nominate-input" placeholder="e.g. 7:00 PM"></div>
-                    <div class="adm-field"><label>Event Type</label>
-                        <select id="tl-type" class="nominate-input" style="background:#fff;color:#111827;">
-                            <option value="mixer">🥂 Pre-Event Mixer</option>
-                            <option value="main">🎪 Main Event</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="adm-field"><label>Description</label><textarea id="tl-desc" class="nominate-input nominate-textarea" rows="2" placeholder="e.g. Doors Open &amp; Red Carpet"></textarea></div>
-                <div class="adm-field"><label>Sort Order <small style="color:#9ca3af;font-weight:400;">(lower = earlier)</small></label><input type="number" id="tl-sort" class="nominate-input" placeholder="e.g. 10" min="0" style="width:140px;"></div>
-                <div style="display:flex;gap:0.6rem;">
-                    <button class="adm-submit-btn" onclick="window.saveTimelineItem()" style="flex:1;">💾 Save Item</button>
-                    <button class="adm-refresh-btn" onclick="window.clearTimelineForm()" style="flex-shrink:0;padding:0 1rem;">✕ Clear</button>
-                </div>
-                <div id="tl-form-msg" style="display:none;margin-top:0.6rem;text-align:center;font-size:0.85rem;"></div>
-            </div>
-            <div class="admin-section">
-                <div class="adm-rankings-header" style="margin-bottom:1rem;">
-                    <h2>📅 Current Schedule</h2>
-                    <button class="adm-refresh-btn" onclick="window.loadAdminTimeline()">↻ Refresh</button>
-                </div>
-                <div id="adm-timeline-list"><p class="adm-empty">Click Refresh to load schedule.</p></div>
-            </div>
-        </div>
-
-        <!-- SPONSORS PANE -->
-        <div id="adm-tab-sponsors" class="admin-tab-pane">
-            <div class="admin-section">
-                <h2>➕ Add Sponsor</h2>
-                <input type="hidden" id="sp-edit-id">
-                <div class="adm-field"><label>Sponsor Name</label><input type="text" id="sp-name" class="nominate-input" placeholder="e.g. Fenty Beauty Nigeria"></div>
-                <div class="adm-field"><label>Logo URL</label><input type="url" id="sp-logo" class="nominate-input" placeholder="https://... logo URL"></div>
-                <div class="adm-field">
-                    <label>Tier <small style="color:#9ca3af;font-weight:400;">(e.g. Headline Sponsor, Associate, Media Partner)</small></label>
-                    <input type="text" id="sp-tier" class="nominate-input" placeholder="e.g. Headline Sponsor">
-                </div>
-                <div class="adm-field">
-                    <label>Logo Image <small style="color:#9ca3af;font-weight:400;">(optional — upload or paste URL above)</small></label>
-                    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-bottom:0.5rem;">
-                        <img id="sp-logo-preview" src="" style="width:64px;height:48px;object-fit:contain;border-radius:6px;display:none;border:1px solid #e5e7eb;background:#f9f9f9;">
-                        <div>
-                            <input type="file" id="sp-logo-file" accept="image/*" style="display:none;" onchange="window.uploadSponsorLogo(this)">
-                            <button onclick="document.getElementById('sp-logo-file').click()" class="adm-refresh-btn">📷 Upload Logo</button>
-                        </div>
-                    </div>
-                </div>
-                <button class="adm-submit-btn" onclick="window.saveSponsor()">💾 Save Sponsor</button>
-                <div id="sp-form-msg" style="display:none;margin-top:0.75rem;font-size:0.85rem;text-align:center;"></div>
-            </div>
-            <div class="admin-section">
-                <div class="adm-rankings-header" style="margin-bottom:1rem;">
-                    <h2>🤝 All Sponsors</h2>
-                    <button class="adm-refresh-btn" onclick="window.loadAdminSponsors()">↻ Refresh</button>
-                </div>
-                <div id="adm-sponsors-list"><p class="adm-empty">Click Refresh to load sponsors.</p></div>
-            </div>
-        </div>
-
     </main>
 </div>
-<!-- Portfolio Modal -->
-<div id="adm-portfolio-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
-  <div style="background:#1e1e2e;border-radius:16px;width:min(720px,96vw);max-height:88vh;overflow-y:auto;padding:1.5rem;position:relative;">
-    <button onclick="window.closePortfolioModal()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.12);border:none;border-radius:50%;width:34px;height:34px;color:#fff;font-size:1.1rem;cursor:pointer;">&#10005;</button>
-    <h3 id="adm-portfolio-title" style="color:#f3e8d0;font-family:'Playfair Display',serif;margin:0 0 1rem;">Portfolio</h3>
-    <div id="adm-portfolio-drop" style="border:2px dashed #7c3aed;border-radius:12px;padding:2rem;text-align:center;cursor:pointer;color:#c4b5fd;font-size:0.9rem;margin-bottom:1rem;transition:background 0.2s;"
-         onclick="document.getElementById('adm-portfolio-file').click()"
-         ondragover="event.preventDefault();this.style.background='rgba(124,58,237,0.15)';"
-         ondragleave="this.style.background='';"
-         ondrop="window.handlePortfolioDrop(event)">
-      <div style="font-size:2rem;margin-bottom:0.5rem;">&#128193;</div>
-      Drop images / videos here, or click to browse<br>
-      <span style="font-size:0.78rem;opacity:0.7;">JPG, PNG, WEBP, MP4, MOV &mdash; max 50 MB each</span>
-    </div>
-    <input type="file" id="adm-portfolio-file" multiple accept="image/*,video/*" style="display:none" onchange="window.uploadPortfolioFiles(this.files)">
-    <div id="adm-portfolio-upload-status" style="font-size:0.82rem;color:#a78bfa;min-height:1.2rem;margin-bottom:0.75rem;"></div>
-    <div id="adm-portfolio-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem;"></div>
-  </div>
-</div>
-
 <!-- Toast notification -->
 <div id="ctrl-toast" class="ctrl-toast">✓ Saved</div>
 <script src="https://cdn.jsdelivr.net/npm/tus-js-client@3.1.0/dist/tus.min.js"></script>
@@ -3045,7 +2821,7 @@ var TEAM_WHATSAPP_LINKS = {
 var VOLUNTEER_GENERAL_LINK = 'https://chat.whatsapp.com/GxESsKpFCom7oERmblOQFl';
 var _sb = null;
 var _statUnit = 'cm';
-var _eventDate = new Date('2026-11-21T19:00:00+01:00');
+var _eventDate = new Date('2026-11-26T19:00:00+01:00');
 var _countdownTimer = null;
 var _walletTickets = [];
 
@@ -3228,15 +3004,6 @@ async function fetchAppSettings() {
         if (res.data) {
             window.appSettings = res.data;
             applyTabGates(!!window.currentUser); // re-fence tabs with fresh data
-            // F66: show winner overlay for ALL users if winner_id is set
-            if (res.data.winner_id && !window._winnerShownThisSession) {
-                window._winnerShownThisSession = true;
-                _sb.from('contestants').select('full_name,headshot_url').eq('id', res.data.winner_id).single().then(function(cr) {
-                    if (!cr.error && cr.data && !document.getElementById('winner-reveal-overlay')) {
-                        window._showWinnerOverlay(cr.data);
-                    }
-                });
-            }
         }
     } catch(e) { /* use defaults */ }
 }
@@ -3275,10 +3042,7 @@ window.loadAdminControls = async function() {
         'ctrl-tickets':      'show_tickets',
         'ctrl-judges':       'show_judges',
         'ctrl-team':         'show_team',
-        'ctrl-lineup':       'show_lineup',
-        'ctrl-pre-event':    'show_pre_event',
-        'ctrl-main-event':   'show_main_event',
-        'ctrl-fan-points':   'apply_fan_points'
+        'ctrl-lineup':       'show_lineup'
     };
     Object.keys(map).forEach(function(elId) {
         var el = document.getElementById(elId);
@@ -3308,9 +3072,6 @@ function boot() {
     fetchAppSettings(); // Feature 36 — load master switches early
     window.renderVoteList();
     fetchEventDate();
-    window._subscribeWinnerReveal();
-    window.loadFinaleContestants();
-    window.loadPublicSponsors();
     window.loadLineup();
     renderJudges();
     renderTeam();
@@ -3375,7 +3136,6 @@ window.switchTab = function(tab) {
     if (tab === 'home')          { window.loadDispatches(); }
     if (tab === 'gallery')       { window.loadGallery(); }
     if (tab === 'home')          { window.checkActivePoll && window.checkActivePoll(); }
-    if (tab === 'event')         { window.switchTimeline && window.switchTimeline('mixer'); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -3495,316 +3255,31 @@ window.castVote = function(categoryId, nomineeId) {
     window.renderVoteList();
 };
 
-window.initiateNominationPayment = function() {
+window.submitNomination = async function() {
     var name     = document.getElementById('nom-name').value.trim();
     var cat      = document.getElementById('nom-category').value;
     var handle   = document.getElementById('nom-handle').value.trim();
     var reason   = document.getElementById('nom-reason').value.trim();
     var whatsapp = document.getElementById('nom-whatsapp').value.trim();
-    var email    = document.getElementById('nom-email').value.trim();
     var err      = document.getElementById('nominate-error');
     var suc      = document.getElementById('nominate-success');
     err.style.display = 'none'; suc.style.display = 'none';
-    if (!name)  { err.textContent = "Please enter the nominee's name."; err.style.display = 'block'; return; }
-    if (!cat)   { err.textContent = 'Please select a category.'; err.style.display = 'block'; return; }
-    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { err.textContent = "Please enter the nominee's valid email address."; err.style.display = 'block'; return; }
+    if (!name) { err.textContent = "Please enter the nominee's name."; err.style.display = 'block'; return; }
+    if (!cat)  { err.textContent = 'Please select a category.'; err.style.display = 'block'; return; }
     if (whatsapp && (whatsapp.replace(/\D/g,'').length < 7 || whatsapp.replace(/\D/g,'').length > 15)) {
         err.textContent = 'Please enter a valid WhatsApp number.'; err.style.display = 'block'; return;
     }
     if (!window.currentUser) { window.openAuthModal(); return; }
-    var btn = document.getElementById('nom-pay-btn');
-    if (btn) { btn.textContent = 'Opening payment…'; btn.disabled = true; }
-    var handler = PaystackPop.setup({
-        key: PAYSTACK_KEY,
-        email: window.currentUser.email,
-        amount: 20000,
-        currency: 'NGN',
-        ref: 'CDLS_NOM_' + Date.now() + '_' + Math.random().toString(36).slice(2,8).toUpperCase(),
-        metadata: { user_id: window.currentUser.id, type: 'nomination', nominee_name: name },
-        callback: function(r) {
-            window.onNominationPaymentSuccess(r.reference, { name:name, cat:cat, handle:handle, reason:reason, whatsapp:whatsapp, email:email });
-        },
-        onClose: function() {
-            if (btn) { btn.textContent = 'Pay \u20a6200 & Nominate \u2726'; btn.disabled = false; }
-        }
-    });
-    handler.openIframe();
-};
-
-window.onNominationPaymentSuccess = async function(payRef, data) {
-    var btn = document.getElementById('nom-pay-btn');
-    var err = document.getElementById('nominate-error');
-    var suc = document.getElementById('nominate-success');
-    if (btn) { btn.textContent = 'Submitting nomination…'; btn.disabled = true; }
-    var _r = await _sb.from('nominations').insert([{
-        user_id: window.currentUser.id,
-        nominee_name: data.name,
-        category: data.cat,
-        social_handle: data.handle || null,
-        reason: data.reason || null,
-        whatsapp_number: data.whatsapp || null,
-        email: data.email,
-        payment_ref: payRef,
-        amount_paid: 200
-    }]);
-    if (_r.error) {
-        if (err) { err.textContent = 'Payment received but submission failed: ' + _r.error.message + '. Ref: ' + payRef; err.style.display = 'block'; }
-        if (btn) { btn.textContent = 'Pay \u20a6200 & Nominate \u2726'; btn.disabled = false; }
-        return;
+    if (_sb) {
+        var _r = await _sb.from('nominations').insert([{
+            user_id: window.currentUser.id, nominee_name: name, category: cat,
+            social_handle: handle, reason: reason, whatsapp_number: whatsapp || null
+        }]);
+        if (_r.error) { err.textContent = 'Submission failed: ' + _r.error.message; err.style.display = 'block'; return; }
     }
-    ['nom-name','nom-category','nom-handle','nom-reason','nom-whatsapp','nom-email'].forEach(function(id) {
-        var el = document.getElementById(id); if (el) el.value = '';
-    });
-    if (btn) { btn.textContent = 'Pay \u20a6200 & Nominate \u2726'; btn.disabled = false; }
-    // Show prominent full-screen success overlay
-    window.showNominationSuccessOverlay(data.name);
+    suc.style.display = 'flex';
+    ['nom-name','nom-category','nom-handle','nom-reason','nom-whatsapp'].forEach(function(id) { document.getElementById(id).value = ''; });
 };
-
-window.showNominationSuccessOverlay = function(nomineeName) {
-    var old = document.getElementById('nom-success-overlay'); if (old) old.remove();
-    var ov = document.createElement('div');
-    ov.id = 'nom-success-overlay';
-    ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(10,0,4,0.93);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;animation:fadeIn 0.3s ease;';
-    ov.innerHTML = '<div style="text-align:center;max-width:360px;">'
-        +'<div style="font-size:3.5rem;margin-bottom:1rem;">✨</div>'
-        +'<h2 style="font-family:Playfair Display,serif;font-size:1.6rem;color:#D4AF37;margin-bottom:0.75rem;line-height:1.3;">Nomination Received!</h2>'
-        +'<p style="font-size:0.95rem;color:rgba(255,255,255,0.85);line-height:1.6;margin-bottom:0.5rem;">'
-        +'<strong style="color:#fff;">'+(nomineeName||'Your nominee')+'</strong> has been successfully nominated.</p>'
-        +'<p style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:1.75rem;">Payment confirmed. Our panel will review all nominations before the event.</p>'
-        +'<button onclick="document.getElementById(\'nom-success-overlay\').remove()" '
-        +'style="background:#9A1A45;color:#fff;border:none;border-radius:50px;padding:0.8rem 2rem;font-size:0.95rem;font-weight:700;font-family:inherit;cursor:pointer;">'
-        +'Done ✓</button></div>';
-    document.body.appendChild(ov);
-    // Auto-close after 8 seconds
-    setTimeout(function() { var o = document.getElementById('nom-success-overlay'); if(o) o.remove(); }, 8000);
-};
-
-/* ════ Admin: Judges & Team Management ════ */
-
-window.previewPersonPhoto = function(input, previewId, urlInputId) {
-    var file = input.files[0]; if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        var img = document.getElementById(previewId);
-        if (img) { img.src = e.target.result; img.style.display = 'block'; }
-        var urlInput = document.getElementById(urlInputId);
-        if (urlInput) urlInput.value = '';
-    };
-    reader.readAsDataURL(file);
-};
-
-window.syncPhotoPreview = function(url, previewId) {
-    var img = document.getElementById(previewId);
-    if (!img) return;
-    if (url) { img.src = url; img.style.display = 'block'; } else { img.style.display = 'none'; }
-};
-
-window.clearPersonForm = function(type) {
-    var pfx = type === 'judge' ? 'judge' : 'team';
-    ['edit-id','name','title-input','photo-url'].forEach(function(f) { var el=document.getElementById(pfx+'-'+f); if(el) el.value=''; });
-    var bios = document.getElementById(pfx+'-bios'); if(bios) bios.value='';
-    if (type==='judge') { var cb=document.getElementById('judge-is-head'); if(cb) cb.checked=false; }
-    var prev = document.getElementById(pfx+'-photo-preview'); if(prev) { prev.src=''; prev.style.display='none'; }
-    var file = document.getElementById(pfx+'-photo-file'); if(file) file.value='';
-    var msg = document.getElementById(pfx+'-form-msg'); if(msg) msg.style.display='none';
-    var socEl = document.getElementById(pfx+'-social'); if(socEl) socEl.value='';
-    var quoteEl = document.getElementById(pfx+'-quote'); if(quoteEl) quoteEl.value='';
-};
-
-window._uploadPersonPhoto = async function(fileInputId, bucket) {
-    var fileInput = document.getElementById(fileInputId);
-    if (!fileInput || !fileInput.files[0]) return null;
-    var file = fileInput.files[0];
-    var session = await _sb.auth.getSession();
-    var token = session.data.session ? session.data.session.access_token : null;
-    if (!token) throw new Error('Not authenticated');
-    var path = Date.now() + '_' + file.name.replace(/[^a-z0-9.]/gi,'_');
-    var fd = new FormData(); fd.append('', file, file.name);
-    var r = await fetch(SUPABASE_URL+'/storage/v1/object/'+bucket+'/'+path,
-        { method:'POST', headers:{ Authorization:'Bearer '+token,'x-upsert':'true' }, body:fd });
-    if (!r.ok) throw new Error(await r.text());
-    return SUPABASE_URL+'/storage/v1/object/public/'+bucket+'/'+path;
-};
-
-window.saveJudge = async function() {
-    var msgEl = document.getElementById('judge-form-msg');
-    var showMsg = function(t,err) { if(!msgEl) return; msgEl.style.display=''; msgEl.style.color=err?'#dc2626':'#16a34a'; msgEl.textContent=t; };
-    var editId  = document.getElementById('judge-edit-id').value.trim();
-    var name    = document.getElementById('judge-name').value.trim();
-    var title   = document.getElementById('judge-title-input').value.trim();
-    var isHead  = document.getElementById('judge-is-head').checked;
-    var biosRaw = document.getElementById('judge-bios').value.trim();
-    var photoUrl = document.getElementById('judge-photo-url').value.trim();
-    var socialHandles = document.getElementById('judge-social') ? document.getElementById('judge-social').value.trim() : '';
-    if (!name||!title) { showMsg('Name and title are required.',true); return; }
-    var bios = biosRaw.split(/\n\n+/).map(function(s){return s.trim();}).filter(Boolean);
-    if (!bios.length) bios = biosRaw.split('\n').map(function(s){return s.trim();}).filter(Boolean);
-    showMsg('Saving…',false);
-    try {
-        var uploaded = await window._uploadPersonPhoto('judge-photo-file','people-photos');
-        if (uploaded) photoUrl = uploaded;
-    } catch(e) { showMsg('Photo upload failed: '+e.message,true); return; }
-    var payload = { name:name, title:title, is_head:isHead, bios:bios, photo_url:photoUrl||null, social_handles:socialHandles||null };
-    var res;
-    if (editId) { res = await _sb.from('judges').update(payload).eq('id',editId); }
-    else        { res = await _sb.from('judges').insert([payload]); }
-    if (res.error) { showMsg('Error: '+res.error.message,true); return; }
-    showMsg(editId?'Judge updated!':'Judge added!',false);
-    window.clearPersonForm('judge');
-    window.loadAdminJudges();
-    renderJudges();
-};
-
-window.loadAdminJudges = async function() {
-    var list = document.getElementById('adm-judges-list');
-    if (!list||!_sb) return;
-    list.innerHTML = '<p class="adm-empty">Loading…</p>';
-    var res = await _sb.from('judges').select('*').order('sort_order').order('created_at');
-    if (res.error) { list.innerHTML='<p class="adm-empty" style="color:#dc2626;">Error: '+res.error.message+'</p>'; return; }
-    if (!res.data||!res.data.length) { list.innerHTML='<p class="adm-empty">No judges yet. Add one above.</p>'; return; }
-    list.innerHTML = res.data.map(function(j) {
-        return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:0.6rem;background:#fafafa;">'
-            +(j.photo_url?'<img src="'+j.photo_url+'" style="width:48px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0;">':'<div style="width:48px;height:56px;background:#f3f4f6;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">👑</div>')
-            +'<div style="flex:1;min-width:0;"><p style="font-weight:700;font-size:0.88rem;color:#111827;margin:0 0 2px;">'+_esc(j.name)+(j.is_head?' <span style="color:#9A1A45;font-size:0.7rem;">HEAD</span>':'')+'</p>'
-            +'<p style="font-size:0.75rem;color:#6b7280;margin:0;">'+_esc(j.title)+'</p>'
-            +(j.social_handles?'<p style="font-size:0.7rem;color:#9ca3af;margin:2px 0 0;">📲 '+_esc(j.social_handles)+'</p>':'')+'</div>'
-            +'<div style="display:flex;gap:0.4rem;flex-shrink:0;">'
-            +'<button onclick="window.editJudge(\''+j.id+'\')" style="font-size:0.72rem;padding:4px 8px;background:#1d4ed8;color:#fff;border:none;border-radius:6px;cursor:pointer;">✏️ Edit</button>'
-            +'<button onclick="window.deleteJudge(\''+j.id+'\')" style="font-size:0.72rem;padding:4px 8px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;">🗑️</button>'
-            +'</div></div>';
-    }).join('');
-};
-
-window.editJudge = async function(id) {
-    var res = await _sb.from('judges').select('*').eq('id',id).single();
-    if (res.error||!res.data) return;
-    var j = res.data;
-    document.getElementById('judge-edit-id').value = j.id;
-    document.getElementById('judge-name').value = j.name||'';
-    document.getElementById('judge-title-input').value = j.title||'';
-    document.getElementById('judge-is-head').checked = !!j.is_head;
-    document.getElementById('judge-photo-url').value = j.photo_url||'';
-    var bios = Array.isArray(j.bios)?j.bios:(j.bios?JSON.parse(j.bios):[]);
-    document.getElementById('judge-bios').value = bios.join('\n\n');
-    if (document.getElementById('judge-social')) document.getElementById('judge-social').value = j.social_handles||'';
-    window.syncPhotoPreview(j.photo_url,'judge-photo-preview');
-    document.getElementById('adm-tab-judges').scrollTop = 0;
-    document.getElementById('judge-form-msg').style.display='none';
-};
-
-window.deleteJudge = async function(id) {
-    if (!confirm('Delete this judge?')) return;
-    await _sb.from('judges').delete().eq('id',id);
-    window.loadAdminJudges(); renderJudges();
-};
-
-window.saveTeamMember = async function() {
-    var msgEl = document.getElementById('team-form-msg');
-    var showMsg = function(t,err) { if(!msgEl) return; msgEl.style.display=''; msgEl.style.color=err?'#dc2626':'#16a34a'; msgEl.textContent=t; };
-    var editId  = document.getElementById('team-edit-id').value.trim();
-    var name    = document.getElementById('team-name').value.trim();
-    var title   = document.getElementById('team-title-input').value.trim();
-    var biosRaw = document.getElementById('team-bios').value.trim();
-    var photoUrl = document.getElementById('team-photo-url').value.trim();
-    var socialHandles = document.getElementById('team-social') ? document.getElementById('team-social').value.trim() : '';
-    var sigQuote = document.getElementById('team-quote') ? document.getElementById('team-quote').value.trim() : '';
-    if (!name||!title) { showMsg('Name and role are required.',true); return; }
-    var bios = biosRaw.split(/\n\n+/).map(function(s){return s.trim();}).filter(Boolean);
-    if (!bios.length) bios = biosRaw.split('\n').map(function(s){return s.trim();}).filter(Boolean);
-    showMsg('Saving…',false);
-    try {
-        var uploaded = await window._uploadPersonPhoto('team-photo-file','people-photos');
-        if (uploaded) photoUrl = uploaded;
-    } catch(e) { showMsg('Photo upload failed: '+e.message,true); return; }
-    var payload = { name:name, title:title, bios:bios, photo_url:photoUrl||null, social_handles:socialHandles||null, signature_quote:sigQuote||null };
-    var res;
-    if (editId) { res = await _sb.from('team_members').update(payload).eq('id',editId); }
-    else        { res = await _sb.from('team_members').insert([payload]); }
-    if (res.error) { showMsg('Error: '+res.error.message,true); return; }
-    showMsg(editId?'Member updated!':'Member added!',false);
-    window.clearPersonForm('team');
-    window.loadAdminTeam();
-    renderTeam();
-};
-
-window.loadAdminTeam = async function() {
-    var list = document.getElementById('adm-team-list');
-    if (!list||!_sb) return;
-    list.innerHTML = '<p class="adm-empty">Loading…</p>';
-    var res = await _sb.from('team_members').select('*').order('sort_order').order('created_at');
-    if (res.error) { list.innerHTML='<p class="adm-empty" style="color:#dc2626;">Error: '+res.error.message+'</p>'; return; }
-    if (!res.data||!res.data.length) { list.innerHTML='<p class="adm-empty">No team members yet. Add one above.</p>'; return; }
-    list.innerHTML = res.data.map(function(m) {
-        return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:0.6rem;background:#fafafa;">'
-            +(m.photo_url?'<img src="'+m.photo_url+'" style="width:48px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0;">':'<div style="width:48px;height:56px;background:#f3f4f6;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">👤</div>')
-            +'<div style="flex:1;min-width:0;"><p style="font-weight:700;font-size:0.88rem;color:#111827;margin:0 0 2px;">'+_esc(m.name)+'</p>'
-            +'<p style="font-size:0.75rem;color:#6b7280;margin:0;">'+_esc(m.title)+'</p>'
-            +(m.social_handles?'<p style="font-size:0.7rem;color:#9ca3af;margin:2px 0 0;">📲 '+_esc(m.social_handles)+'</p>':'')
-            +(m.signature_quote?'<p style="font-size:0.7rem;color:#b45309;font-style:italic;margin:2px 0 0;">&ldquo;'+_esc(m.signature_quote)+'&rdquo;</p>':'')+'</div>'
-            +'<div style="display:flex;gap:0.4rem;flex-shrink:0;">'
-            +'<button onclick="window.editTeamMember(\''+m.id+'\')" style="font-size:0.72rem;padding:4px 8px;background:#1d4ed8;color:#fff;border:none;border-radius:6px;cursor:pointer;">✏️ Edit</button>'
-            +'<button onclick="window.deleteTeamMember(\''+m.id+'\')" style="font-size:0.72rem;padding:4px 8px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;">🗑️</button>'
-            +'</div></div>';
-    }).join('');
-};
-
-window.editTeamMember = async function(id) {
-    var res = await _sb.from('team_members').select('*').eq('id',id).single();
-    if (res.error||!res.data) return;
-    var m = res.data;
-    document.getElementById('team-edit-id').value = m.id;
-    document.getElementById('team-name').value = m.name||'';
-    document.getElementById('team-title-input').value = m.title||'';
-    document.getElementById('team-photo-url').value = m.photo_url||'';
-    var bios = Array.isArray(m.bios)?m.bios:(m.bios?JSON.parse(m.bios):[]);
-    document.getElementById('team-bios').value = bios.join('\n\n');
-    if (document.getElementById('team-social')) document.getElementById('team-social').value = m.social_handles||'';
-    if (document.getElementById('team-quote')) document.getElementById('team-quote').value = m.signature_quote||'';
-    window.syncPhotoPreview(m.photo_url,'team-photo-preview');
-    document.getElementById('adm-tab-team').scrollTop = 0;
-    document.getElementById('team-form-msg').style.display='none';
-};
-
-window.deleteTeamMember = async function(id) {
-    if (!confirm('Delete this team member?')) return;
-    await _sb.from('team_members').delete().eq('id',id);
-    window.loadAdminTeam(); renderTeam();
-};
-
-window.loadAdminNominations = async function() {
-    var list = document.getElementById('adm-nominations-list');
-    if (!list || !_sb) return;
-    list.innerHTML = '<p class="adm-empty">Loading…</p>';
-    var res = await _sb.from('nominations').select('*').order('created_at', { ascending: false });
-    if (res.error) { list.innerHTML = '<p class="adm-empty" style="color:#dc2626;">Error: ' + res.error.message + '</p>'; return; }
-    if (!res.data || !res.data.length) { list.innerHTML = '<p class="adm-empty">No nominations yet.</p>'; return; }
-    var catLabels = {
-        artist:'Most Fashionable Artist', creator:'Most Fashionable Content Creator',
-        actor:'Most Fashionable Actor', dancer:'Most Fashionable Dancer',
-        entrepreneur:'Most Fashionable Entrepreneur', comedian:'Most Fashionable Comedian',
-        influencer:'Most Fashionable Influencer', student:'Most Fashionable Student Personality'
-    };
-    list.innerHTML = res.data.map(function(n, i) {
-        var date = new Date(n.created_at).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
-        var catLabel = catLabels[n.category] || n.category || '—';
-        return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:1rem;margin-bottom:0.75rem;background:#fafafa;">'
-            +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.6rem;">'
-            +'<div><strong style="font-size:0.95rem;color:#111827;">'+(i+1)+'. '+_esc(n.nominee_name||'—')+'</strong>'
-            +'<span style="display:block;font-size:0.72rem;color:#9A1A45;font-weight:700;margin-top:2px;">'+catLabel+'</span></div>'
-            +'<span style="font-size:0.68rem;color:#6b7280;">'+date+'</span></div>'
-            +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem 1rem;font-size:0.78rem;color:#374151;margin-bottom:0.5rem;">'
-            +'<div><span style="color:#6b7280;">📧 Email:</span> '+_esc(n.email||'—')+'</div>'
-            +'<div><span style="color:#6b7280;">📱 WhatsApp:</span> '+_esc(n.whatsapp_number||'—')+'</div>'
-            +'<div><span style="color:#6b7280;">📲 Handle:</span> '+_esc(n.social_handle||'—')+'</div>'
-            +'<div><span style="color:#6b7280;">💳 Ref:</span> <span style="font-size:0.68rem;">'+_esc(n.payment_ref||'—')+'</span></div>'
-            +'</div>'
-            +(n.reason ? '<div style="font-size:0.78rem;color:#4b5563;background:#f3f4f6;border-radius:6px;padding:0.5rem 0.75rem;">'
-            +'<em>"'+_esc(n.reason)+'"</em></div>' : '')
-            +'</div>';
-    }).join('');
-};
-
-window.submitNomination = window.initiateNominationPayment;
 
 window.toggleContestantFields = function(val) {
     var el = document.getElementById('contestant-fields');
@@ -3906,18 +3381,12 @@ window.switchAdminTab  = function(tab, btn) {
     if (btn)  btn.classList.add('active');
     if (tab !== 'scan') stopScanner(); // stop camera when leaving scan tab
     if (tab === 'controls')   window.loadAdminControls();
-    if (tab === 'candidates')  window.loadAdminCandidates();
-    if (tab === 'nominations') window.loadAdminNominations();
-    if (tab === 'judges')      window.loadAdminJudges();
-    if (tab === 'team')        window.loadAdminTeam();
+    if (tab === 'candidates') window.loadAdminCandidates();
     if (tab === 'dispatches') window.loadAdminDispatches();
     if (tab === 'gallery')    window.loadAdminGallery();
     if (tab === 'polls')      window.loadAdminPolls();
     if (tab === 'messages')   window.loadAdminMessages();
     if (tab === 'volunteers') window.loadAdminVolunteers();
-    if (tab === 'timeline')   window.loadAdminTimeline();
-    if (tab === 'sponsors')   window.loadAdminSponsors();
-    if (tab === 'analytics')  window.loadAdminAnalytics();
 };
 
 /* ── QR TICKET SCANNER ── */
@@ -4369,7 +3838,7 @@ window.loadLineup = async function() {
     renderContestantCards(res.data || [], grid);
 };
 
-window.openContestantModal = async function(c) {
+window.openContestantModal = function(c) {
     var overlay = document.getElementById('contestant-overlay');
     var content = document.getElementById('contestant-modal-content');
     var heroHtml = c.fullbody_url ? '<img class="contestant-hero" src="' + c.fullbody_url + '" alt="' + c.full_name + '">' : '<div class="contestant-hero-placeholder">👤</div>';
@@ -4389,47 +3858,8 @@ window.openContestantModal = async function(c) {
         (bioText   ? '<p class="contestant-bio">' + _esc(bioText) + '</p>' : '') +
         (quoteText ? '<p class="contestant-bio" style="font-style:italic;color:var(--cream-60);">&ldquo;' + _esc(quoteText) + '&rdquo;</p>' : '') +
         (socialsHtml ? '<div class="contestant-socials">' + socialsHtml + '</div>' : '') +
-        '</div>' +
-        '<div id="contestant-portfolio-section" style="margin-top:1.5rem;"><p style="color:var(--cream-60);font-size:0.85rem;text-align:center;opacity:0.7;">Loading diary…</p></div>';
+        '</div>';
     overlay.classList.remove('hidden');
-    // Fetch portfolio media async
-    try {
-        if (!_sb) return;
-        var pmRes = await _sb.from('contestant_media').select('*').eq('contestant_id', c.id).order('created_at', {ascending:true});
-        var media = (pmRes.data || []);
-        var sec = document.getElementById('contestant-portfolio-section');
-        if (!sec) return;
-        if (media.length === 0) { sec.innerHTML = ''; return; }
-        var images = media.filter(function(m){ return m.media_type === 'image'; });
-        var videos = media.filter(function(m){ return m.media_type === 'video'; });
-        var secHtml = '<hr style="border:none;border-top:1px solid rgba(243,232,208,0.18);margin:1.5rem 0;">';
-        secHtml += '<h3 style="font-family:\"Playfair Display\",serif;color:#f3e8d0;font-size:1.05rem;margin:0 0 0.75rem;letter-spacing:0.04em;">The Diary</h3>';
-        if (images.length) {
-            secHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.6rem;margin-bottom:' + (videos.length ? '1rem' : '0') + ';">';
-            images.forEach(function(m) {
-                secHtml += '<div style="display:flex;flex-direction:column;gap:0.3rem;">' +
-                    '<img src="' + m.media_url + '" alt="Diary" loading="lazy" onclick="window.openGalleryLightbox(\'' + m.media_url + '\')" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform=\'scale(1.04)\'" onmouseout="this.style.transform=\'\'"">' +
-                    (m.caption ? '<p style="font-size:0.72rem;color:rgba(243,232,208,0.72);margin:0;text-align:center;font-style:italic;padding:0 2px;">' + (m.caption||'').replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</p>' : '') +
-                    '</div>';
-            });
-            secHtml += '</div>';
-        }
-        if (videos.length) {
-            secHtml += '<h4 style="font-family:\"Playfair Display\",serif;color:#f3e8d0;font-size:0.92rem;margin:0 0 0.6rem;">Behind the Scenes</h4>';
-            secHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;">';
-            videos.forEach(function(m) {
-                secHtml += '<div style="display:flex;flex-direction:column;gap:0.3rem;">' +
-                    '<video controls src="' + m.media_url + '" style="width:100%;border-radius:8px;background:#000;"></video>' +
-                    (m.caption ? '<p style="font-size:0.72rem;color:rgba(243,232,208,0.72);margin:0;text-align:center;font-style:italic;padding:0 2px;">' + (m.caption||'').replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</p>' : '') +
-                    '</div>';
-            });
-            secHtml += '</div>';
-        }
-        sec.innerHTML = secHtml;
-    } catch(e) {
-        var sec2 = document.getElementById('contestant-portfolio-section');
-        if (sec2) sec2.innerHTML = '';
-    }
 };
 window.closeContestantModal = function() { document.getElementById('contestant-overlay').classList.add('hidden'); };
 
@@ -4438,36 +3868,21 @@ window.openProfileModal = function(person) {
     var content = document.getElementById('profile-modal-content');
     var heroHtml = person.photo ? '<img class="profile-hero" src="' + person.photo + '" alt="' + person.name + '">' : '<div class="profile-hero-placeholder">👤</div>';
     var biosHtml = (person.bios || []).map(function(p) { return '<p class="profile-bio-para">' + p + '</p>'; }).join('');
-    var roleTag    = person.isHead ? '✦ Head Judge' : (person.department || '');
-    var socialHtml = person.socialHandles ? '<p style="font-size:0.8rem;color:var(--cream-60);margin:0.4rem 0 0;letter-spacing:0.01em;">📲 ' + _esc(person.socialHandles) + '</p>' : '';
-    var quoteHtml  = person.signatureQuote ? '<p style="font-style:italic;font-size:0.87rem;color:var(--cream-60);margin:1rem 0;border-left:3px solid rgba(243,232,208,0.28);padding-left:0.75rem;line-height:1.6;">&ldquo;' + _esc(person.signatureQuote) + '&rdquo;</p>' : '';
+    var roleTag  = person.isHead ? '✦ Head Judge' : (person.department || '');
     content.innerHTML = heroHtml + '<div class="profile-info">' +
         (roleTag ? '<span class="profile-role-tag">' + roleTag + '</span>' : '') +
         '<h2 class="profile-name">' + person.name + '</h2>' +
         '<p class="profile-title">' + (person.title || '') + '</p>' +
-        socialHtml + quoteHtml + biosHtml + '</div>';
+        biosHtml + '</div>';
     overlay.classList.remove('hidden');
 };
 window.closeProfileModal = function() { document.getElementById('profile-overlay').classList.add('hidden'); };
 
-async function renderJudges() {
+function renderJudges() {
     var grid = document.getElementById('judges-grid');
     if (!grid) return;
-    grid.innerHTML = '<p style="color:var(--cream-40);font-size:0.82rem;text-align:center;">Loading…</p>';
-    var data = null;
-    if (_sb) {
-        var res = await _sb.from('judges').select('*').order('sort_order').order('created_at');
-        if (!res.error && res.data && res.data.length > 0) {
-            data = res.data.map(function(j) { return {
-                id: j.id, isHead: j.is_head, name: j.name, title: j.title,
-                photo: j.photo_url, socialHandles: j.social_handles||'',
-                bios: Array.isArray(j.bios) ? j.bios : (j.bios ? JSON.parse(j.bios) : [])
-            }; });
-        }
-    }
-    if (!data) data = mockJudges;
     grid.innerHTML = '';
-    data.forEach(function(j) {
+    mockJudges.forEach(function(j) {
         var card = document.createElement('div');
         card.className = 'judge-card' + (j.isHead ? ' head-judge' : '');
         card.onclick = function() { window.openProfileModal(j); };
@@ -4476,25 +3891,11 @@ async function renderJudges() {
         grid.appendChild(card);
     });
 }
-async function renderTeam() {
+function renderTeam() {
     var grid = document.getElementById('team-grid');
     if (!grid) return;
-    grid.innerHTML = '<p style="color:var(--cream-40);font-size:0.82rem;text-align:center;">Loading…</p>';
-    var data = null;
-    if (_sb) {
-        var res = await _sb.from('team_members').select('*').order('sort_order').order('created_at');
-        if (!res.error && res.data && res.data.length > 0) {
-            data = res.data.map(function(m) { return {
-                id: m.id, name: m.name, title: m.title,
-                photo: m.photo_url, socialHandles: m.social_handles||'',
-                signatureQuote: m.signature_quote||'',
-                bios: Array.isArray(m.bios) ? m.bios : (m.bios ? JSON.parse(m.bios) : [])
-            }; });
-        }
-    }
-    if (!data) data = mockTeam;
     grid.innerHTML = '';
-    data.forEach(function(m) {
+    mockTeam.forEach(function(m) {
         var card = document.createElement('div');
         card.className = 'judge-card';
         card.onclick = function() { window.openProfileModal(m); };
@@ -4679,18 +4080,6 @@ function applyTabGates(loggedIn) {
         if (lockEl)    lockEl.style.display    = isOpen ? 'none' : 'flex';
         if (contentEl) contentEl.style.display = isOpen ? ''     : 'none';
     });
-
-    // ── Timeline segment visibility ──
-    var showPre  = settings.show_pre_event  !== false;
-    var showMain = settings.show_main_event !== false;
-    var mixerBtn = document.getElementById('tl-btn-mixer');
-    var mainBtn  = document.getElementById('tl-btn-main');
-    var tlList   = document.getElementById('dynamic-timeline-list');
-    if (mixerBtn) mixerBtn.style.display = showPre  ? '' : 'none';
-    if (mainBtn)  mainBtn.style.display  = showMain ? '' : 'none';
-    if (tlList && !showPre && !showMain) {
-        tlList.innerHTML = '<p style="font-size:0.85rem;color:var(--cream-60);text-align:center;padding:1rem 0;">The event schedule is currently classified. Check back soon.</p>';
-    }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -4837,15 +4226,9 @@ window.loadLiveRankings = async function() {
     if (!container) return;
     container.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Loading…</p>';
     if (!_sb) return;
-    var applyFan = window.appSettings && window.appSettings.apply_fan_points === true;
-    // Fetch scores and contestants separately — vote_count fetched only when fan points enabled
     var res  = await _sb.from('scores').select('contestant_id,look_category,look_total');
     var cRes = await _sb.from('contestants').select('id,full_name,headshot_url').eq('is_approved', true);
-    if (cRes.error || !cRes.data) {
-        container.innerHTML = '<p style="color:#ff6b9d;">Error loading rankings: ' + ((cRes.error && cRes.error.message) || 'no data') + '</p>';
-        return;
-    }
-    // Build score totals from judges
+    if (res.error || !cRes.data) { container.innerHTML = '<p style="color:#ff6b9d;">Error loading rankings.</p>'; return; }
     var totals = {};
     (res.data || []).forEach(function(s) {
         if (!totals[s.contestant_id]) totals[s.contestant_id] = {};
@@ -4853,59 +4236,57 @@ window.loadLiveRankings = async function() {
         totals[s.contestant_id][s.look_category].sum += s.look_total;
         totals[s.contestant_id][s.look_category].n   += 1;
     });
-    // Fan vote bonus — fetch vote counts from votes table when fan points toggle is on
-    var voteMap = {};
-    var maxVotes = 1;
-    if (applyFan) {
-        var vRes = await _sb.from('votes').select('contestant_id').eq('category', 'fan_favourite');
-        if (!vRes.error && vRes.data) {
-            vRes.data.forEach(function(v) { voteMap[v.contestant_id] = (voteMap[v.contestant_id] || 0) + 1; });
-            Object.values(voteMap).forEach(function(n) { if (n > maxVotes) maxVotes = n; });
-        }
-    }
     var ranked = cRes.data.map(function(c) {
-        var d = totals[c.id] || {}, judgeScore = 0;
-        Object.keys(d).forEach(function(lk) { judgeScore += d[lk].sum / d[lk].n; });
-        var votes = voteMap[c.id] || 0;
-        var fanBonus = applyFan ? Math.round((votes / maxVotes) * 50) : 0;
-        var grand = Math.round(judgeScore) + fanBonus;
-        return { name: c.full_name, img: c.headshot_url, grand: grand, judgeScore: Math.round(judgeScore), fanBonus: fanBonus, votes: votes };
+        var d = totals[c.id] || {}, grand = 0;
+        Object.keys(d).forEach(function(lk) { grand += d[lk].sum / d[lk].n; });
+        return { name: c.full_name, img: c.headshot_url, grand: Math.round(grand) };
     }).sort(function(a, b) { return b.grand - a.grand; });
-    // update note
-    var note = document.getElementById('rankings-denominator-note');
-    if (note) {
-        if (applyFan) note.textContent = 'Grand Total = avg judge scores + fan vote bonus (scaled 0–20 pts, max ' + maxVotes + ' votes).';
-        else note.textContent = 'Grand Total = avg Look 1 + avg Look 2 + avg Look 3 + avg Look 4 across all judges (max 200).';
-    }
     container.innerHTML = '';
     ranked.forEach(function(r, i) {
-        var medals = ['\U0001f947','\U0001f948','\U0001f949'];
+        var medals = ['🥇','🥈','🥉'];
         var posLabel = i < 3 ? medals[i] : String(i + 1);
+
         var row = document.createElement('div');
         row.className = 'ranking-row';
+
+        // Position badge
         var pos = document.createElement('span');
         pos.className = 'ranking-pos';
         pos.textContent = posLabel;
         row.appendChild(pos);
+
+        // Avatar — img with clean JS onerror fallback
         if (r.img) {
             var img = document.createElement('img');
             img.className = 'ranking-img';
             img.src = r.img;
             img.alt = r.name;
-            img.onerror = function() { var fb = document.createElement('div'); fb.className = 'ranking-avatar-fallback'; fb.textContent = '\U0001f464'; this.parentNode.replaceChild(fb, this); };
+            img.onerror = function() {
+                var fb = document.createElement('div');
+                fb.className = 'ranking-avatar-fallback';
+                fb.textContent = '👤';
+                this.parentNode.replaceChild(fb, this);
+            };
             row.appendChild(img);
         } else {
-            var fb = document.createElement('div'); fb.className = 'ranking-avatar-fallback'; fb.textContent = '\U0001f464'; row.appendChild(fb);
+            var fb = document.createElement('div');
+            fb.className = 'ranking-avatar-fallback';
+            fb.textContent = '👤';
+            row.appendChild(fb);
         }
+
+        // Name
         var name = document.createElement('span');
         name.className = 'ranking-name';
         name.textContent = r.name;
         row.appendChild(name);
-        var scoreWrap = document.createElement('span');
-        scoreWrap.className = 'ranking-score';
-        scoreWrap.textContent = r.grand + ' pts';
-        if (applyFan && r.fanBonus > 0) scoreWrap.title = 'Judge: ' + r.judgeScore + ' + Fan: +' + r.fanBonus;
-        row.appendChild(scoreWrap);
+
+        // Score pill
+        var score = document.createElement('span');
+        score.className = 'ranking-score';
+        score.textContent = r.grand + ' pts';
+        row.appendChild(score);
+
         container.appendChild(row);
     });
 };
@@ -5374,9 +4755,7 @@ window.loadAdminCandidates = async function() {
                 (c.is_approved ? '✓ Approved' : '⏳ Pending') + '</span></td>' +
             '<td>' + (!c.is_approved
                 ? '<button class="adm-approve-btn" onclick="window.approveCandidate(\'' + safeId + '\',\'' + safeName + '\')">Approve ✓</button>'
-                : '<span style="color:#16a34a;font-size:0.8rem;font-weight:600;">✓ Live</span>') +
-            '<br><button onclick="window.openPortfolioModal(\'' + safeId + '\',\'' + safeName + '\')" style="font-size:0.7rem;padding:3px 8px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:0.35rem;white-space:nowrap;">Manage Diary 📔</button>' +
-            '</td>';
+                : '<span style="color:#16a34a;font-size:0.8rem;font-weight:600;">✓ Live</span>') + '</td>';
         tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -6042,536 +5421,10 @@ window.addEventListener('load', function() {
     // poll listener now started in boot() after _sb ready
 });
 
-/* ── Diary Admin ── */
-var _portfolioContestantId = null;
-
-window.openPortfolioModal = async function(id, name) {
-    _portfolioContestantId = id;
-    document.getElementById('adm-portfolio-title').textContent = 'Diary — ' + name;
-    document.getElementById('adm-portfolio-upload-status').textContent = '';
-    var modal = document.getElementById('adm-portfolio-modal');
-    modal.style.display = 'flex';
-    await window.loadPortfolioMedia();
-};
-
-window.closePortfolioModal = function() {
-    document.getElementById('adm-portfolio-modal').style.display = 'none';
-    _portfolioContestantId = null;
-};
-
-window.loadPortfolioMedia = async function() {
-    var grid = document.getElementById('adm-portfolio-grid');
-    grid.innerHTML = '<p style="color:#a78bfa;font-size:0.85rem;">Loading…</p>';
-    try {
-        var res = await _sb.from('contestant_media').select('*').eq('contestant_id', _portfolioContestantId).order('created_at', {ascending:true});
-        var media = res.data || [];
-        if (media.length === 0) {
-            grid.innerHTML = '<p style="color:#6b7280;font-size:0.82rem;">No diary entries yet. Upload something above!</p>';
-            return;
-        }
-        grid.innerHTML = '';
-        // reset grid to single column for caption rows
-        grid.style.gridTemplateColumns = 'repeat(auto-fill,minmax(160px,1fr))';
-        media.forEach(function(m) {
-            var wrap = document.createElement('div');
-            wrap.style.cssText = 'display:flex;flex-direction:column;gap:0.35rem;';
-            var card = document.createElement('div');
-            card.style.cssText = 'position:relative;border-radius:10px;overflow:hidden;background:#2a2a3e;' + (m.media_type === 'image' ? 'aspect-ratio:1;' : '');
-            var safeUrl = m.media_url.replace(/'/g, '%27');
-            var mid = m.id;
-            if (m.media_type === 'image') {
-                card.innerHTML = '<img src="' + m.media_url + '" style="width:100%;height:100%;object-fit:cover;cursor:pointer;" onclick="window.openGalleryLightbox(\'' + safeUrl + '\')">' +
-                    '<button onclick="window.deletePortfolioItem(\'' + mid + '\')" style="position:absolute;top:4px;right:4px;background:rgba(220,38,38,0.85);border:none;border-radius:50%;width:24px;height:24px;color:#fff;font-size:0.8rem;cursor:pointer;line-height:1;">✕</button>';
-            } else {
-                card.innerHTML = '<video src="' + m.media_url + '" controls style="width:100%;border-radius:10px;background:#000;"></video>' +
-                    '<button onclick="window.deletePortfolioItem(\'' + mid + '\')" style="position:absolute;top:4px;right:4px;background:rgba(220,38,38,0.85);border:none;border-radius:50%;width:24px;height:24px;color:#fff;font-size:0.8rem;cursor:pointer;line-height:1;">✕</button>';
-            }
-            // Caption row
-            var capRow = document.createElement('div');
-            capRow.style.cssText = 'display:flex;gap:0.3rem;align-items:center;';
-            var capInput = document.createElement('input');
-            capInput.type = 'text';
-            capInput.placeholder = 'Add caption…';
-            capInput.value = m.caption || '';
-            capInput.dataset.id = mid;
-            capInput.style.cssText = 'flex:1;font-size:0.73rem;padding:4px 8px;border-radius:6px;border:1px solid #4b5563;background:#111827;color:#f3f4f6;outline:none;min-width:0;';
-            var capBtn = document.createElement('button');
-            capBtn.textContent = '✓';
-            capBtn.title = 'Save caption';
-            capBtn.style.cssText = 'padding:4px 9px;background:#7c3aed;border:none;border-radius:6px;color:#fff;font-size:0.75rem;cursor:pointer;flex-shrink:0;';
-            (function(inputEl, id) {
-                capBtn.onclick = function() { window.saveMediaCaption(id, inputEl.value, capBtn); };
-            })(capInput, mid);
-            capRow.appendChild(capInput);
-            capRow.appendChild(capBtn);
-            wrap.appendChild(card);
-            wrap.appendChild(capRow);
-            grid.appendChild(wrap);
-        });
-    } catch(e) {
-        grid.innerHTML = '<p style="color:#f87171;font-size:0.82rem;">Error loading diary: ' + e.message + '</p>';
-    }
-};
-
-window.handlePortfolioDrop = async function(e) {
-    e.preventDefault();
-    document.getElementById('adm-portfolio-drop').style.background = '';
-    var files = e.dataTransfer.files;
-    if (files && files.length) await window.uploadPortfolioFiles(files);
-};
-
-window.uploadPortfolioFiles = async function(files) {
-    if (!_portfolioContestantId) return;
-    var status = document.getElementById('adm-portfolio-upload-status');
-    var sessData = (await _sb.auth.getSession()).data;
-    var authToken = (sessData && sessData.session) ? sessData.session.access_token : SUPABASE_KEY;
-    var total = files.length, done = 0, failed = 0;
-    status.textContent = 'Uploading 0/' + total + '…';
-    for (var i = 0; i < files.length; i++) {
-        var file = files[i];
-        if (file.size > 50 * 1024 * 1024) {
-            failed++;
-            status.textContent = 'Skipped ' + file.name + ' (>50MB)';
-            continue;
-        }
-        var isVideo = file.type.startsWith('video/');
-        var ext = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg');
-        var path = _portfolioContestantId + '/' + Date.now() + '_' + i + '.' + ext;
-        try {
-            var url = await _uploadToStorage(file, 'contestant-portfolios', path, authToken);
-            await _sb.from('contestant_media').insert({
-                contestant_id: _portfolioContestantId,
-                media_url: url,
-                media_type: isVideo ? 'video' : 'image'
-            });
-            done++;
-            status.textContent = 'Uploading ' + done + '/' + total + '…';
-        } catch(err) {
-            failed++;
-            console.error('Portfolio upload error:', err);
-            status.textContent = 'Error on ' + file.name + ': ' + err.message;
-        }
-    }
-    status.textContent = done + ' file(s) uploaded' + (failed ? ', ' + failed + ' failed' : '') + '.';
-    await window.loadPortfolioMedia();
-};
-
-window.deletePortfolioItem = async function(mediaId) {
-    if (!confirm('Delete this diary entry?')) return;
-    try {
-        await _sb.from('contestant_media').delete().eq('id', mediaId);
-        await window.loadPortfolioMedia();
-    } catch(e) {
-        alert('Delete failed: ' + e.message);
-    }
-};
-
-window.saveMediaCaption = async function(mediaId, caption, btn) {
-    try {
-        var res = await _sb.from('contestant_media').update({ caption: caption.trim() || null }).eq('id', mediaId);
-        if (res.error) throw res.error;
-        if (btn) {
-            var orig = btn.style.background;
-            btn.style.background = '#16a34a';
-            btn.textContent = '✓';
-            setTimeout(function() { btn.style.background = orig || '#7c3aed'; }, 1400);
-        }
-    } catch(e) {
-        alert('Could not save caption: ' + e.message);
-    }
-};
-
-/* ── Dynamic Timeline (Features 61+63) ── */
-var _currentTLType = 'mixer';
-
-window.switchTimeline = function(type) {
-    _currentTLType = type;
-    var mixerBtn = document.getElementById('tl-btn-mixer');
-    var mainBtn  = document.getElementById('tl-btn-main');
-    if (mixerBtn) {
-        mixerBtn.style.background = type === 'mixer' ? 'var(--gold)' : 'transparent';
-        mixerBtn.style.color      = type === 'mixer' ? '#0a0005'     : 'var(--gold)';
-    }
-    if (mainBtn) {
-        mainBtn.style.background = type === 'main' ? 'var(--gold)' : 'transparent';
-        mainBtn.style.color      = type === 'main' ? '#0a0005'     : 'var(--gold)';
-    }
-    window.loadTimeline(type);
-};
-
-window.loadTimeline = async function(type) {
-    var container = document.getElementById('dynamic-timeline-list');
-    if (!container) return;
-    if (!_sb) {
-        container.innerHTML = '<p style="font-size:0.82rem;color:var(--cream-60);text-align:center;">Not connected.</p>';
-        return;
-    }
-    container.innerHTML = '<p style="font-size:0.82rem;color:var(--cream-60);text-align:center;padding:0.5rem 0;">Loading…</p>';
-    try {
-        var res = await _sb.from('event_timeline').select('*').eq('event_type', type).order('sort_order', {ascending:true});
-        var items = res.data || [];
-        if (items.length === 0) {
-            container.innerHTML = '<p style="font-size:0.82rem;color:var(--cream-60);text-align:center;padding:0.5rem 0;">No schedule items yet.</p>';
-            return;
-        }
-        container.innerHTML = items.map(function(item) {
-            return '<div class="event-tl-item">' +
-                '<div class="event-tl-time">' + _esc(item.time_label) + '</div>' +
-                '<div class="event-tl-dot"></div>' +
-                '<div class="event-tl-desc">' + _esc(item.description) + '</div>' +
-                '</div>';
-        }).join('');
-    } catch(e) {
-        container.innerHTML = '<p style="font-size:0.82rem;color:var(--cream-60);text-align:center;">Error loading schedule.</p>';
-    }
-};
-
-window.loadAdminTimeline = async function() {
-    var list = document.getElementById('adm-timeline-list');
-    if (!list || !_sb) return;
-    list.innerHTML = '<p class="adm-empty">Loading…</p>';
-    var res = await _sb.from('event_timeline').select('*').order('event_type').order('sort_order');
-    if (res.error) { list.innerHTML = '<p class="adm-empty" style="color:#dc2626;">Error: ' + res.error.message + '</p>'; return; }
-    var items = res.data || [];
-    if (!items.length) { list.innerHTML = '<p class="adm-empty">No schedule items yet. Add one above.</p>'; return; }
-    var groups = { mixer: [], main: [] };
-    items.forEach(function(it) { if (groups[it.event_type]) groups[it.event_type].push(it); });
-    var h = '';
-    [['mixer','🥂 Pre-Event Mixer'],['main','🎪 Main Event']].forEach(function(pair) {
-        var key = pair[0], label = pair[1];
-        if (!groups[key].length) return;
-        h += '<p style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9A1A45;margin:0.75rem 0 0.4rem;">' + label + '</p>';
-        groups[key].forEach(function(it) {
-            h += '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:0.4rem;background:#fafafa;">'
-                + '<div style="flex-shrink:0;font-size:0.72rem;font-weight:700;color:#d97706;width:52px;">' + _esc(it.time_label) + '</div>'
-                + '<div style="flex:1;font-size:0.82rem;color:#111827;">' + _esc(it.description) + '</div>'
-                + '<div style="font-size:0.68rem;color:#9ca3af;flex-shrink:0;margin-right:4px;">#' + it.sort_order + '</div>'
-                + '<button onclick="window.editTimelineItem(\'' + it.id + '\')" style="font-size:0.7rem;padding:3px 7px;background:#1d4ed8;color:#fff;border:none;border-radius:5px;cursor:pointer;">✏️</button>'
-                + '<button onclick="window.deleteTimelineItem(\'' + it.id + '\')" style="font-size:0.7rem;padding:3px 7px;background:#dc2626;color:#fff;border:none;border-radius:5px;cursor:pointer;">🗑️</button>'
-                + '</div>';
-        });
-    });
-    list.innerHTML = h;
-};
-
-window.saveTimelineItem = async function() {
-    var msgEl = document.getElementById('tl-form-msg');
-    var showMsg = function(t, err) { msgEl.style.display=''; msgEl.style.color=err?'#dc2626':'#16a34a'; msgEl.textContent=t; };
-    var editId = document.getElementById('tl-edit-id').value.trim();
-    var time   = document.getElementById('tl-time').value.trim();
-    var type   = document.getElementById('tl-type').value;
-    var desc   = document.getElementById('tl-desc').value.trim();
-    var sort   = parseInt(document.getElementById('tl-sort').value) || 0;
-    if (!time || !desc) { showMsg('Time label and description are required.', true); return; }
-    showMsg('Saving…', false);
-    var payload = { time_label:time, event_type:type, description:desc, sort_order:sort };
-    var res = editId
-        ? await _sb.from('event_timeline').update(payload).eq('id', editId)
-        : await _sb.from('event_timeline').insert([payload]);
-    if (res.error) { showMsg('Error: ' + res.error.message, true); return; }
-    showMsg(editId ? 'Item updated!' : 'Item added!', false);
-    window.clearTimelineForm();
-    window.loadAdminTimeline();
-    window.loadTimeline(_currentTLType);
-};
-
-window.editTimelineItem = async function(id) {
-    var res = await _sb.from('event_timeline').select('*').eq('id', id).single();
-    if (res.error || !res.data) return;
-    var it = res.data;
-    document.getElementById('tl-edit-id').value = it.id;
-    document.getElementById('tl-time').value    = it.time_label || '';
-    document.getElementById('tl-type').value    = it.event_type || 'mixer';
-    document.getElementById('tl-desc').value    = it.description || '';
-    document.getElementById('tl-sort').value    = it.sort_order || 0;
-    document.getElementById('tl-form-msg').style.display = 'none';
-    document.getElementById('adm-tab-timeline').scrollTop = 0;
-};
-
-window.deleteTimelineItem = async function(id) {
-    if (!confirm('Delete this schedule item?')) return;
-    await _sb.from('event_timeline').delete().eq('id', id);
-    window.loadAdminTimeline();
-    window.loadTimeline(_currentTLType);
-};
-
-window.clearTimelineForm = function() {
-    ['tl-edit-id','tl-time','tl-desc','tl-sort'].forEach(function(id) {
-        var el = document.getElementById(id); if (el) el.value = '';
-    });
-    var t = document.getElementById('tl-type'); if (t) t.value = 'mixer';
-    var m = document.getElementById('tl-form-msg'); if (m) m.style.display = 'none';
-};
-
-
-/* ════════════════════════════════════
-   FEATURE 65 - Dynamic Sponsors
-════════════════════════════════════ */
-window.loadPublicSponsors = async function() {
-    var grid = document.getElementById('sponsors-grid');
-    if (!grid || !_sb) return;
-    var res = await _sb.from('sponsors').select('*').order('tier').order('created_at');
-    if (res.error || !res.data || !res.data.length) {
-        grid.innerHTML = '<div style="color:var(--cream-60);font-size:0.82rem;grid-column:1/-1;text-align:center;padding:0.5rem 0;">Sponsors to be announced.</div>';
-        return;
-    }
-    grid.innerHTML = '';
-    res.data.forEach(function(sp) {
-        var card = document.createElement('div');
-        card.className = 'sponsor-card';
-        card.title = sp.name + (sp.tier ? ' — ' + sp.tier : '');
-        if (sp.logo_url) {
-            card.innerHTML = '<img src="' + sp.logo_url + '" alt="' + _esc(sp.name) + '" style="max-width:80%;max-height:48px;object-fit:contain;" onerror="this.style.display=\'none\'">';
-        } else {
-            card.textContent = sp.name;
-            card.style.fontSize = '0.75rem';
-            card.style.fontWeight = '700';
-        }
-        grid.appendChild(card);
-    });
-};
-
-
-window.uploadSponsorLogo = async function(input) {
-    var file = input.files[0];
-    if (!file || !_sb) return;
-    var preview = document.getElementById('sp-logo-preview');
-    var logoField = document.getElementById('sp-logo');
-    var msg = document.getElementById('sp-form-msg');
-    if (msg) { msg.style.display='block'; msg.style.color='#6b7280'; msg.textContent='Uploading logo…'; }
-    try {
-        var sess = await _sb.auth.getSession();
-        var token = sess.data && sess.data.session ? sess.data.session.access_token : SUPABASE_KEY;
-        var path = 'logos/' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-        var url = await _uploadToStorage(file, 'sponsors-media', path, token);
-        if (logoField) logoField.value = url;
-        if (preview) { preview.src = url; preview.style.display = 'block'; }
-        if (msg) { msg.style.color='#16a34a'; msg.textContent='Logo uploaded!'; }
-    } catch(e) {
-        if (msg) { msg.style.color='#E3004F'; msg.textContent='Upload failed: ' + e.message; }
-    }
-};
-
-window.loadAdminSponsors = async function() {
-    var list = document.getElementById('adm-sponsors-list');
-    if (!list || !_sb) return;
-    list.innerHTML = '<p class="adm-empty">Loading…</p>';
-    var res = await _sb.from('sponsors').select('*').order('tier').order('created_at');
-    if (res.error) { list.innerHTML = '<p style="color:#E3004F;">Error: ' + res.error.message + '</p>'; return; }
-    if (!res.data || !res.data.length) { list.innerHTML = '<p class="adm-empty">No sponsors yet.</p>'; return; }
-    list.innerHTML = '';
-    res.data.forEach(function(sp) {
-        var row = document.createElement('div');
-        row.style.cssText = 'display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid #f3f4f6;';
-        var logo = sp.logo_url ? '<img src="' + sp.logo_url + '" style="width:40px;height:32px;object-fit:contain;border-radius:4px;border:1px solid #e5e7eb;" onerror="this.style.display=\'none\'">' : '<div style="width:40px;height:32px;background:#f3f4f6;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1rem;">\U0001f91d</div>';
-        row.innerHTML = logo + '<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _esc(sp.name) + '</div><div style="font-size:0.75rem;color:#6b7280;">' + (sp.tier || '') + '</div></div>' +
-            '<button onclick="window.editSponsor(' + JSON.stringify(sp) + ')" style="background:transparent;border:1px solid #d1d5db;border-radius:7px;padding:0.3rem 0.6rem;font-size:0.75rem;cursor:pointer;">✏️</button>' +
-            '<button onclick="window.deleteSponsor(\'' + sp.id + '\')" style="background:transparent;border:1px solid #fca5a5;border-radius:7px;padding:0.3rem 0.6rem;font-size:0.75rem;cursor:pointer;color:#E3004F;">\u{1f5d1}</button>';
-        list.appendChild(row);
-    });
-};
-
-window.editSponsor = function(sp) {
-    document.getElementById('sp-edit-id').value = sp.id;
-    document.getElementById('sp-name').value = sp.name || '';
-    document.getElementById('sp-logo').value = sp.logo_url || '';
-    var t = document.getElementById('sp-tier'); if (t) t.value = sp.tier || '';
-};
-
-window.saveSponsor = async function() {
-    if (!_sb) return;
-    var id   = document.getElementById('sp-edit-id').value.trim();
-    var name = document.getElementById('sp-name').value.trim();
-    var logo = document.getElementById('sp-logo').value.trim();
-    var tier = document.getElementById('sp-tier').value;
-    var msg  = document.getElementById('sp-form-msg');
-    if (!name) { msg.style.display='block'; msg.style.color='#E3004F'; msg.textContent='Name is required.'; return; }
-    var payload = { name: name, logo_url: logo || null, tier: tier };
-    var res = id
-        ? await _sb.from('sponsors').update(payload).eq('id', id)
-        : await _sb.from('sponsors').insert(payload);
-    if (res.error) { msg.style.display='block'; msg.style.color='#E3004F'; msg.textContent='Error: '+res.error.message; return; }
-    ['sp-edit-id','sp-name','sp-logo'].forEach(function(x){document.getElementById(x).value='';});
-    document.getElementById('sp-tier').value = 'partner';
-    msg.style.display='block'; msg.style.color='#16a34a'; msg.textContent = id ? 'Sponsor updated!' : 'Sponsor added!';
-    setTimeout(function(){msg.style.display='none';},2500);
-    window.loadAdminSponsors();
-    window.loadPublicSponsors();
-};
-
-window.deleteSponsor = async function(id) {
-    if (!_sb || !confirm('Delete this sponsor?')) return;
-    await _sb.from('sponsors').delete().eq('id', id);
-    window.loadAdminSponsors();
-    window.loadPublicSponsors();
-};
-
-/* ════════════════════════════════════
-   FEATURE 66 - BBN Winner Reveal
-════════════════════════════════════ */
-window.loadFinaleContestants = async function() {
-    var sel = document.getElementById('finale-winner-select');
-    if (!sel || !_sb) return;
-    var res = await _sb.from('contestants').select('id,full_name').eq('is_approved', true).order('full_name');
-    if (res.error || !res.data) return;
-    sel.innerHTML = '<option value="">— select winner —</option>';
-    res.data.forEach(function(c) {
-        var o = document.createElement('option'); o.value = c.id; o.textContent = c.full_name; sel.appendChild(o);
-    });
-};
-
-window.hideWinnerReveal = async function() {
-    if (!_sb || !confirm('Hide the winner banner on all devices?')) return;
-    var msg = document.getElementById('finale-msg');
-    var res = await _sb.from('system_settings').update({ winner_id: null }).eq('id', 1);
-    if (res.error) { if(msg){msg.style.color='#E3004F';msg.textContent='Error: '+res.error.message;} return; }
-    // dismiss locally for admin too
-    var ov = document.getElementById('winner-reveal-overlay');
-    if (ov) ov.remove();
-    if(msg){msg.style.color='#6b7280';msg.textContent='Banner hidden on all devices.';}
-};
-
-window.triggerWinnerReveal = async function() {
-    var sel = document.getElementById('finale-winner-select');
-    var msg = document.getElementById('finale-msg');
-    if (!sel || !sel.value) { if(msg){msg.style.color='#E3004F';msg.textContent='Please select a winner first.';} return; }
-    if (!confirm('Broadcast winner reveal to ALL connected users?')) return;
-    if (!_sb) return;
-    var res = await _sb.from('system_settings').update({ winner_id: sel.value }).eq('id', 1);
-    if (res.error) { if(msg){msg.style.color='#E3004F';msg.textContent='Error: '+res.error.message;} return; }
-    if(msg){msg.style.color='#16a34a';msg.textContent='\U0001f389 Winner broadcast sent!';}
-    var cRes = await _sb.from('contestants').select('full_name,headshot_url').eq('id', sel.value).single();
-    if (!cRes.error && cRes.data) window._showWinnerOverlay(cRes.data);
-};
-
-window._showWinnerOverlay = function(contestant) {
-    var existing = document.getElementById('winner-reveal-overlay');
-    if (existing) existing.remove();
-    var ov = document.createElement('div');
-    ov.id = 'winner-reveal-overlay';
-    ov.style.cssText = 'position:fixed;inset:0;background:#0d000a;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:winnerFadeIn 0.8s ease;';
-    ov.innerHTML = '<div id="winner-confetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>' +
-        '<div style="position:relative;z-index:2;text-align:center;padding:2rem;">' +
-        (contestant.headshot_url ? '<img src="'+contestant.headshot_url+'" style="width:160px;height:160px;object-fit:cover;border-radius:50%;border:4px solid #E3004F;margin-bottom:1.5rem;box-shadow:0 0 60px rgba(227,0,79,0.6);">' : '') +
-        '<p style="font-size:0.85rem;letter-spacing:0.3em;color:#E3004F;font-weight:700;text-transform:uppercase;margin-bottom:0.5rem;">Crème De La Style 2026</p>' +
-        '<h1 style="font-size:clamp(2.2rem,9vw,4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:0.5rem;text-shadow:0 0 40px rgba(227,0,79,0.8);">\U0001f451 ' + _esc(contestant.full_name) + '</h1>' +
-        '<p style="font-size:1.1rem;color:var(--gold);font-weight:700;letter-spacing:0.15em;">WINNER</p>' +
-        '</div>' +
-        '<button onclick="window._winnerShownThisSession=false;document.getElementById(\'winner-reveal-overlay\').remove()" style="position:absolute;top:1.5rem;right:1.5rem;background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);padding:0.4rem 0.9rem;border-radius:8px;cursor:pointer;font-size:0.8rem;">✕ Close</button>';
-    document.body.appendChild(ov);
-    // confetti
-    var canvas = document.createElement('canvas');
-    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
-    document.getElementById('winner-confetti').appendChild(canvas);
-    var ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    var particles = [];
-    var colors = ['#E3004F','#FFD700','#fff','#ff69b4','#c0392b'];
-    for (var i = 0; i < 160; i++) {
-        particles.push({ x: Math.random()*canvas.width, y: -20, vx: (Math.random()-0.5)*4, vy: Math.random()*4+2, color: colors[Math.floor(Math.random()*colors.length)], size: Math.random()*8+4, rot: Math.random()*360, rspeed: (Math.random()-0.5)*5 });
-    }
-    var animId;
-    function drawConfetti() {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        var alive = false;
-        particles.forEach(function(p) {
-            if (p.y < canvas.height + 20) { alive = true; p.x += p.vx; p.y += p.vy; p.rot += p.rspeed; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180); ctx.fillStyle=p.color; ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2); ctx.restore(); }
-        });
-        if (alive) animId = requestAnimationFrame(drawConfetti);
-    }
-    drawConfetti();
-    setTimeout(function(){ cancelAnimationFrame(animId); }, 8000);
-};
-
-window._subscribeWinnerReveal = function() {
-    if (!_sb) return;
-    _sb.channel('winner-reveal').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'system_settings' }, function(payload) {
-        var nw = payload.new;
-        if (!nw) return;
-        // Winner cleared — dismiss overlay on all devices
-        if (!nw.winner_id) {
-            var ov = document.getElementById('winner-reveal-overlay');
-            if (ov) ov.remove();
-            return;
-        }
-        // Winner set — show overlay (admins see it too from realtime, skip only if they triggered)
-        _sb.from('contestants').select('full_name,headshot_url').eq('id', nw.winner_id).single().then(function(res) {
-            if (!res.error && res.data) window._showWinnerOverlay(res.data);
-        });
-    }).subscribe();
-};
-
-/* ════════════════════════════════════
-   FEATURE 69 - Live Analytics
-════════════════════════════════════ */
-window.loadAdminAnalytics = async function() {
-    if (!_sb) return;
-    var set = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; };
-    set('stat-tickets','…'); set('stat-votes','…'); set('stat-nominations','…');
-    set('stat-contestants','…'); set('stat-judges','…'); set('stat-sponsors','…');
-    try {
-        var tRes = await _sb.from('tickets').select('id,amount_paid', { count: 'exact' });
-        set('stat-tickets', tRes.count != null ? tRes.count : '—');
-        if (tRes.data) { var tRev = tRes.data.reduce(function(s,r){return s+(r.amount_paid||0);},0); set('stat-tickets-rev','Revenue: ₦'+tRev.toLocaleString()); }
-
-        var vRes = await _sb.from('contestants').select('vote_count').eq('is_approved',true);
-        if (!vRes.error && vRes.data) { var tv = vRes.data.reduce(function(s,r){return s+(r.vote_count||0);},0); set('stat-votes',tv.toLocaleString()); }
-
-        var nRes = await _sb.from('nominations').select('id,amount_paid', { count: 'exact' });
-        set('stat-nominations', nRes.count != null ? nRes.count : '—');
-        if (nRes.data) { var nRev = nRes.data.reduce(function(s,r){return s+(r.amount_paid||0);},0); set('stat-noms-rev','Revenue: ₦'+nRev.toLocaleString()); }
-
-        var cRes = await _sb.from('contestants').select('id,amount_paid', { count: 'exact' });
-        set('stat-contestants', cRes.count != null ? cRes.count : '—');
-        if (cRes.data) { var cRev = cRes.data.reduce(function(s,r){return s+(r.amount_paid||0);},0); set('stat-cont-rev','Revenue: ₦'+cRev.toLocaleString()); }
-
-        var jRes = await _sb.from('judges').select('id', { count: 'exact' });
-        set('stat-judges', jRes.count != null ? jRes.count : '—');
-
-        var tmRes = await _sb.from('team_members').select('id', { count: 'exact' });
-        set('stat-team-c', 'Team members: ' + (tmRes.count != null ? tmRes.count : '—'));
-
-        var spRes = await _sb.from('sponsors').select('id', { count: 'exact' });
-        set('stat-sponsors', spRes.count != null ? spRes.count : '—');
-    } catch(e) { console.warn('Analytics error', e); }
-};
-
-/* ════════════════════════════════════
-   FEATURE 68 - PWA Install Prompt
-════════════════════════════════════ */
-var _pwaPrompt = null;
-window.addEventListener('beforeinstallprompt', function(e) {
-    e.preventDefault();
-    _pwaPrompt = e;
-    var banner = document.getElementById('pwa-install-banner');
-    if (banner) banner.style.display = 'flex';
-});
-window.triggerPwaInstall = function() {
-    if (!_pwaPrompt) return;
-    _pwaPrompt.prompt();
-    _pwaPrompt.userChoice.then(function() { _pwaPrompt = null; var b = document.getElementById('pwa-install-banner'); if(b) b.style.display='none'; });
-};
-
-
-    // Feature 68: Register Service Worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/creme-app/sw.js').catch(function(e){ console.warn('SW reg failed', e); });
-        });
-    }
 /* ── RUN ── */
 boot();
 
 })();
 </script>
-
-<!-- PWA Install Banner -->
-<div id="pwa-install-banner" style="display:none;position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%);background:#1a0014;border:1px solid rgba(227,0,79,0.5);border-radius:14px;padding:0.75rem 1.1rem;gap:0.75rem;align-items:center;z-index:9998;box-shadow:0 8px 32px rgba(0,0,0,0.4);max-width:340px;width:calc(100% - 2rem);">
-    <span style="font-size:1.4rem;">📲</span>
-    <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:0.85rem;color:#fff;">Install the App</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.55);">Add Crème De La Style to your home screen.</div></div>
-    <button onclick="window.triggerPwaInstall()" style="background:#E3004F;color:#fff;border:none;border-radius:9px;padding:0.45rem 0.85rem;font-weight:700;font-size:0.8rem;cursor:pointer;font-family:inherit;white-space:nowrap;">Install</button>
-    <button onclick="document.getElementById('pwa-install-banner').style.display='none'" style="background:transparent;border:none;color:rgba(255,255,255,0.4);font-size:1.1rem;cursor:pointer;padding:0 0.2rem;">✕</button>
-</div>
-
 </body>
 </html>
