@@ -2771,12 +2771,15 @@ html, body {
 
                 <div style="margin-top:1.5rem;padding:1.25rem;border:2px solid #E3004F;border-radius:14px;background:rgba(227,0,79,0.06);">
                     <h3 style="color:#E3004F;margin:0 0 0.5rem;font-size:1rem;">🏆 Grand Finale — Winner Reveal</h3>
-                    <p style="font-size:0.78rem;color:#9ca3af;margin-bottom:0.9rem;line-height:1.5;">Select the winner and press TRIGGER to broadcast a realtime fullscreen takeover to every connected device.</p>
+                    <p style="font-size:0.78rem;color:#9ca3af;margin-bottom:0.9rem;line-height:1.5;">Select the winner and TRIGGER to broadcast a realtime fullscreen takeover to every connected device. Press HIDE to dismiss it on all devices.</p>
                     <label style="font-size:0.8rem;font-weight:600;color:#374151;display:block;margin-bottom:0.4rem;">Select Winner</label>
                     <select id="finale-winner-select" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:0.9rem;margin-bottom:0.9rem;">
                         <option value="">— loading contestants —</option>
                     </select>
-                    <button onclick="window.triggerWinnerReveal()" style="width:100%;padding:0.8rem;background:#E3004F;color:#fff;font-weight:900;font-size:1rem;border:none;border-radius:10px;cursor:pointer;letter-spacing:0.05em;font-family:inherit;">🎉 TRIGGER WINNER REVEAL</button>
+                    <div style="display:flex;gap:0.6rem;">
+                        <button onclick="window.triggerWinnerReveal()" style="flex:1;padding:0.8rem;background:#E3004F;color:#fff;font-weight:900;font-size:0.95rem;border:none;border-radius:10px;cursor:pointer;letter-spacing:0.04em;font-family:inherit;">🎉 TRIGGER REVEAL</button>
+                        <button onclick="window.hideWinnerReveal()" style="flex:0 0 auto;padding:0.8rem 1rem;background:#374151;color:#fff;font-weight:700;font-size:0.85rem;border:none;border-radius:10px;cursor:pointer;font-family:inherit;">🚫 HIDE BANNER</button>
+                    </div>
                     <div id="finale-msg" style="margin-top:0.6rem;font-size:0.8rem;text-align:center;min-height:1rem;"></div>
                 </div>
 
@@ -2954,6 +2957,7 @@ html, body {
                 </div>
                 <div id="adm-timeline-list"><p class="adm-empty">Click Refresh to load schedule.</p></div>
             </div>
+        </div>
 
         <!-- SPONSORS PANE -->
         <div id="adm-tab-sponsors" class="admin-tab-pane">
@@ -3220,8 +3224,9 @@ async function fetchAppSettings() {
         if (res.data) {
             window.appSettings = res.data;
             applyTabGates(!!window.currentUser); // re-fence tabs with fresh data
-            // F66: show winner overlay if winner has been set (non-admin users)
-            if (res.data.winner_id && window.currentUserRole !== 'admin') {
+            // F66: show winner overlay for ALL users if winner_id is set
+            if (res.data.winner_id && !window._winnerShownThisSession) {
+                window._winnerShownThisSession = true;
                 _sb.from('contestants').select('full_name,headshot_url').eq('id', res.data.winner_id).single().then(function(cr) {
                     if (!cr.error && cr.data && !document.getElementById('winner-reveal-overlay')) {
                         window._showWinnerOverlay(cr.data);
@@ -6398,6 +6403,17 @@ window.loadFinaleContestants = async function() {
     });
 };
 
+window.hideWinnerReveal = async function() {
+    if (!_sb || !confirm('Hide the winner banner on all devices?')) return;
+    var msg = document.getElementById('finale-msg');
+    var res = await _sb.from('system_settings').update({ winner_id: null }).eq('id', 1);
+    if (res.error) { if(msg){msg.style.color='#E3004F';msg.textContent='Error: '+res.error.message;} return; }
+    // dismiss locally for admin too
+    var ov = document.getElementById('winner-reveal-overlay');
+    if (ov) ov.remove();
+    if(msg){msg.style.color='#6b7280';msg.textContent='Banner hidden on all devices.';}
+};
+
 window.triggerWinnerReveal = async function() {
     var sel = document.getElementById('finale-winner-select');
     var msg = document.getElementById('finale-msg');
@@ -6424,7 +6440,7 @@ window._showWinnerOverlay = function(contestant) {
         '<h1 style="font-size:clamp(2.2rem,9vw,4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:0.5rem;text-shadow:0 0 40px rgba(227,0,79,0.8);">\U0001f451 ' + _esc(contestant.full_name) + '</h1>' +
         '<p style="font-size:1.1rem;color:var(--gold);font-weight:700;letter-spacing:0.15em;">WINNER</p>' +
         '</div>' +
-        '<button onclick="document.getElementById(\'winner-reveal-overlay\').remove()" style="position:absolute;top:1.5rem;right:1.5rem;background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);padding:0.4rem 0.9rem;border-radius:8px;cursor:pointer;font-size:0.8rem;">✕ Close</button>';
+        '<button onclick="window._winnerShownThisSession=false;document.getElementById(\'winner-reveal-overlay\').remove()" style="position:absolute;top:1.5rem;right:1.5rem;background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);padding:0.4rem 0.9rem;border-radius:8px;cursor:pointer;font-size:0.8rem;">✕ Close</button>';
     document.body.appendChild(ov);
     // confetti
     var canvas = document.createElement('canvas');
@@ -6454,8 +6470,14 @@ window._subscribeWinnerReveal = function() {
     if (!_sb) return;
     _sb.channel('winner-reveal').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'system_settings' }, function(payload) {
         var nw = payload.new;
-        if (!nw || !nw.winner_id) return;
-        if (window.currentUserRole === 'admin') return; // admin triggered it, skip self-overlay
+        if (!nw) return;
+        // Winner cleared — dismiss overlay on all devices
+        if (!nw.winner_id) {
+            var ov = document.getElementById('winner-reveal-overlay');
+            if (ov) ov.remove();
+            return;
+        }
+        // Winner set — show overlay (admins see it too from realtime, skip only if they triggered)
         _sb.from('contestants').select('full_name,headshot_url').eq('id', nw.winner_id).single().then(function(res) {
             if (!res.error && res.data) window._showWinnerOverlay(res.data);
         });
