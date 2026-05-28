@@ -1767,8 +1767,8 @@ html, body {
                     </select>
                 </div>
                 <div class="nominate-field">
-                    <label>Instagram / Social Handle <span class="required">(*)</span>required</label>
-                    <input type="text" id="nom-handle" class="nominate-input" placeholder="@handle">
+                    <label>Instagram / Social Link <span class="required">(*)</span>required</label>
+                    <input type="url" id="nom-handle" class="nominate-input" placeholder="https://instagram.com/yourname">
                 </div>
                 <div class="nominate-field">
                     <label>Why do they deserve it?</label>
@@ -2038,8 +2038,8 @@ html, body {
                             <textarea id="rf-experience-detail" class="nominate-input nominate-textarea" rows="3" placeholder="Briefly describe your prior experience..." style="display:none;" oninput="checkRegForm()"></textarea>
                         </div>
                         <div class="nominate-field">
-                            <label>Social Handles * <span style="color:var(--cream-60);font-weight:400;">(Instagram, TikTok, etc.)</span></label>
-                            <input type="text" id="rf-social-handles" class="nominate-input" placeholder="e.g. IG: @name, TikTok: @name" oninput="checkRegForm()">
+                            <label>Social Links * <span style="color:var(--cream-60);font-weight:400;">(Instagram, TikTok, etc.)</span></label>
+                            <input type="url" id="rf-social-handles" class="nominate-input" placeholder="https://instagram.com/yourname" oninput="checkRegForm()">
                         </div>
                         <div class="nominate-field">
                             <label>About You * <span style="color:var(--cream-60);font-weight:400;">Tell us who you are — 1-3 sentences</span></label>
@@ -2837,7 +2837,7 @@ html, body {
                 </div>
                 <div class="adm-field"><label>Full Name</label><input type="text" id="judge-name" class="nominate-input" placeholder="e.g. Adaeze Okafor"></div>
                 <div class="adm-field"><label>Title / Role</label><input type="text" id="judge-title-input" class="nominate-input" placeholder="e.g. Head Judge · Fashion Designer & Creative Director"></div>
-                <div class="adm-field"><label>Social Media Handles <small style="color:#9ca3af;font-weight:400;">(e.g. IG: @name, TikTok: @name)</small></label><input type="text" id="judge-social" class="nominate-input" placeholder="IG: @judgename · TikTok: @judgename"></div>
+                <div class="adm-field"><label>Social Media Link <small style="color:#9ca3af;font-weight:400;">(Instagram, TikTok, etc.)</small></label><input type="url" id="judge-social" class="nominate-input" placeholder="https://instagram.com/judgename"></div>
                 <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.85rem;">
                     <input type="checkbox" id="judge-is-head" style="width:17px;height:17px;accent-color:#9A1A45;cursor:pointer;">
                     <label for="judge-is-head" style="font-size:0.82rem;font-weight:600;color:#374151;cursor:pointer;">Mark as Head Judge</label>
@@ -2876,7 +2876,7 @@ html, body {
                 </div>
                 <div class="adm-field"><label>Full Name</label><input type="text" id="team-name" class="nominate-input" placeholder="e.g. Oluwanifemi Akangbe"></div>
                 <div class="adm-field"><label>Role / Title</label><input type="text" id="team-title-input" class="nominate-input" placeholder="e.g. Event Director"></div>
-                <div class="adm-field"><label>Social Media Handles <small style="color:#9ca3af;font-weight:400;">(e.g. IG: @name, TikTok: @name)</small></label><input type="text" id="team-social" class="nominate-input" placeholder="IG: @teamname · TikTok: @teamname"></div>
+                <div class="adm-field"><label>Social Media Link <small style="color:#9ca3af;font-weight:400;">(Instagram, TikTok, etc.)</small></label><input type="url" id="team-social" class="nominate-input" placeholder="https://instagram.com/teamname"></div>
                 <div class="adm-field"><label>Signature Quote <small style="color:#9ca3af;font-weight:400;">(displayed on profile)</small></label><input type="text" id="team-quote" class="nominate-input" placeholder='e.g. "Style is everything."'  maxlength="220"></div>
                 <div class="adm-field"><label>Bio Paragraphs <small style="color:#9ca3af;font-weight:400;">(separate paragraphs with a blank line)</small></label>
                     <textarea id="team-bios" class="nominate-input nominate-textarea" rows="6" placeholder="Bio paragraph...&#10;&#10;Quote or second paragraph..."></textarea>
@@ -4857,9 +4857,9 @@ window.loadLiveRankings = async function() {
     var voteMap = {};
     var maxVotes = 1;
     if (applyFan) {
-        var vRes = await _sb.from('votes').select('contestant_id').eq('category', 'fan_favourite');
+        var vRes = await _sb.from('votes').select('nominee_id').eq('category_id', 'fan_favourite');
         if (!vRes.error && vRes.data) {
-            vRes.data.forEach(function(v) { voteMap[v.contestant_id] = (voteMap[v.contestant_id] || 0) + 1; });
+            vRes.data.forEach(function(v) { voteMap[v.nominee_id] = (voteMap[v.nominee_id] || 0) + 1; });
             Object.values(voteMap).forEach(function(n) { if (n > maxVotes) maxVotes = n; });
         }
     }
@@ -4867,7 +4867,7 @@ window.loadLiveRankings = async function() {
         var d = totals[c.id] || {}, judgeScore = 0;
         Object.keys(d).forEach(function(lk) { judgeScore += d[lk].sum / d[lk].n; });
         var votes = voteMap[c.id] || 0;
-        var fanBonus = applyFan ? Math.round((votes / maxVotes) * 50) : 0;
+        var fanBonus = applyFan ? Math.round((votes / maxVotes) * 20) : 0;
         var grand = Math.round(judgeScore) + fanBonus;
         return { name: c.full_name, img: c.headshot_url, grand: grand, judgeScore: Math.round(judgeScore), fanBonus: fanBonus, votes: votes };
     }).sort(function(a, b) { return b.grand - a.grand; });
@@ -6547,10 +6547,18 @@ window.addEventListener('beforeinstallprompt', function(e) {
     showPwaBanner();
 });
 
+// Mark as installed when app is installed
+window.addEventListener('appinstalled', function() {
+    localStorage.setItem('creme_pwa_installed', '1');
+    var b = document.getElementById('pwa-install-banner');
+    if (b) b.style.display = 'none';
+});
+
 // Show banner proactively on mobile if not already installed
 function showPwaBanner() {
+    if (localStorage.getItem('creme_pwa_installed')) return; // already installed
     var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-    if (isStandalone) return; // already installed
+    if (isStandalone) { localStorage.setItem('creme_pwa_installed', '1'); return; }
     var banner = document.getElementById('pwa-install-banner');
     if (banner) banner.style.display = 'flex';
 }
@@ -6561,7 +6569,10 @@ setTimeout(function() { showPwaBanner(); }, /Android|iPhone|iPad|iPod/i.test(nav
 window.triggerPwaInstall = function() {
     if (_pwaPrompt) {
         _pwaPrompt.prompt();
-        _pwaPrompt.userChoice.then(function() {
+        _pwaPrompt.userChoice.then(function(choice) {
+            if (choice.outcome === 'accepted') {
+                localStorage.setItem('creme_pwa_installed', '1');
+            }
             _pwaPrompt = null;
             var b = document.getElementById('pwa-install-banner');
             if (b) b.style.display = 'none';
