@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crème De La Style ✦ OAU Official Hub</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d000a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crème De La Style">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -800,6 +805,7 @@ html, body {
     border-radius: 24px; width: 100%; max-width: 460px;
     max-height: 88vh; overflow-y: auto; position: relative;
 }
+@keyframes winnerFadeIn { from { opacity:0; transform:scale(1.04); } to { opacity:1; transform:scale(1); } }
 .profile-hero {
     width: 100%; height: auto; max-height: 68vh; object-fit: contain;
     border-radius: 24px 24px 0 0; display: block; background: #0d000a;
@@ -1631,6 +1637,7 @@ html, body {
         <div id="tab-home" class="tab-screen active">
 
             <div class="home-hero">
+                <div style="margin-bottom:0.85rem;"><img src="https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/logo.png" alt="Crème De La Style" style="height:72px;width:auto;object-fit:contain;filter:drop-shadow(0 2px 12px rgba(227,0,79,0.35));" onerror="this.style.display='none'"></div>
                 <h1 class="hero-title">Crème De La Style <span class="gold">✨</span></h1>
                 <p class="hero-subtitle">✦ OAU Official Hub ✦</p>
                 <p class="hero-desc">Where culture meets the runway. Where boldness becomes legacy.</p>
@@ -2249,20 +2256,11 @@ html, body {
             </div>
 
             <!-- Nav buttons (4-up grid) -->
-            <div class="event-nav-btns">
-                <button class="event-nav-btn primary" onclick="switchTab('tickets')">🎟️ Get Tickets</button>
-                <button class="event-nav-btn" onclick="switchTab('register')">📝 Register as Contestant</button>
-                <button class="event-nav-btn" onclick="switchTab('judges')">⚖️ Meet the Judges</button>
-                <button class="event-nav-btn" onclick="switchTab('lineup')">👗 Meet the Contestants</button>
-            </div>
-
             <!-- Sponsors -->
             <div class="sponsors-section">
                 <div class="sponsors-label">Sponsors &amp; Partners</div>
                 <div class="sponsors-grid" id="sponsors-grid">
-                    <div class="sponsor-card">Coming Soon</div>
-                    <div class="sponsor-card">Coming Soon</div>
-                    <div class="sponsor-card">Coming Soon</div>
+                    <div style="color:var(--cream-60);font-size:0.82rem;grid-column:1/-1;text-align:center;padding:0.5rem 0;">Loading sponsors…</div>
                 </div>
             </div>
         </div>
@@ -2372,7 +2370,7 @@ html, body {
             <!-- VIEW: Live Rankings -->
             <div id="judge-rankings-view" style="display:none;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-                    <p style="color:var(--cream-60);font-size:0.8rem;margin:0;">Grand Total = avg Look 1 + avg Look 2 + avg Look 3 + avg Look 4 across all judges (max 200).</p>
+                    <p id="rankings-denominator-note" style="color:var(--cream-60);font-size:0.8rem;margin:0;">Grand Total = avg Look 1 + avg Look 2 + avg Look 3 + avg Look 4 across all judges (max 200).</p>
                     <button onclick="window.loadLiveRankings()" style="margin-left:0.75rem;flex-shrink:0;background:transparent;border:1px solid rgba(255,248,220,0.3);color:rgba(255,248,220,0.7);padding:0.4rem 1rem;border-radius:8px;font-size:0.72rem;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(255,248,220,0.3)';this.style.color='rgba(255,248,220,0.7)'">↻ Refresh</button>
                 </div>
                 <div id="judge-rankings-list"><p style="color:var(--cream-60);font-size:0.88rem;">Click Refresh to load rankings.</p></div>
@@ -2546,6 +2544,7 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('polls', this)">📣 Polls</button>
         <button class="admin-tab" onclick="switchAdminTab('messages', this)">✉️ Messages</button>
         <button class="admin-tab" onclick="switchAdminTab('timeline', this)">📅 Timeline</button>
+        <button class="admin-tab" onclick="switchAdminTab('sponsors', this)">🤝 Sponsors</button>
     </nav>
     <main class="admin-body">
         <div id="adm-tab-dispatches" class="admin-tab-pane active">
@@ -2566,11 +2565,17 @@ html, body {
         </div>
         <div id="adm-tab-analytics" class="admin-tab-pane">
             <div class="admin-section">
-                <h2>Platform Overview</h2>
-                <div class="adm-stats-grid">
-                    <div class="adm-stat-card" style="border-top-color:#3b82f6;"><div class="adm-stat-num">1,204</div><div class="adm-stat-label">Total Users</div><div class="adm-stat-change positive">↑ +14 today</div></div>
-                    <div class="adm-stat-card" style="border-top-color:#E3004F;"><div class="adm-stat-num">8,430</div><div class="adm-stat-label">Votes Cast</div><div class="adm-stat-change positive">↑ Active now</div></div>
-                    <div class="adm-stat-card" style="border-top-color:#FFD700;"><div class="adm-stat-num">24</div><div class="adm-stat-label">Nominees</div><div class="adm-stat-change">8 categories</div></div>
+                <div class="adm-rankings-header">
+                    <h2>Platform Overview</h2>
+                    <button class="adm-refresh-btn" onclick="window.loadAdminAnalytics()">↻ Refresh</button>
+                </div>
+                <div class="adm-stats-grid" style="margin-top:1rem;">
+                    <div class="adm-stat-card" style="border-top-color:#3b82f6;"><div class="adm-stat-num" id="stat-tickets">—</div><div class="adm-stat-label">Tickets Sold</div><div class="adm-stat-change" id="stat-tickets-rev">Revenue: —</div></div>
+                    <div class="adm-stat-card" style="border-top-color:#E3004F;"><div class="adm-stat-num" id="stat-votes">—</div><div class="adm-stat-label">Fan Votes Cast</div><div class="adm-stat-change positive" id="stat-votes-sub">Realtime</div></div>
+                    <div class="adm-stat-card" style="border-top-color:#FFD700;"><div class="adm-stat-num" id="stat-nominations">—</div><div class="adm-stat-label">Nominations</div><div class="adm-stat-change" id="stat-noms-rev">Revenue: —</div></div>
+                    <div class="adm-stat-card" style="border-top-color:#16a34a;"><div class="adm-stat-num" id="stat-contestants">—</div><div class="adm-stat-label">Contestants</div><div class="adm-stat-change" id="stat-cont-rev">Revenue: —</div></div>
+                    <div class="adm-stat-card" style="border-top-color:#a855f7;"><div class="adm-stat-num" id="stat-judges">—</div><div class="adm-stat-label">Judges</div><div class="adm-stat-change" id="stat-team-c">Team members: —</div></div>
+                    <div class="adm-stat-card" style="border-top-color:#f97316;"><div class="adm-stat-num" id="stat-sponsors">—</div><div class="adm-stat-label">Sponsors</div><div class="adm-stat-change">Across all tiers</div></div>
                 </div>
             </div>
         </div>
@@ -2750,6 +2755,29 @@ html, body {
                         <input type="checkbox" id="ctrl-main-event" onchange="saveAppControl('show_main_event', this.checked)">
                         <span class="ctrl-slider"></span>
                     </label>
+                </div>
+
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Apply Fan Vote Boost</div>
+                        <div class="ctrl-desc">Add public fan votes (scaled to 20 pts max) into the judge rankings score.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-fan-points" onchange="saveAppControl('apply_fan_points', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div style="margin-top:1.5rem;padding:1.25rem;border:2px solid #E3004F;border-radius:14px;background:rgba(227,0,79,0.06);">
+                    <h3 style="color:#E3004F;margin:0 0 0.5rem;font-size:1rem;">🏆 Grand Finale — Winner Reveal</h3>
+                    <p style="font-size:0.78rem;color:#9ca3af;margin-bottom:0.9rem;line-height:1.5;">Select the winner and press TRIGGER to broadcast a realtime fullscreen takeover to every connected device.</p>
+                    <label style="font-size:0.8rem;font-weight:600;color:#374151;display:block;margin-bottom:0.4rem;">Select Winner</label>
+                    <select id="finale-winner-select" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:0.9rem;margin-bottom:0.9rem;">
+                        <option value="">— loading contestants —</option>
+                    </select>
+                    <button onclick="window.triggerWinnerReveal()" style="width:100%;padding:0.8rem;background:#E3004F;color:#fff;font-weight:900;font-size:1rem;border:none;border-radius:10px;cursor:pointer;letter-spacing:0.05em;font-family:inherit;">🎉 TRIGGER WINNER REVEAL</button>
+                    <div id="finale-msg" style="margin-top:0.6rem;font-size:0.8rem;text-align:center;min-height:1rem;"></div>
                 </div>
 
                 <div id="ctrl-status" style="margin-top:1rem;font-size:0.8rem;color:#6b7280;min-height:1.2rem;"></div>
@@ -2949,6 +2977,35 @@ html, body {
     <div id="adm-portfolio-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem;"></div>
   </div>
 </div>
+
+        <!-- SPONSORS PANE -->
+        <div id="adm-tab-sponsors" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2>➕ Add Sponsor</h2>
+                <input type="hidden" id="sp-edit-id">
+                <div class="adm-field"><label>Sponsor Name</label><input type="text" id="sp-name" class="nominate-input" placeholder="e.g. Fenty Beauty Nigeria"></div>
+                <div class="adm-field"><label>Logo URL</label><input type="url" id="sp-logo" class="nominate-input" placeholder="https://... logo URL"></div>
+                <div class="adm-field">
+                    <label>Tier</label>
+                    <select id="sp-tier" style="width:100%;padding:0.55rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;font-size:0.9rem;">
+                        <option value="title">Title Sponsor</option>
+                        <option value="gold">Gold</option>
+                        <option value="silver">Silver</option>
+                        <option value="partner">Partner</option>
+                    </select>
+                </div>
+                <button class="adm-submit-btn" onclick="window.saveSponsor()">💾 Save Sponsor</button>
+                <div id="sp-form-msg" style="display:none;margin-top:0.75rem;font-size:0.85rem;text-align:center;"></div>
+            </div>
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1rem;">
+                    <h2>🤝 All Sponsors</h2>
+                    <button class="adm-refresh-btn" onclick="window.loadAdminSponsors()">↻ Refresh</button>
+                </div>
+                <div id="adm-sponsors-list"><p class="adm-empty">Click Refresh to load sponsors.</p></div>
+            </div>
+        </div>
+
 
 <!-- Toast notification -->
 <div id="ctrl-toast" class="ctrl-toast">✓ Saved</div>
@@ -3200,7 +3257,8 @@ window.loadAdminControls = async function() {
         'ctrl-team':         'show_team',
         'ctrl-lineup':       'show_lineup',
         'ctrl-pre-event':    'show_pre_event',
-        'ctrl-main-event':   'show_main_event'
+        'ctrl-main-event':   'show_main_event',
+        'ctrl-fan-points':   'apply_fan_points'
     };
     Object.keys(map).forEach(function(elId) {
         var el = document.getElementById(elId);
@@ -3230,6 +3288,9 @@ function boot() {
     fetchAppSettings(); // Feature 36 — load master switches early
     window.renderVoteList();
     fetchEventDate();
+    window._subscribeWinnerReveal();
+    window.loadFinaleContestants();
+    window.loadPublicSponsors();
     window.loadLineup();
     renderJudges();
     renderTeam();
@@ -3835,6 +3896,8 @@ window.switchAdminTab  = function(tab, btn) {
     if (tab === 'messages')   window.loadAdminMessages();
     if (tab === 'volunteers') window.loadAdminVolunteers();
     if (tab === 'timeline')   window.loadAdminTimeline();
+    if (tab === 'sponsors')   window.loadAdminSponsors();
+    if (tab === 'analytics')  window.loadAdminAnalytics();
 };
 
 /* ── QR TICKET SCANNER ── */
@@ -4754,8 +4817,9 @@ window.loadLiveRankings = async function() {
     if (!container) return;
     container.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Loading…</p>';
     if (!_sb) return;
+    var applyFan = window.appSettings && window.appSettings.apply_fan_points === true;
     var res  = await _sb.from('scores').select('contestant_id,look_category,look_total');
-    var cRes = await _sb.from('contestants').select('id,full_name,headshot_url').eq('is_approved', true);
+    var cRes = await _sb.from('contestants').select('id,full_name,headshot_url,vote_count').eq('is_approved', true);
     if (res.error || !cRes.data) { container.innerHTML = '<p style="color:#ff6b9d;">Error loading rankings.</p>'; return; }
     var totals = {};
     (res.data || []).forEach(function(s) {
@@ -4764,57 +4828,51 @@ window.loadLiveRankings = async function() {
         totals[s.contestant_id][s.look_category].sum += s.look_total;
         totals[s.contestant_id][s.look_category].n   += 1;
     });
+    // find max votes for scaling fan bonus
+    var maxVotes = 1;
+    cRes.data.forEach(function(c) { if ((c.vote_count || 0) > maxVotes) maxVotes = c.vote_count; });
     var ranked = cRes.data.map(function(c) {
-        var d = totals[c.id] || {}, grand = 0;
-        Object.keys(d).forEach(function(lk) { grand += d[lk].sum / d[lk].n; });
-        return { name: c.full_name, img: c.headshot_url, grand: Math.round(grand) };
+        var d = totals[c.id] || {}, judgeScore = 0;
+        Object.keys(d).forEach(function(lk) { judgeScore += d[lk].sum / d[lk].n; });
+        var fanBonus = applyFan ? Math.round(((c.vote_count || 0) / maxVotes) * 20) : 0;
+        var grand = Math.round(judgeScore) + fanBonus;
+        return { name: c.full_name, img: c.headshot_url, grand: grand, judgeScore: Math.round(judgeScore), fanBonus: fanBonus, votes: c.vote_count || 0 };
     }).sort(function(a, b) { return b.grand - a.grand; });
+    // update note
+    var note = document.getElementById('rankings-denominator-note');
+    if (note) {
+        if (applyFan) note.textContent = 'Grand Total = avg judge scores + fan vote bonus (scaled 0–20 pts, max ' + maxVotes + ' votes).';
+        else note.textContent = 'Grand Total = avg Look 1 + avg Look 2 + avg Look 3 + avg Look 4 across all judges (max 200).';
+    }
     container.innerHTML = '';
     ranked.forEach(function(r, i) {
-        var medals = ['🥇','🥈','🥉'];
+        var medals = ['\U0001f947','\U0001f948','\U0001f949'];
         var posLabel = i < 3 ? medals[i] : String(i + 1);
-
         var row = document.createElement('div');
         row.className = 'ranking-row';
-
-        // Position badge
         var pos = document.createElement('span');
         pos.className = 'ranking-pos';
         pos.textContent = posLabel;
         row.appendChild(pos);
-
-        // Avatar — img with clean JS onerror fallback
         if (r.img) {
             var img = document.createElement('img');
             img.className = 'ranking-img';
             img.src = r.img;
             img.alt = r.name;
-            img.onerror = function() {
-                var fb = document.createElement('div');
-                fb.className = 'ranking-avatar-fallback';
-                fb.textContent = '👤';
-                this.parentNode.replaceChild(fb, this);
-            };
+            img.onerror = function() { var fb = document.createElement('div'); fb.className = 'ranking-avatar-fallback'; fb.textContent = '\U0001f464'; this.parentNode.replaceChild(fb, this); };
             row.appendChild(img);
         } else {
-            var fb = document.createElement('div');
-            fb.className = 'ranking-avatar-fallback';
-            fb.textContent = '👤';
-            row.appendChild(fb);
+            var fb = document.createElement('div'); fb.className = 'ranking-avatar-fallback'; fb.textContent = '\U0001f464'; row.appendChild(fb);
         }
-
-        // Name
         var name = document.createElement('span');
         name.className = 'ranking-name';
         name.textContent = r.name;
         row.appendChild(name);
-
-        // Score pill
-        var score = document.createElement('span');
-        score.className = 'ranking-score';
-        score.textContent = r.grand + ' pts';
-        row.appendChild(score);
-
+        var scoreWrap = document.createElement('span');
+        scoreWrap.className = 'ranking-score';
+        scoreWrap.textContent = r.grand + ' pts';
+        if (applyFan && r.fanBonus > 0) scoreWrap.title = 'Judge: ' + r.judgeScore + ' + Fan: +' + r.fanBonus;
+        row.appendChild(scoreWrap);
         container.appendChild(row);
     });
 };
@@ -6212,10 +6270,237 @@ window.clearTimelineForm = function() {
     var m = document.getElementById('tl-form-msg'); if (m) m.style.display = 'none';
 };
 
+
+/* ════════════════════════════════════
+   FEATURE 65 - Dynamic Sponsors
+════════════════════════════════════ */
+window.loadPublicSponsors = async function() {
+    var grid = document.getElementById('sponsors-grid');
+    if (!grid || !_sb) return;
+    var res = await _sb.from('sponsors').select('*').order('tier').order('created_at');
+    if (res.error || !res.data || !res.data.length) {
+        grid.innerHTML = '<div style="color:var(--cream-60);font-size:0.82rem;grid-column:1/-1;text-align:center;padding:0.5rem 0;">Sponsors to be announced.</div>';
+        return;
+    }
+    grid.innerHTML = '';
+    res.data.forEach(function(sp) {
+        var card = document.createElement('div');
+        card.className = 'sponsor-card';
+        card.title = sp.name + (sp.tier ? ' — ' + sp.tier : '');
+        if (sp.logo_url) {
+            card.innerHTML = '<img src="' + sp.logo_url + '" alt="' + _esc(sp.name) + '" style="max-width:80%;max-height:48px;object-fit:contain;" onerror="this.style.display=\'none\'">';
+        } else {
+            card.textContent = sp.name;
+            card.style.fontSize = '0.75rem';
+            card.style.fontWeight = '700';
+        }
+        grid.appendChild(card);
+    });
+};
+
+window.loadAdminSponsors = async function() {
+    var list = document.getElementById('adm-sponsors-list');
+    if (!list || !_sb) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('sponsors').select('*').order('tier').order('created_at');
+    if (res.error) { list.innerHTML = '<p style="color:#E3004F;">Error: ' + res.error.message + '</p>'; return; }
+    if (!res.data || !res.data.length) { list.innerHTML = '<p class="adm-empty">No sponsors yet.</p>'; return; }
+    list.innerHTML = '';
+    res.data.forEach(function(sp) {
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid #f3f4f6;';
+        var logo = sp.logo_url ? '<img src="' + sp.logo_url + '" style="width:40px;height:32px;object-fit:contain;border-radius:4px;border:1px solid #e5e7eb;" onerror="this.style.display=\'none\'">' : '<div style="width:40px;height:32px;background:#f3f4f6;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1rem;">\U0001f91d</div>';
+        row.innerHTML = logo + '<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _esc(sp.name) + '</div><div style="font-size:0.75rem;color:#6b7280;">' + (sp.tier || '') + '</div></div>' +
+            '<button onclick="window.editSponsor(' + JSON.stringify(sp) + ')" style="background:transparent;border:1px solid #d1d5db;border-radius:7px;padding:0.3rem 0.6rem;font-size:0.75rem;cursor:pointer;">✏️</button>' +
+            '<button onclick="window.deleteSponsor(\'' + sp.id + '\')" style="background:transparent;border:1px solid #fca5a5;border-radius:7px;padding:0.3rem 0.6rem;font-size:0.75rem;cursor:pointer;color:#E3004F;">\u{1f5d1}</button>';
+        list.appendChild(row);
+    });
+};
+
+window.editSponsor = function(sp) {
+    document.getElementById('sp-edit-id').value = sp.id;
+    document.getElementById('sp-name').value = sp.name || '';
+    document.getElementById('sp-logo').value = sp.logo_url || '';
+    var t = document.getElementById('sp-tier'); if (t) t.value = sp.tier || 'partner';
+};
+
+window.saveSponsor = async function() {
+    if (!_sb) return;
+    var id   = document.getElementById('sp-edit-id').value.trim();
+    var name = document.getElementById('sp-name').value.trim();
+    var logo = document.getElementById('sp-logo').value.trim();
+    var tier = document.getElementById('sp-tier').value;
+    var msg  = document.getElementById('sp-form-msg');
+    if (!name) { msg.style.display='block'; msg.style.color='#E3004F'; msg.textContent='Name is required.'; return; }
+    var payload = { name: name, logo_url: logo || null, tier: tier };
+    var res = id
+        ? await _sb.from('sponsors').update(payload).eq('id', id)
+        : await _sb.from('sponsors').insert(payload);
+    if (res.error) { msg.style.display='block'; msg.style.color='#E3004F'; msg.textContent='Error: '+res.error.message; return; }
+    ['sp-edit-id','sp-name','sp-logo'].forEach(function(x){document.getElementById(x).value='';});
+    document.getElementById('sp-tier').value = 'partner';
+    msg.style.display='block'; msg.style.color='#16a34a'; msg.textContent = id ? 'Sponsor updated!' : 'Sponsor added!';
+    setTimeout(function(){msg.style.display='none';},2500);
+    window.loadAdminSponsors();
+    window.loadPublicSponsors();
+};
+
+window.deleteSponsor = async function(id) {
+    if (!_sb || !confirm('Delete this sponsor?')) return;
+    await _sb.from('sponsors').delete().eq('id', id);
+    window.loadAdminSponsors();
+    window.loadPublicSponsors();
+};
+
+/* ════════════════════════════════════
+   FEATURE 66 - BBN Winner Reveal
+════════════════════════════════════ */
+window.loadFinaleContestants = async function() {
+    var sel = document.getElementById('finale-winner-select');
+    if (!sel || !_sb) return;
+    var res = await _sb.from('contestants').select('id,full_name').eq('is_approved', true).order('full_name');
+    if (res.error || !res.data) return;
+    sel.innerHTML = '<option value="">— select winner —</option>';
+    res.data.forEach(function(c) {
+        var o = document.createElement('option'); o.value = c.id; o.textContent = c.full_name; sel.appendChild(o);
+    });
+};
+
+window.triggerWinnerReveal = async function() {
+    var sel = document.getElementById('finale-winner-select');
+    var msg = document.getElementById('finale-msg');
+    if (!sel || !sel.value) { if(msg){msg.style.color='#E3004F';msg.textContent='Please select a winner first.';} return; }
+    if (!confirm('Broadcast winner reveal to ALL connected users?')) return;
+    if (!_sb) return;
+    var res = await _sb.from('system_settings').update({ winner_id: sel.value }).eq('id', 1);
+    if (res.error) { if(msg){msg.style.color='#E3004F';msg.textContent='Error: '+res.error.message;} return; }
+    if(msg){msg.style.color='#16a34a';msg.textContent='\U0001f389 Winner broadcast sent!';}
+    var cRes = await _sb.from('contestants').select('full_name,headshot_url').eq('id', sel.value).single();
+    if (!cRes.error && cRes.data) window._showWinnerOverlay(cRes.data);
+};
+
+window._showWinnerOverlay = function(contestant) {
+    var existing = document.getElementById('winner-reveal-overlay');
+    if (existing) existing.remove();
+    var ov = document.createElement('div');
+    ov.id = 'winner-reveal-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;background:#0d000a;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:winnerFadeIn 0.8s ease;';
+    ov.innerHTML = '<div id="winner-confetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>' +
+        '<div style="position:relative;z-index:2;text-align:center;padding:2rem;">' +
+        (contestant.headshot_url ? '<img src="'+contestant.headshot_url+'" style="width:160px;height:160px;object-fit:cover;border-radius:50%;border:4px solid #E3004F;margin-bottom:1.5rem;box-shadow:0 0 60px rgba(227,0,79,0.6);">' : '') +
+        '<p style="font-size:0.85rem;letter-spacing:0.3em;color:#E3004F;font-weight:700;text-transform:uppercase;margin-bottom:0.5rem;">Crème De La Style 2026</p>' +
+        '<h1 style="font-size:clamp(2.2rem,9vw,4rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:0.5rem;text-shadow:0 0 40px rgba(227,0,79,0.8);">\U0001f451 ' + _esc(contestant.full_name) + '</h1>' +
+        '<p style="font-size:1.1rem;color:var(--gold);font-weight:700;letter-spacing:0.15em;">WINNER</p>' +
+        '</div>' +
+        '<button onclick="document.getElementById(\'winner-reveal-overlay\').remove()" style="position:absolute;top:1.5rem;right:1.5rem;background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);padding:0.4rem 0.9rem;border-radius:8px;cursor:pointer;font-size:0.8rem;">✕ Close</button>';
+    document.body.appendChild(ov);
+    // confetti
+    var canvas = document.createElement('canvas');
+    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
+    document.getElementById('winner-confetti').appendChild(canvas);
+    var ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    var particles = [];
+    var colors = ['#E3004F','#FFD700','#fff','#ff69b4','#c0392b'];
+    for (var i = 0; i < 160; i++) {
+        particles.push({ x: Math.random()*canvas.width, y: -20, vx: (Math.random()-0.5)*4, vy: Math.random()*4+2, color: colors[Math.floor(Math.random()*colors.length)], size: Math.random()*8+4, rot: Math.random()*360, rspeed: (Math.random()-0.5)*5 });
+    }
+    var animId;
+    function drawConfetti() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        var alive = false;
+        particles.forEach(function(p) {
+            if (p.y < canvas.height + 20) { alive = true; p.x += p.vx; p.y += p.vy; p.rot += p.rspeed; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180); ctx.fillStyle=p.color; ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2); ctx.restore(); }
+        });
+        if (alive) animId = requestAnimationFrame(drawConfetti);
+    }
+    drawConfetti();
+    setTimeout(function(){ cancelAnimationFrame(animId); }, 8000);
+};
+
+window._subscribeWinnerReveal = function() {
+    if (!_sb) return;
+    _sb.channel('winner-reveal').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'system_settings' }, function(payload) {
+        var nw = payload.new;
+        if (!nw || !nw.winner_id) return;
+        if (window.currentUserRole === 'admin') return; // admin triggered it, skip self-overlay
+        _sb.from('contestants').select('full_name,headshot_url').eq('id', nw.winner_id).single().then(function(res) {
+            if (!res.error && res.data) window._showWinnerOverlay(res.data);
+        });
+    }).subscribe();
+};
+
+/* ════════════════════════════════════
+   FEATURE 69 - Live Analytics
+════════════════════════════════════ */
+window.loadAdminAnalytics = async function() {
+    if (!_sb) return;
+    var set = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; };
+    set('stat-tickets','…'); set('stat-votes','…'); set('stat-nominations','…');
+    set('stat-contestants','…'); set('stat-judges','…'); set('stat-sponsors','…');
+    try {
+        var tRes = await _sb.from('tickets').select('id,amount_paid', { count: 'exact' });
+        set('stat-tickets', tRes.count != null ? tRes.count : '—');
+        if (tRes.data) { var tRev = tRes.data.reduce(function(s,r){return s+(r.amount_paid||0);},0); set('stat-tickets-rev','Revenue: ₦'+tRev.toLocaleString()); }
+
+        var vRes = await _sb.from('contestants').select('vote_count').eq('is_approved',true);
+        if (!vRes.error && vRes.data) { var tv = vRes.data.reduce(function(s,r){return s+(r.vote_count||0);},0); set('stat-votes',tv.toLocaleString()); }
+
+        var nRes = await _sb.from('nominations').select('id,amount_paid', { count: 'exact' });
+        set('stat-nominations', nRes.count != null ? nRes.count : '—');
+        if (nRes.data) { var nRev = nRes.data.reduce(function(s,r){return s+(r.amount_paid||0);},0); set('stat-noms-rev','Revenue: ₦'+nRev.toLocaleString()); }
+
+        var cRes = await _sb.from('contestants').select('id,amount_paid', { count: 'exact' });
+        set('stat-contestants', cRes.count != null ? cRes.count : '—');
+        if (cRes.data) { var cRev = cRes.data.reduce(function(s,r){return s+(r.amount_paid||0);},0); set('stat-cont-rev','Revenue: ₦'+cRev.toLocaleString()); }
+
+        var jRes = await _sb.from('judges').select('id', { count: 'exact' });
+        set('stat-judges', jRes.count != null ? jRes.count : '—');
+
+        var tmRes = await _sb.from('team_members').select('id', { count: 'exact' });
+        set('stat-team-c', 'Team members: ' + (tmRes.count != null ? tmRes.count : '—'));
+
+        var spRes = await _sb.from('sponsors').select('id', { count: 'exact' });
+        set('stat-sponsors', spRes.count != null ? spRes.count : '—');
+    } catch(e) { console.warn('Analytics error', e); }
+};
+
+/* ════════════════════════════════════
+   FEATURE 68 - PWA Install Prompt
+════════════════════════════════════ */
+var _pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    _pwaPrompt = e;
+    var banner = document.getElementById('pwa-install-banner');
+    if (banner) banner.style.display = 'flex';
+});
+window.triggerPwaInstall = function() {
+    if (!_pwaPrompt) return;
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(function() { _pwaPrompt = null; var b = document.getElementById('pwa-install-banner'); if(b) b.style.display='none'; });
+};
+
+
+    // Feature 68: Register Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/creme-app/sw.js').catch(function(e){ console.warn('SW reg failed', e); });
+        });
+    }
 /* ── RUN ── */
 boot();
 
 })();
 </script>
+
+<!-- PWA Install Banner -->
+<div id="pwa-install-banner" style="display:none;position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%);background:#1a0014;border:1px solid rgba(227,0,79,0.5);border-radius:14px;padding:0.75rem 1.1rem;gap:0.75rem;align-items:center;z-index:9998;box-shadow:0 8px 32px rgba(0,0,0,0.4);max-width:340px;width:calc(100% - 2rem);">
+    <span style="font-size:1.4rem;">📲</span>
+    <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:0.85rem;color:#fff;">Install the App</div><div style="font-size:0.75rem;color:rgba(255,255,255,0.55);">Add Crème De La Style to your home screen.</div></div>
+    <button onclick="window.triggerPwaInstall()" style="background:#E3004F;color:#fff;border:none;border-radius:9px;padding:0.45rem 0.85rem;font-weight:700;font-size:0.8rem;cursor:pointer;font-family:inherit;white-space:nowrap;">Install</button>
+    <button onclick="document.getElementById('pwa-install-banner').style.display='none'" style="background:transparent;border:none;color:rgba(255,255,255,0.4);font-size:1.1rem;cursor:pointer;padding:0 0.2rem;">✕</button>
+</div>
+
 </body>
 </html>
