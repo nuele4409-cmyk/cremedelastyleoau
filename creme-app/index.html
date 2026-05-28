@@ -5985,25 +5985,64 @@ window.castPollVote = async function(pollId, btn) {
 /* ════ F53 – Candidate PDF Export ════ */
 window.exportCandidatesPDF = async function() {
     if (!_sb) { alert('Not connected to database.'); return; }
-    if (!window.jspdf) {
-        await new Promise(function(resolve,reject){
-            var s1=document.createElement('script');
-            s1.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-            s1.onload=function(){ var s2=document.createElement('script'); s2.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'; s2.onload=resolve; s2.onerror=reject; document.head.appendChild(s2); };
-            s1.onerror=reject; document.head.appendChild(s1);
+    try {
+        await new Promise(function(resolve, reject) {
+            if (window.jspdf && window.jspdf.jsPDF) { resolve(); return; }
+            var s1 = document.createElement('script');
+            s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            s1.onload = function() {
+                var s2 = document.createElement('script');
+                s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+                s2.onload = resolve;
+                s2.onerror = function() { reject(new Error('autoTable failed to load')); };
+                document.head.appendChild(s2);
+            };
+            s1.onerror = function() { reject(new Error('jsPDF failed to load')); };
+            document.head.appendChild(s1);
         });
-    }
-    var res = await _sb.from('contestants').select('*').eq('paid',true).order('created_at',{ascending:true});
-    if (res.error||!res.data||!res.data.length) { alert('No paid candidates found.'); return; }
+    } catch(libErr) { alert('PDF library failed to load: ' + libErr.message); return; }
+    var res = await _sb.from('contestants').select('*').order('full_name', {ascending: true});
+    if (res.error) { alert('Database error: ' + res.error.message); return; }
+    if (!res.data || !res.data.length) { alert('No candidates found.'); return; }
+    // Only include those with payment ref
+    var candidates = res.data.filter(function(c) { return c.payment_ref; });
+    if (!candidates.length) { alert('No paid candidates found yet.'); return; }
+    res = { data: candidates };
     var jsPDF = window.jspdf.jsPDF;
     var doc = new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
     doc.setFontSize(16); doc.setFont('helvetica','bold');
-    doc.text('Crème De La Style OAU – Registered Candidates',14,16);
+    doc.text('Creme De La Style OAU - Registered Candidates',14,16);
     doc.setFontSize(9); doc.setFont('helvetica','normal');
-    doc.text('Generated: '+new Date().toLocaleString(),14,22);
-    var rows=res.data.map(function(c,i){return[i+1,c.full_name||'—',c.department||'—',(c.level||'—')+'L',c.phone||'—',c.height||'—',c.chest||'—',c.shoulder||'—',c.waist||'—',c.hips||'—'];});
-    doc.autoTable({startY:26,head:[['#','Full Name','Department','Level','Phone','Height','Chest','Shoulder','Waist','Hips']],body:rows,styles:{fontSize:8,cellPadding:2},headStyles:{fillColor:[106,0,34],textColor:255,fontStyle:'bold'},alternateRowStyles:{fillColor:[253,242,248]},margin:{left:14,right:14}});
-    doc.save('CDLS-Candidates-'+new Date().toISOString().slice(0,10)+'.pdf');
+    doc.text('Generated: '+new Date().toLocaleString()+'   |   Total: '+res.data.length+' candidates',14,22);
+    var rows=res.data.map(function(c,i){
+        var status = c.is_approved ? 'Approved' : 'Pending';
+        return[
+            i+1,
+            c.full_name||'—',
+            c.email||'—',
+            c.phone||'—',
+            c.department||'—',
+            (c.level||'—'),
+            c.gender||'—',
+            (c.height||'—')+' cm',
+            c.clothing_size||'—',
+            c.payment_ref||'—',
+            status
+        ];
+    });
+    doc.autoTable({
+        startY:28,
+        head:[['#','Full Name','Email','Phone','Department','Level','Gender','Height','Size','Payment Ref','Status']],
+        body:rows,
+        styles:{fontSize:7,cellPadding:2},
+        headStyles:{fillColor:[106,0,34],textColor:255,fontStyle:'bold'},
+        alternateRowStyles:{fillColor:[253,242,248]},
+        columnStyles:{ 9:{cellWidth:28}, 1:{cellWidth:28}, 2:{cellWidth:32} },
+        margin:{left:8,right:8}
+    });
+    try {
+        doc.save('CDLS-Candidates-'+new Date().toISOString().slice(0,10)+'.pdf');
+    } catch(saveErr) { alert('PDF save error: ' + saveErr.message); }
 };
 
 /* ════ F55 – Admin Messages ════ */
