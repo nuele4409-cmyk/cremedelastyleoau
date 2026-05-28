@@ -3056,158 +3056,13 @@ var awardCategories = [
     { id: 'influencer',   title: 'Most Fashionable Influencer of the Year' },
     { id: 'student',      title: 'Most Fashionable Student Personality of the Year' },
 ];
-var mockNominees = [
-    { id: 'n1', name: 'Tunde A.' },
-    { id: 'n2', name: 'Bisi O.' },
-    { id: 'n3', name: 'Zara Cole' },
-];
+var mockNominees = [];
 
-var mockJudges = [
-    {
-        id: 'j1', isHead: true,
-        name: 'Adaeze Okafor',
-        title: 'Head Judge · Fashion Designer & Creative Director',
-        photo: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&h=700&fit=crop&q=80',
-        bios: [
-            'Adaeze Okafor is a Lagos-based fashion designer whose label has graced runways from Lagos to Paris. With over a decade in the industry, she brings an unmatched eye for form, fabric, and cultural storytelling to the judging panel.',
-            'A graduate of the London College of Fashion and founder of House of Adaeze, she has dressed some of the most recognised faces in Afro-pop and Nollywood. Her work has been featured in Vogue Africa, This Day Style, and CNN Style.',
-            'As Head Judge of Crème De La Style, Adaeze will evaluate contestants on originality, cohesion, confidence, and their ability to own a room without saying a word.'
-        ]
-    },
-    {
-        id: 'j2',
-        name: 'Seun Balogun',
-        title: 'Stylist & Brand Consultant',
-        photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&h=700&fit=crop&q=80',
-        bios: [
-            'Seun Balogun has styled some of Nigeria\'s biggest artists, athletes, and public figures. Known for his clean, architectural approach to menswear and bold use of colour, he brings a sharp commercial eye to the panel.',
-            'Seun started his career assisting on music video sets and quickly rose to become the go-to stylist for red carpet moments across the country. He currently runs Balogun Creative Agency out of Abuja.',
-            '"I want to see someone who dresses for themselves first — not for approval. That authenticity is what separates a fashion person from a truly stylish person."'
-        ]
-    },
-    {
-        id: 'j3',
-        name: 'Chioma Eze',
-        title: 'Fashion Photographer',
-        photo: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=600&h=700&fit=crop&q=80',
-        bios: [
-            'Chioma Eze\'s lens has captured fashion weeks, editorial shoots, and cultural festivals across West Africa. Her photography is known for its cinematic quality and its celebration of Black beauty in all its forms.',
-            'Based between Lagos and Accra, Chioma has shot for major fashion magazines and collaborated with brands including Zara, ASOS Africa, and several independent Nigerian designers.',
-            'As a judge, Chioma will be assessing how well contestants understand the visual language of fashion — how they carry themselves, how they move, and how they tell a story without a camera prompt.'
-        ]
-    },
-    {
-        id: 'j4',
-        name: 'Tunde Fashola',
-        title: 'Content Creator & Influencer',
-        photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=700&fit=crop&q=80',
-        bios: [
-            'Tunde Fashola is one of Nigeria\'s most followed menswear creators, with a community built on his authentic approach to everyday luxury. He understands what resonates with a generation that consumes fashion digitally.',
-            'He started posting outfit content from his university dorm room and turned it into a full media brand. He now consults for fashion brands looking to connect with Nigerian Gen-Z audiences.',
-            'Tunde will judge on personal brand clarity, audience appeal, and whether each contestant has what it takes to translate their style into cultural impact.'
-        ]
-    }
-];
+var mockJudges = [];
 
-var mockTeam = [
-    {
-        id: 't1',
-        name: 'Oluwanifemi Akangbe',
-        title: 'Event Director',
-        photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=700&fit=crop&q=80',
-        bios: [
-            'Nifemi is the visionary behind Crème De La Style. A final-year student of OAU with a passion for culture, fashion, and community, she conceived the event as a space for the most stylish students on campus to be properly celebrated.',
-            '"We want people to leave that night feeling like they witnessed something historic. We are not just throwing a party — we are setting a standard for how OAU students see themselves."'
-        ]
-    },
-    {
-        id: 't2',
-        name: 'Babatunde Osei',
-        title: 'Creative Lead & Art Director',
-        photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&h=700&fit=crop&q=80',
-        bios: [
-            'Babatunde is the creative force shaping the visual identity of Crème De La Style. He is responsible for the brand aesthetics, stage design, and the overall experience from the moment a guest arrives to the moment they leave.',
-            'A graphic design student with a deep interest in fashion editorial and spatial design, Tunde brings a meticulous eye and an unapologetically bold aesthetic to everything he touches.'
-        ]
-    },
-    {
-        id: 't3',
-        name: 'Adunola Bello',
-        title: 'PR & Communications',
-        photo: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=600&h=700&fit=crop&q=80',
-        bios: [
-            'Adunola manages the public image and communications strategy for Crème De La Style. From press releases to social media campaigns, she ensures the right message reaches the right audience at the right time.',
-            'With a background in mass communication and a sharp instinct for digital storytelling, Adunola has built the event\'s social presence from scratch and continues to grow a highly engaged community around the brand.'
-        ]
-    },
-    {
-        id: 't4',
-        name: 'Emeka Chukwu',
-        title: 'Digital & Technology Lead',
-        photo: 'https://images.unsplash.com/photo-1463453091185-61582044d556?w=600&h=700&fit=crop&q=80',
-        bios: [
-            'Emeka built and manages the Crème De La Style digital platform — the very app you are using right now. He handles the full technology stack: from the web application to the database architecture and the ticketing system.',
-            'A computer science student with a taste for clean code and elegant design, Emeka believes that technology should be invisible — the experience should feel like magic, not like software.'
-        ]
-    }
-];
+var mockTeam = [];
 
-var mockContestants = [
-    {
-        id: 'c1', full_name: 'Zara Okonkwo',
-        headshot_url: 'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=600&h=750&fit=crop&q=80',
-        fullbody_url: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&h=800&fit=crop&q=80',
-        height: 175, waist: 60, hips: 88, stat_unit: 'cm',
-        instagram: '@zaraokonkwo', tiktok: '@zarathestyle',
-        about_me: 'Final year Fashion Design student. Style is my language and I have been speaking it fluently since I was twelve.',
-        why_picked: 'Because no one on this campus walks into a room like I do. I don\'t follow trends — I set them.', is_approved: true
-    },
-    {
-        id: 'c2', full_name: 'Kolade Adeyemi',
-        headshot_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=750&fit=crop&q=80',
-        fullbody_url: 'https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=600&h=800&fit=crop&q=80',
-        height: 182, waist: 76, hips: 90, stat_unit: 'cm',
-        instagram: '@koladeofficial', tiktok: null,
-        about_me: 'Law student, but fashion is my first love. Menswear, tailoring, and a clean silhouette — that is my entire personality.',
-        why_picked: 'Men\'s fashion on this campus needs a new standard. I am it.', is_approved: true
-    },
-    {
-        id: 'c3', full_name: 'Temi Falola',
-        headshot_url: 'https://images.unsplash.com/photo-1523263685509-57c1d050d19b?w=600&h=750&fit=crop&q=80',
-        fullbody_url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&h=800&fit=crop&q=80',
-        height: 168, waist: 62, hips: 86, stat_unit: 'cm',
-        instagram: '@temifalola_', tiktok: '@temiifalola',
-        about_me: 'I mix vintage pieces with contemporary African fashion. Every outfit I wear is a conversation I am having with culture.',
-        why_picked: 'Style without culture is just clothes. I bring both.', is_approved: true
-    },
-    {
-        id: 'c4', full_name: 'David Nnadi',
-        headshot_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=750&fit=crop&q=80',
-        fullbody_url: 'https://images.unsplash.com/photo-1617137968427-85924c800a22?w=600&h=800&fit=crop&q=80',
-        height: 179, waist: 74, hips: 89, stat_unit: 'cm',
-        instagram: '@davidnnadi', tiktok: '@nnadi_david',
-        about_me: 'Architecture student by day. Fashion devotee always. I design buildings and outfits with the same philosophy — form, function, and statement.',
-        why_picked: 'I am deliberate about everything I wear. That intentionality is what makes me unforgettable.', is_approved: true
-    },
-    {
-        id: 'c5', full_name: 'Blessing Okoro',
-        headshot_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=750&fit=crop&q=80',
-        fullbody_url: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600&h=800&fit=crop&q=80',
-        height: 172, waist: 64, hips: 92, stat_unit: 'cm',
-        instagram: '@blessingokoro__', tiktok: '@blessingokoro',
-        about_me: 'Medical student who refuses to look like one. My style is bold, colorful, and completely mine.',
-        why_picked: 'Medicine taught me that confidence saves lives. My fashion does the same for me.', is_approved: true
-    },
-    {
-        id: 'c6', full_name: 'Precious Obi',
-        headshot_url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=750&fit=crop&q=80',
-        fullbody_url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=800&fit=crop&q=80',
-        height: 165, waist: 58, hips: 84, stat_unit: 'cm',
-        instagram: '@precious.obi', tiktok: null,
-        about_me: 'Economics student with a luxury mindset on a student budget. Thrift, tailoring, and attitude — that is my formula.',
-        why_picked: 'I prove every day that style has nothing to do with money and everything to do with vision.', is_approved: true
-    }
-];
+var mockContestants = [];
 
 /* ── Feature 36: Global app settings ── */
 window.appSettings = {}; // populated from system_settings on boot
@@ -4353,7 +4208,7 @@ window.loadLineup = async function() {
     var grid = document.getElementById('lineup-grid');
     if (!grid) return;
     // No Supabase connection — show mock data for local dev only
-    if (!_sb) { renderContestantCards(mockContestants, grid); return; }
+    if (!_sb) { renderContestantCards([], grid); return; }
     var res = await _sb.from('contestants').select('*').eq('is_approved', true).order('created_at', { ascending: true });
     if (res.error) { renderContestantCards([], grid); return; } // show locked state on error
     // Strictly show only approved contestants — zero = locked state, never fall back to mock
@@ -4456,7 +4311,7 @@ async function renderJudges() {
             }; });
         }
     }
-    if (!data) data = mockJudges;
+    if (!data) data = [];
     grid.innerHTML = '';
     data.forEach(function(j) {
         var card = document.createElement('div');
@@ -4483,7 +4338,7 @@ async function renderTeam() {
             }; });
         }
     }
-    if (!data) data = mockTeam;
+    if (!data) data = [];
     grid.innerHTML = '';
     data.forEach(function(m) {
         var card = document.createElement('div');
