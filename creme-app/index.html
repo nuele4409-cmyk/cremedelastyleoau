@@ -1578,8 +1578,8 @@ html, body {
 <!-- SPLASH SCREEN (F56) -->
 <div id="splash-screen">
     <div class="splash-logo-ring">
-        <img src="https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/logo.png"
-             onerror="this.style.display='none';this.parentNode.innerHTML='<span style=&quot;font-size:3.5rem;&quot;>&#128081;</span>'"
+        <img src="https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/logo.png?v=2"
+             onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','<span style=&quot;font-family:Playfair Display,serif;font-size:2rem;font-weight:900;color:#fff;letter-spacing:0.05em;&quot;>✦</span>')"
              alt="Creme de la Style Logo">
     </div>
     <div class="splash-title">Crème De La<br>Style OAU</div>
@@ -1639,7 +1639,7 @@ html, body {
             <div class="home-hero">
                 <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:1.1rem;">
                     <div style="width:120px;height:120px;border-radius:50%;border:3px dotted rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;animation:splashPulse 2s ease-in-out infinite;margin-bottom:0.5rem;">
-                        <img src="https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/logo.png" alt="Crème De La Style" style="width:108px;height:108px;border-radius:50%;object-fit:contain;background:#fff;" onerror="this.style.display='none'">
+                        <img src="https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/logo.png?v=2" alt="Crème De La Style" style="width:108px;height:108px;border-radius:50%;object-fit:contain;background:#fff;" onerror="this.style.display='none';this.parentElement.style.display='none';">
                     </div>
                 </div>
                 <h1 class="hero-title">Crème De La Style <span class="gold">✨</span></h1>
@@ -4838,9 +4838,14 @@ window.loadLiveRankings = async function() {
     container.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Loading…</p>';
     if (!_sb) return;
     var applyFan = window.appSettings && window.appSettings.apply_fan_points === true;
+    // Fetch scores and contestants separately — vote_count fetched only when fan points enabled
     var res  = await _sb.from('scores').select('contestant_id,look_category,look_total');
-    var cRes = await _sb.from('contestants').select('id,full_name,headshot_url,vote_count').eq('is_approved', true);
-    if (res.error || !cRes.data) { container.innerHTML = '<p style="color:#ff6b9d;">Error loading rankings.</p>'; return; }
+    var cRes = await _sb.from('contestants').select('id,full_name,headshot_url').eq('is_approved', true);
+    if (cRes.error || !cRes.data) {
+        container.innerHTML = '<p style="color:#ff6b9d;">Error loading rankings: ' + ((cRes.error && cRes.error.message) || 'no data') + '</p>';
+        return;
+    }
+    // Build score totals from judges
     var totals = {};
     (res.data || []).forEach(function(s) {
         if (!totals[s.contestant_id]) totals[s.contestant_id] = {};
@@ -4848,15 +4853,23 @@ window.loadLiveRankings = async function() {
         totals[s.contestant_id][s.look_category].sum += s.look_total;
         totals[s.contestant_id][s.look_category].n   += 1;
     });
-    // find max votes for scaling fan bonus
+    // Fan vote bonus — fetch vote counts from votes table when fan points toggle is on
+    var voteMap = {};
     var maxVotes = 1;
-    cRes.data.forEach(function(c) { if ((c.vote_count || 0) > maxVotes) maxVotes = c.vote_count; });
+    if (applyFan) {
+        var vRes = await _sb.from('votes').select('contestant_id').eq('category', 'fan_favourite');
+        if (!vRes.error && vRes.data) {
+            vRes.data.forEach(function(v) { voteMap[v.contestant_id] = (voteMap[v.contestant_id] || 0) + 1; });
+            Object.values(voteMap).forEach(function(n) { if (n > maxVotes) maxVotes = n; });
+        }
+    }
     var ranked = cRes.data.map(function(c) {
         var d = totals[c.id] || {}, judgeScore = 0;
         Object.keys(d).forEach(function(lk) { judgeScore += d[lk].sum / d[lk].n; });
-        var fanBonus = applyFan ? Math.round(((c.vote_count || 0) / maxVotes) * 20) : 0;
+        var votes = voteMap[c.id] || 0;
+        var fanBonus = applyFan ? Math.round((votes / maxVotes) * 50) : 0;
         var grand = Math.round(judgeScore) + fanBonus;
-        return { name: c.full_name, img: c.headshot_url, grand: grand, judgeScore: Math.round(judgeScore), fanBonus: fanBonus, votes: c.vote_count || 0 };
+        return { name: c.full_name, img: c.headshot_url, grand: grand, judgeScore: Math.round(judgeScore), fanBonus: fanBonus, votes: votes };
     }).sort(function(a, b) { return b.grand - a.grand; });
     // update note
     var note = document.getElementById('rankings-denominator-note');
