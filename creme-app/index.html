@@ -1756,7 +1756,7 @@ html, body {
                     </select>
                 </div>
                 <div class="nominate-field">
-                    <label>Instagram / Social Handle <span class="optional">(optional)</span></label>
+                    <label>Instagram / Social Handle <span class="required">(*)</span>required</label>
                     <input type="text" id="nom-handle" class="nominate-input" placeholder="@handle">
                 </div>
                 <div class="nominate-field">
@@ -2562,6 +2562,8 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('controls', this)">🎛️ Controls</button>
         <button class="admin-tab" onclick="switchAdminTab('candidates', this)">👥 Candidates</button>
         <button class="admin-tab" onclick="switchAdminTab('nominations', this)">📋 Nominations</button>
+        <button class="admin-tab" onclick="switchAdminTab('judges', this)">⚖️ Judges</button>
+        <button class="admin-tab" onclick="switchAdminTab('team', this)">🎗️ Team</button>
         <button class="admin-tab" onclick="switchAdminTab('volunteers', this)">🙋 Volunteers</button>
         <button class="admin-tab" onclick="switchAdminTab('polls', this)">📣 Polls</button>
         <button class="admin-tab" onclick="switchAdminTab('messages', this)">✉️ Messages</button>
@@ -2777,6 +2779,78 @@ html, body {
                 </div>
                 <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All nominations submitted with a ₦200 payment. Each entry shows full nominee details.</p>
                 <div id="adm-nominations-list"><p class="adm-empty">Click Refresh to load nominations.</p></div>
+            </div>
+        </div>
+
+        <!-- JUDGES PANE -->
+        <div id="adm-tab-judges" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2>➕ Add / Edit Judge</h2>
+                <input type="hidden" id="judge-edit-id">
+                <div class="adm-field">
+                    <label>Photo</label>
+                    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-bottom:0.5rem;">
+                        <img id="judge-photo-preview" src="" style="width:64px;height:76px;object-fit:cover;border-radius:8px;display:none;border:2px solid #e5e7eb;">
+                        <div>
+                            <input type="file" id="judge-photo-file" accept="image/*" style="display:none;" onchange="window.previewPersonPhoto(this,'judge-photo-preview','judge-photo-url')">
+                            <button onclick="document.getElementById('judge-photo-file').click()" class="adm-refresh-btn">📷 Upload Photo</button>
+                            <p style="font-size:0.7rem;color:#9ca3af;margin-top:4px;">or paste a URL below</p>
+                        </div>
+                    </div>
+                    <input type="url" id="judge-photo-url" class="nominate-input" placeholder="https://... photo URL" oninput="window.syncPhotoPreview(this.value,'judge-photo-preview')">
+                </div>
+                <div class="adm-field"><label>Full Name</label><input type="text" id="judge-name" class="nominate-input" placeholder="e.g. Adaeze Okafor"></div>
+                <div class="adm-field"><label>Title / Role</label><input type="text" id="judge-title-input" class="nominate-input" placeholder="e.g. Head Judge · Fashion Designer & Creative Director"></div>
+                <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.85rem;">
+                    <input type="checkbox" id="judge-is-head" style="width:17px;height:17px;accent-color:#9A1A45;cursor:pointer;">
+                    <label for="judge-is-head" style="font-size:0.82rem;font-weight:600;color:#374151;cursor:pointer;">Mark as Head Judge</label>
+                </div>
+                <div class="adm-field"><label>Bio Paragraphs <small style="color:#9ca3af;font-weight:400;">(separate paragraphs with a blank line)</small></label>
+                    <textarea id="judge-bios" class="nominate-input nominate-textarea" rows="6" placeholder="First paragraph...&#10;&#10;Second paragraph...&#10;&#10;Third paragraph..."></textarea>
+                </div>
+                <div style="display:flex;gap:0.6rem;">
+                    <button class="adm-submit-btn" onclick="window.saveJudge()" style="flex:1;">💾 Save Judge</button>
+                    <button class="adm-refresh-btn" onclick="window.clearPersonForm('judge')" style="flex-shrink:0;padding:0 1rem;">✕ Clear</button>
+                </div>
+                <div id="judge-form-msg" style="display:none;margin-top:0.6rem;text-align:center;font-size:0.85rem;"></div>
+            </div>
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1rem;"><h2>⚖️ Current Judges</h2><button class="adm-refresh-btn" onclick="window.loadAdminJudges()">↻ Refresh</button></div>
+                <div id="adm-judges-list"><p class="adm-empty">Click Refresh to load judges.</p></div>
+            </div>
+        </div>
+
+        <!-- TEAM PANE -->
+        <div id="adm-tab-team" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2>➕ Add / Edit Team Member</h2>
+                <input type="hidden" id="team-edit-id">
+                <div class="adm-field">
+                    <label>Photo</label>
+                    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-bottom:0.5rem;">
+                        <img id="team-photo-preview" src="" style="width:64px;height:76px;object-fit:cover;border-radius:8px;display:none;border:2px solid #e5e7eb;">
+                        <div>
+                            <input type="file" id="team-photo-file" accept="image/*" style="display:none;" onchange="window.previewPersonPhoto(this,'team-photo-preview','team-photo-url')">
+                            <button onclick="document.getElementById('team-photo-file').click()" class="adm-refresh-btn">📷 Upload Photo</button>
+                            <p style="font-size:0.7rem;color:#9ca3af;margin-top:4px;">or paste a URL below</p>
+                        </div>
+                    </div>
+                    <input type="url" id="team-photo-url" class="nominate-input" placeholder="https://... photo URL" oninput="window.syncPhotoPreview(this.value,'team-photo-preview')">
+                </div>
+                <div class="adm-field"><label>Full Name</label><input type="text" id="team-name" class="nominate-input" placeholder="e.g. Oluwanifemi Akangbe"></div>
+                <div class="adm-field"><label>Role / Title</label><input type="text" id="team-title-input" class="nominate-input" placeholder="e.g. Event Director"></div>
+                <div class="adm-field"><label>Bio Paragraphs <small style="color:#9ca3af;font-weight:400;">(separate paragraphs with a blank line)</small></label>
+                    <textarea id="team-bios" class="nominate-input nominate-textarea" rows="6" placeholder="Bio paragraph...&#10;&#10;Quote or second paragraph..."></textarea>
+                </div>
+                <div style="display:flex;gap:0.6rem;">
+                    <button class="adm-submit-btn" onclick="window.saveTeamMember()" style="flex:1;">💾 Save Member</button>
+                    <button class="adm-refresh-btn" onclick="window.clearPersonForm('team')" style="flex-shrink:0;padding:0 1rem;">✕ Clear</button>
+                </div>
+                <div id="team-form-msg" style="display:none;margin-top:0.6rem;text-align:center;font-size:0.85rem;"></div>
+            </div>
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1rem;"><h2>🎗️ Current Team Members</h2><button class="adm-refresh-btn" onclick="window.loadAdminTeam()">↻ Refresh</button></div>
+                <div id="adm-team-list"><p class="adm-empty">Click Refresh to load team.</p></div>
             </div>
         </div>
 
@@ -3366,6 +3440,187 @@ window.showNominationSuccessOverlay = function(nomineeName) {
     setTimeout(function() { var o = document.getElementById('nom-success-overlay'); if(o) o.remove(); }, 8000);
 };
 
+/* ════ Admin: Judges & Team Management ════ */
+
+window.previewPersonPhoto = function(input, previewId, urlInputId) {
+    var file = input.files[0]; if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var img = document.getElementById(previewId);
+        if (img) { img.src = e.target.result; img.style.display = 'block'; }
+        var urlInput = document.getElementById(urlInputId);
+        if (urlInput) urlInput.value = '';
+    };
+    reader.readAsDataURL(file);
+};
+
+window.syncPhotoPreview = function(url, previewId) {
+    var img = document.getElementById(previewId);
+    if (!img) return;
+    if (url) { img.src = url; img.style.display = 'block'; } else { img.style.display = 'none'; }
+};
+
+window.clearPersonForm = function(type) {
+    var pfx = type === 'judge' ? 'judge' : 'team';
+    ['edit-id','name','title-input','photo-url'].forEach(function(f) { var el=document.getElementById(pfx+'-'+f); if(el) el.value=''; });
+    var bios = document.getElementById(pfx+'-bios'); if(bios) bios.value='';
+    if (type==='judge') { var cb=document.getElementById('judge-is-head'); if(cb) cb.checked=false; }
+    var prev = document.getElementById(pfx+'-photo-preview'); if(prev) { prev.src=''; prev.style.display='none'; }
+    var file = document.getElementById(pfx+'-photo-file'); if(file) file.value='';
+    var msg = document.getElementById(pfx+'-form-msg'); if(msg) msg.style.display='none';
+};
+
+window._uploadPersonPhoto = async function(fileInputId, bucket) {
+    var fileInput = document.getElementById(fileInputId);
+    if (!fileInput || !fileInput.files[0]) return null;
+    var file = fileInput.files[0];
+    var session = await _sb.auth.getSession();
+    var token = session.data.session ? session.data.session.access_token : null;
+    if (!token) throw new Error('Not authenticated');
+    var path = Date.now() + '_' + file.name.replace(/[^a-z0-9.]/gi,'_');
+    var fd = new FormData(); fd.append('', file, file.name);
+    var r = await fetch(SUPABASE_URL+'/storage/v1/object/'+bucket+'/'+path,
+        { method:'POST', headers:{ Authorization:'Bearer '+token,'x-upsert':'true' }, body:fd });
+    if (!r.ok) throw new Error(await r.text());
+    return SUPABASE_URL+'/storage/v1/object/public/'+bucket+'/'+path;
+};
+
+window.saveJudge = async function() {
+    var msgEl = document.getElementById('judge-form-msg');
+    var showMsg = function(t,err) { if(!msgEl) return; msgEl.style.display=''; msgEl.style.color=err?'#dc2626':'#16a34a'; msgEl.textContent=t; };
+    var editId  = document.getElementById('judge-edit-id').value.trim();
+    var name    = document.getElementById('judge-name').value.trim();
+    var title   = document.getElementById('judge-title-input').value.trim();
+    var isHead  = document.getElementById('judge-is-head').checked;
+    var biosRaw = document.getElementById('judge-bios').value.trim();
+    var photoUrl = document.getElementById('judge-photo-url').value.trim();
+    if (!name||!title) { showMsg('Name and title are required.',true); return; }
+    var bios = biosRaw.split(/\n\n+/).map(function(s){return s.trim();}).filter(Boolean);
+    if (!bios.length) bios = biosRaw.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    showMsg('Saving…',false);
+    try {
+        var uploaded = await window._uploadPersonPhoto('judge-photo-file','people-photos');
+        if (uploaded) photoUrl = uploaded;
+    } catch(e) { showMsg('Photo upload failed: '+e.message,true); return; }
+    var payload = { name:name, title:title, is_head:isHead, bios:bios, photo_url:photoUrl||null };
+    var res;
+    if (editId) { res = await _sb.from('judges').update(payload).eq('id',editId); }
+    else        { res = await _sb.from('judges').insert([payload]); }
+    if (res.error) { showMsg('Error: '+res.error.message,true); return; }
+    showMsg(editId?'Judge updated!':'Judge added!',false);
+    window.clearPersonForm('judge');
+    window.loadAdminJudges();
+    renderJudges();
+};
+
+window.loadAdminJudges = async function() {
+    var list = document.getElementById('adm-judges-list');
+    if (!list||!_sb) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('judges').select('*').order('sort_order').order('created_at');
+    if (res.error) { list.innerHTML='<p class="adm-empty" style="color:#dc2626;">Error: '+res.error.message+'</p>'; return; }
+    if (!res.data||!res.data.length) { list.innerHTML='<p class="adm-empty">No judges yet. Add one above.</p>'; return; }
+    list.innerHTML = res.data.map(function(j) {
+        return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:0.6rem;background:#fafafa;">'
+            +(j.photo_url?'<img src="'+j.photo_url+'" style="width:48px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0;">':'<div style="width:48px;height:56px;background:#f3f4f6;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">👑</div>')
+            +'<div style="flex:1;min-width:0;"><p style="font-weight:700;font-size:0.88rem;color:#111827;margin:0 0 2px;">'+_esc(j.name)+(j.is_head?' <span style="color:#9A1A45;font-size:0.7rem;">HEAD</span>':'')+'</p>'
+            +'<p style="font-size:0.75rem;color:#6b7280;margin:0;">'+_esc(j.title)+'</p></div>'
+            +'<div style="display:flex;gap:0.4rem;flex-shrink:0;">'
+            +'<button onclick="window.editJudge(\''+j.id+'\')" style="font-size:0.72rem;padding:4px 8px;background:#1d4ed8;color:#fff;border:none;border-radius:6px;cursor:pointer;">✏️ Edit</button>'
+            +'<button onclick="window.deleteJudge(\''+j.id+'\')" style="font-size:0.72rem;padding:4px 8px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;">🗑️</button>'
+            +'</div></div>';
+    }).join('');
+};
+
+window.editJudge = async function(id) {
+    var res = await _sb.from('judges').select('*').eq('id',id).single();
+    if (res.error||!res.data) return;
+    var j = res.data;
+    document.getElementById('judge-edit-id').value = j.id;
+    document.getElementById('judge-name').value = j.name||'';
+    document.getElementById('judge-title-input').value = j.title||'';
+    document.getElementById('judge-is-head').checked = !!j.is_head;
+    document.getElementById('judge-photo-url').value = j.photo_url||'';
+    var bios = Array.isArray(j.bios)?j.bios:(j.bios?JSON.parse(j.bios):[]);
+    document.getElementById('judge-bios').value = bios.join('\n\n');
+    window.syncPhotoPreview(j.photo_url,'judge-photo-preview');
+    document.getElementById('adm-tab-judges').scrollTop = 0;
+    document.getElementById('judge-form-msg').style.display='none';
+};
+
+window.deleteJudge = async function(id) {
+    if (!confirm('Delete this judge?')) return;
+    await _sb.from('judges').delete().eq('id',id);
+    window.loadAdminJudges(); renderJudges();
+};
+
+window.saveTeamMember = async function() {
+    var msgEl = document.getElementById('team-form-msg');
+    var showMsg = function(t,err) { if(!msgEl) return; msgEl.style.display=''; msgEl.style.color=err?'#dc2626':'#16a34a'; msgEl.textContent=t; };
+    var editId  = document.getElementById('team-edit-id').value.trim();
+    var name    = document.getElementById('team-name').value.trim();
+    var title   = document.getElementById('team-title-input').value.trim();
+    var biosRaw = document.getElementById('team-bios').value.trim();
+    var photoUrl = document.getElementById('team-photo-url').value.trim();
+    if (!name||!title) { showMsg('Name and role are required.',true); return; }
+    var bios = biosRaw.split(/\n\n+/).map(function(s){return s.trim();}).filter(Boolean);
+    if (!bios.length) bios = biosRaw.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    showMsg('Saving…',false);
+    try {
+        var uploaded = await window._uploadPersonPhoto('team-photo-file','people-photos');
+        if (uploaded) photoUrl = uploaded;
+    } catch(e) { showMsg('Photo upload failed: '+e.message,true); return; }
+    var payload = { name:name, title:title, bios:bios, photo_url:photoUrl||null };
+    var res;
+    if (editId) { res = await _sb.from('team_members').update(payload).eq('id',editId); }
+    else        { res = await _sb.from('team_members').insert([payload]); }
+    if (res.error) { showMsg('Error: '+res.error.message,true); return; }
+    showMsg(editId?'Member updated!':'Member added!',false);
+    window.clearPersonForm('team');
+    window.loadAdminTeam();
+    renderTeam();
+};
+
+window.loadAdminTeam = async function() {
+    var list = document.getElementById('adm-team-list');
+    if (!list||!_sb) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('team_members').select('*').order('sort_order').order('created_at');
+    if (res.error) { list.innerHTML='<p class="adm-empty" style="color:#dc2626;">Error: '+res.error.message+'</p>'; return; }
+    if (!res.data||!res.data.length) { list.innerHTML='<p class="adm-empty">No team members yet. Add one above.</p>'; return; }
+    list.innerHTML = res.data.map(function(m) {
+        return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:0.6rem;background:#fafafa;">'
+            +(m.photo_url?'<img src="'+m.photo_url+'" style="width:48px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0;">':'<div style="width:48px;height:56px;background:#f3f4f6;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">👤</div>')
+            +'<div style="flex:1;min-width:0;"><p style="font-weight:700;font-size:0.88rem;color:#111827;margin:0 0 2px;">'+_esc(m.name)+'</p>'
+            +'<p style="font-size:0.75rem;color:#6b7280;margin:0;">'+_esc(m.title)+'</p></div>'
+            +'<div style="display:flex;gap:0.4rem;flex-shrink:0;">'
+            +'<button onclick="window.editTeamMember(\''+m.id+'\')" style="font-size:0.72rem;padding:4px 8px;background:#1d4ed8;color:#fff;border:none;border-radius:6px;cursor:pointer;">✏️ Edit</button>'
+            +'<button onclick="window.deleteTeamMember(\''+m.id+'\')" style="font-size:0.72rem;padding:4px 8px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;">🗑️</button>'
+            +'</div></div>';
+    }).join('');
+};
+
+window.editTeamMember = async function(id) {
+    var res = await _sb.from('team_members').select('*').eq('id',id).single();
+    if (res.error||!res.data) return;
+    var m = res.data;
+    document.getElementById('team-edit-id').value = m.id;
+    document.getElementById('team-name').value = m.name||'';
+    document.getElementById('team-title-input').value = m.title||'';
+    document.getElementById('team-photo-url').value = m.photo_url||'';
+    var bios = Array.isArray(m.bios)?m.bios:(m.bios?JSON.parse(m.bios):[]);
+    document.getElementById('team-bios').value = bios.join('\n\n');
+    window.syncPhotoPreview(m.photo_url,'team-photo-preview');
+    document.getElementById('adm-tab-team').scrollTop = 0;
+    document.getElementById('team-form-msg').style.display='none';
+};
+
+window.deleteTeamMember = async function(id) {
+    if (!confirm('Delete this team member?')) return;
+    await _sb.from('team_members').delete().eq('id',id);
+    window.loadAdminTeam(); renderTeam();
+};
+
 window.loadAdminNominations = async function() {
     var list = document.getElementById('adm-nominations-list');
     if (!list || !_sb) return;
@@ -3503,6 +3758,8 @@ window.switchAdminTab  = function(tab, btn) {
     if (tab === 'controls')   window.loadAdminControls();
     if (tab === 'candidates')  window.loadAdminCandidates();
     if (tab === 'nominations') window.loadAdminNominations();
+    if (tab === 'judges')      window.loadAdminJudges();
+    if (tab === 'team')        window.loadAdminTeam();
     if (tab === 'dispatches') window.loadAdminDispatches();
     if (tab === 'gallery')    window.loadAdminGallery();
     if (tab === 'polls')      window.loadAdminPolls();
@@ -3999,11 +4256,24 @@ window.openProfileModal = function(person) {
 };
 window.closeProfileModal = function() { document.getElementById('profile-overlay').classList.add('hidden'); };
 
-function renderJudges() {
+async function renderJudges() {
     var grid = document.getElementById('judges-grid');
     if (!grid) return;
+    grid.innerHTML = '<p style="color:var(--cream-40);font-size:0.82rem;text-align:center;">Loading…</p>';
+    var data = null;
+    if (_sb) {
+        var res = await _sb.from('judges').select('*').order('sort_order').order('created_at');
+        if (!res.error && res.data && res.data.length > 0) {
+            data = res.data.map(function(j) { return {
+                id: j.id, isHead: j.is_head, name: j.name, title: j.title,
+                photo: j.photo_url,
+                bios: Array.isArray(j.bios) ? j.bios : (j.bios ? JSON.parse(j.bios) : [])
+            }; });
+        }
+    }
+    if (!data) data = mockJudges;
     grid.innerHTML = '';
-    mockJudges.forEach(function(j) {
+    data.forEach(function(j) {
         var card = document.createElement('div');
         card.className = 'judge-card' + (j.isHead ? ' head-judge' : '');
         card.onclick = function() { window.openProfileModal(j); };
@@ -4012,11 +4282,24 @@ function renderJudges() {
         grid.appendChild(card);
     });
 }
-function renderTeam() {
+async function renderTeam() {
     var grid = document.getElementById('team-grid');
     if (!grid) return;
+    grid.innerHTML = '<p style="color:var(--cream-40);font-size:0.82rem;text-align:center;">Loading…</p>';
+    var data = null;
+    if (_sb) {
+        var res = await _sb.from('team_members').select('*').order('sort_order').order('created_at');
+        if (!res.error && res.data && res.data.length > 0) {
+            data = res.data.map(function(m) { return {
+                id: m.id, name: m.name, title: m.title,
+                photo: m.photo_url,
+                bios: Array.isArray(m.bios) ? m.bios : (m.bios ? JSON.parse(m.bios) : [])
+            }; });
+        }
+    }
+    if (!data) data = mockTeam;
     grid.innerHTML = '';
-    mockTeam.forEach(function(m) {
+    data.forEach(function(m) {
         var card = document.createElement('div');
         card.className = 'judge-card';
         card.onclick = function() { window.openProfileModal(m); };
