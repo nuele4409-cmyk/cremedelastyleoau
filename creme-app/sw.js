@@ -1,17 +1,16 @@
-/* Crème De La Style — Service Worker v1 */
-var CACHE = 'creme-v3';
+/* Crème De La Style — Service Worker */
+var CACHE = 'creme-v4';
 var PRECACHE = [
-  '/creme-app/',
-  '/creme-app/index.html',
-  '/creme-app/manifest.json',
-  '/creme-app/icon-192.png',
-  '/creme-app/icon-512.png'
+  './index.html',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open(CACHE).then(function(c) {
-      return c.addAll(PRECACHE).catch(function() {});
+      return c.addAll(PRECACHE).catch(function(){});
     })
   );
   self.skipWaiting();
@@ -31,32 +30,11 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   var url = e.request.url;
-
-  // Skip non-http/https requests (chrome-extension://, data:, etc.)
   if (!url.startsWith('http://') && !url.startsWith('https://')) return;
-
-  // Network-first for Supabase API calls — never cache these
-  if (url.includes('supabase.co')) {
-    e.respondWith(
-      fetch(e.request).catch(function() {
-        return caches.match(e.request);
-      })
-    );
-    return;
-  }
-
-  // Cache-first for app shell assets
+  if (url.includes('supabase.co') || url.includes('googleapis')) return;
   e.respondWith(
     caches.match(e.request).then(function(cached) {
-      if (cached) return cached;
-      return fetch(e.request).then(function(res) {
-        // Only cache valid same-origin responses
-        if (res && res.status === 200 && res.type === 'basic') {
-          var clone = res.clone();
-          caches.open(CACHE).then(function(c){ c.put(e.request, clone); });
-        }
-        return res;
-      });
+      return cached || fetch(e.request).catch(function() { return caches.match('./index.html'); });
     })
   );
 });
