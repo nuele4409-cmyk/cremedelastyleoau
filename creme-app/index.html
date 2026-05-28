@@ -317,13 +317,13 @@ html, body {
 }
 #splash-screen.fade-out { opacity: 0; pointer-events: none; }
 .splash-logo-ring {
-    width: 130px; height: 130px; border-radius: 50%;
-    border: 3px dotted rgba(255,255,255,0.45);
+    width: 140px; height: 140px; border-radius: 50%;
+    border: 3px dotted rgba(255,255,255,0.55);
     display: flex; align-items: center; justify-content: center;
     margin-bottom: 1.6rem;
     animation: splashPulse 1.8s ease-in-out infinite;
 }
-.splash-logo-ring img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; }
+.splash-logo-ring img { width: 112px; height: 112px; border-radius: 50%; object-fit: contain; background: #fff; }
 .splash-title {
     font-family: 'Playfair Display', Georgia, serif;
     font-size: 2.2rem; font-weight: 900; letter-spacing: 0.08em;
@@ -1637,7 +1637,11 @@ html, body {
         <div id="tab-home" class="tab-screen active">
 
             <div class="home-hero">
-                <div style="margin-bottom:0.85rem;"><img src="https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/logo.png" alt="Crème De La Style" style="height:72px;width:auto;object-fit:contain;filter:drop-shadow(0 2px 12px rgba(227,0,79,0.35));" onerror="this.style.display='none'"></div>
+                <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:1.1rem;">
+                    <div style="width:120px;height:120px;border-radius:50%;border:3px dotted rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;animation:splashPulse 2s ease-in-out infinite;margin-bottom:0.5rem;">
+                        <img src="https://nfoeltjcmemcpwdwewbq.supabase.co/storage/v1/object/public/gallery-media/brand/logo.png" alt="Crème De La Style" style="width:108px;height:108px;border-radius:50%;object-fit:contain;background:#fff;" onerror="this.style.display='none'">
+                    </div>
+                </div>
                 <h1 class="hero-title">Crème De La Style <span class="gold">✨</span></h1>
                 <p class="hero-subtitle">✦ OAU Official Hub ✦</p>
                 <p class="hero-desc">Where culture meets the runway. Where boldness becomes legacy.</p>
