@@ -2230,43 +2230,21 @@ html, body {
                 </div>
             </div>
 
-            <!-- Timeline -->
-            <div class="event-timeline">
-                <div class="event-tl-label">Event Timeline</div>
-                <div class="event-tl-item">
-                    <div class="event-tl-time">7:00 PM</div>
-                    <div class="event-tl-dot"></div>
-                    <div class="event-tl-desc">Doors Open &amp; Red Carpet</div>
+            <!-- Timeline (dynamic) -->
+            <div class="event-timeline" id="event-timeline-section">
+                <div class="event-tl-label">Event Schedule</div>
+                <div id="timeline-toggle-bar" style="display:flex;gap:0.5rem;margin-bottom:1.25rem;">
+                    <button id="tl-btn-mixer" onclick="window.switchTimeline('mixer')"
+                        style="flex:1;padding:0.55rem 0;border-radius:50px;border:1.5px solid var(--gold);background:var(--gold);color:#0a0005;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;">
+                        🥂 Pre-Event Mixer
+                    </button>
+                    <button id="tl-btn-main" onclick="window.switchTimeline('main')"
+                        style="flex:1;padding:0.55rem 0;border-radius:50px;border:1.5px solid var(--gold);background:transparent;color:var(--gold);font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:inherit;">
+                        🎪 Main Event
+                    </button>
                 </div>
-                <div class="event-tl-item">
-                    <div class="event-tl-time">7:45 PM</div>
-                    <div class="event-tl-dot"></div>
-                    <div class="event-tl-desc">Opening Ceremony</div>
-                </div>
-                <div class="event-tl-item">
-                    <div class="event-tl-time">8:00 PM</div>
-                    <div class="event-tl-dot"></div>
-                    <div class="event-tl-desc">Runway Show — Look 1</div>
-                </div>
-                <div class="event-tl-item">
-                    <div class="event-tl-time">8:45 PM</div>
-                    <div class="event-tl-dot"></div>
-                    <div class="event-tl-desc">Runway Show — Look 2</div>
-                </div>
-                <div class="event-tl-item">
-                    <div class="event-tl-time">9:30 PM</div>
-                    <div class="event-tl-dot"></div>
-                    <div class="event-tl-desc">Live Voting &amp; Interval</div>
-                </div>
-                <div class="event-tl-item">
-                    <div class="event-tl-time">10:00 PM</div>
-                    <div class="event-tl-dot"></div>
-                    <div class="event-tl-desc">Awards &amp; Crowning</div>
-                </div>
-                <div class="event-tl-item">
-                    <div class="event-tl-time">10:45 PM</div>
-                    <div class="event-tl-dot"></div>
-                    <div class="event-tl-desc">After-party</div>
+                <div id="dynamic-timeline-list">
+                    <p style="font-size:0.82rem;color:var(--cream-60);text-align:center;">Loading schedule…</p>
                 </div>
             </div>
 
@@ -2567,6 +2545,7 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('volunteers', this)">🙋 Volunteers</button>
         <button class="admin-tab" onclick="switchAdminTab('polls', this)">📣 Polls</button>
         <button class="admin-tab" onclick="switchAdminTab('messages', this)">✉️ Messages</button>
+        <button class="admin-tab" onclick="switchAdminTab('timeline', this)">📅 Timeline</button>
     </nav>
     <main class="admin-body">
         <div id="adm-tab-dispatches" class="admin-tab-pane active">
@@ -2751,6 +2730,28 @@ html, body {
                     </label>
                 </div>
 
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Pre-Event Mixer Schedule</div>
+                        <div class="ctrl-desc">Show or hide the Pre-Event Mixer timeline button.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-pre-event" onchange="saveAppControl('show_pre_event', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Main Event Schedule</div>
+                        <div class="ctrl-desc">Show or hide the Main Event timeline button.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-main-event" onchange="saveAppControl('show_main_event', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
                 <div id="ctrl-status" style="margin-top:1rem;font-size:0.8rem;color:#6b7280;min-height:1.2rem;"></div>
             </div>
         </div>
@@ -2893,6 +2894,37 @@ html, body {
                 <div class="adm-rankings-header" style="margin-bottom:1.2rem;"><h2>✉️ Contact Messages</h2><button class="adm-refresh-btn" onclick="window.loadAdminMessages()">&#8635; Refresh</button></div>
                 <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All messages submitted via the public Contact form.</p>
                 <div id="adm-messages-list"><p class="adm-empty">Click Refresh to load messages.</p></div>
+            </div>
+        </div>
+
+        <!-- TIMELINE PANE -->
+        <div id="adm-tab-timeline" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2>➕ Add Schedule Item</h2>
+                <input type="hidden" id="tl-edit-id">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                    <div class="adm-field"><label>Time Label</label><input type="text" id="tl-time" class="nominate-input" placeholder="e.g. 7:00 PM"></div>
+                    <div class="adm-field"><label>Event Type</label>
+                        <select id="tl-type" class="nominate-input" style="background:#fff;color:#111827;">
+                            <option value="mixer">🥂 Pre-Event Mixer</option>
+                            <option value="main">🎪 Main Event</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="adm-field"><label>Description</label><textarea id="tl-desc" class="nominate-input nominate-textarea" rows="2" placeholder="e.g. Doors Open &amp; Red Carpet"></textarea></div>
+                <div class="adm-field"><label>Sort Order <small style="color:#9ca3af;font-weight:400;">(lower = earlier)</small></label><input type="number" id="tl-sort" class="nominate-input" placeholder="e.g. 10" min="0" style="width:140px;"></div>
+                <div style="display:flex;gap:0.6rem;">
+                    <button class="adm-submit-btn" onclick="window.saveTimelineItem()" style="flex:1;">💾 Save Item</button>
+                    <button class="adm-refresh-btn" onclick="window.clearTimelineForm()" style="flex-shrink:0;padding:0 1rem;">✕ Clear</button>
+                </div>
+                <div id="tl-form-msg" style="display:none;margin-top:0.6rem;text-align:center;font-size:0.85rem;"></div>
+            </div>
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1rem;">
+                    <h2>📅 Current Schedule</h2>
+                    <button class="adm-refresh-btn" onclick="window.loadAdminTimeline()">↻ Refresh</button>
+                </div>
+                <div id="adm-timeline-list"><p class="adm-empty">Click Refresh to load schedule.</p></div>
             </div>
         </div>
 
@@ -3166,7 +3198,9 @@ window.loadAdminControls = async function() {
         'ctrl-tickets':      'show_tickets',
         'ctrl-judges':       'show_judges',
         'ctrl-team':         'show_team',
-        'ctrl-lineup':       'show_lineup'
+        'ctrl-lineup':       'show_lineup',
+        'ctrl-pre-event':    'show_pre_event',
+        'ctrl-main-event':   'show_main_event'
     };
     Object.keys(map).forEach(function(elId) {
         var el = document.getElementById(elId);
@@ -3260,6 +3294,7 @@ window.switchTab = function(tab) {
     if (tab === 'home')          { window.loadDispatches(); }
     if (tab === 'gallery')       { window.loadGallery(); }
     if (tab === 'home')          { window.checkActivePoll && window.checkActivePoll(); }
+    if (tab === 'event')         { window.switchTimeline && window.switchTimeline('mixer'); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -3799,6 +3834,7 @@ window.switchAdminTab  = function(tab, btn) {
     if (tab === 'polls')      window.loadAdminPolls();
     if (tab === 'messages')   window.loadAdminMessages();
     if (tab === 'volunteers') window.loadAdminVolunteers();
+    if (tab === 'timeline')   window.loadAdminTimeline();
 };
 
 /* ── QR TICKET SCANNER ── */
@@ -4560,6 +4596,18 @@ function applyTabGates(loggedIn) {
         if (lockEl)    lockEl.style.display    = isOpen ? 'none' : 'flex';
         if (contentEl) contentEl.style.display = isOpen ? ''     : 'none';
     });
+
+    // ── Timeline segment visibility ──
+    var showPre  = settings.show_pre_event  !== false;
+    var showMain = settings.show_main_event !== false;
+    var mixerBtn = document.getElementById('tl-btn-mixer');
+    var mainBtn  = document.getElementById('tl-btn-main');
+    var tlList   = document.getElementById('dynamic-timeline-list');
+    if (mixerBtn) mixerBtn.style.display = showPre  ? '' : 'none';
+    if (mainBtn)  mainBtn.style.display  = showMain ? '' : 'none';
+    if (tlList && !showPre && !showMain) {
+        tlList.innerHTML = '<p style="font-size:0.85rem;color:var(--cream-60);text-align:center;padding:1rem 0;">The event schedule is currently classified. Check back soon.</p>';
+    }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -6040,6 +6088,128 @@ window.saveMediaCaption = async function(mediaId, caption, btn) {
     } catch(e) {
         alert('Could not save caption: ' + e.message);
     }
+};
+
+/* ── Dynamic Timeline (Features 61+63) ── */
+var _currentTLType = 'mixer';
+
+window.switchTimeline = function(type) {
+    _currentTLType = type;
+    var mixerBtn = document.getElementById('tl-btn-mixer');
+    var mainBtn  = document.getElementById('tl-btn-main');
+    if (mixerBtn) {
+        mixerBtn.style.background = type === 'mixer' ? 'var(--gold)' : 'transparent';
+        mixerBtn.style.color      = type === 'mixer' ? '#0a0005'     : 'var(--gold)';
+    }
+    if (mainBtn) {
+        mainBtn.style.background = type === 'main' ? 'var(--gold)' : 'transparent';
+        mainBtn.style.color      = type === 'main' ? '#0a0005'     : 'var(--gold)';
+    }
+    window.loadTimeline(type);
+};
+
+window.loadTimeline = async function(type) {
+    var container = document.getElementById('dynamic-timeline-list');
+    if (!container) return;
+    if (!_sb) {
+        container.innerHTML = '<p style="font-size:0.82rem;color:var(--cream-60);text-align:center;">Not connected.</p>';
+        return;
+    }
+    container.innerHTML = '<p style="font-size:0.82rem;color:var(--cream-60);text-align:center;padding:0.5rem 0;">Loading…</p>';
+    try {
+        var res = await _sb.from('event_timeline').select('*').eq('event_type', type).order('sort_order', {ascending:true});
+        var items = res.data || [];
+        if (items.length === 0) {
+            container.innerHTML = '<p style="font-size:0.82rem;color:var(--cream-60);text-align:center;padding:0.5rem 0;">No schedule items yet.</p>';
+            return;
+        }
+        container.innerHTML = items.map(function(item) {
+            return '<div class="event-tl-item">' +
+                '<div class="event-tl-time">' + _esc(item.time_label) + '</div>' +
+                '<div class="event-tl-dot"></div>' +
+                '<div class="event-tl-desc">' + _esc(item.description) + '</div>' +
+                '</div>';
+        }).join('');
+    } catch(e) {
+        container.innerHTML = '<p style="font-size:0.82rem;color:var(--cream-60);text-align:center;">Error loading schedule.</p>';
+    }
+};
+
+window.loadAdminTimeline = async function() {
+    var list = document.getElementById('adm-timeline-list');
+    if (!list || !_sb) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('event_timeline').select('*').order('event_type').order('sort_order');
+    if (res.error) { list.innerHTML = '<p class="adm-empty" style="color:#dc2626;">Error: ' + res.error.message + '</p>'; return; }
+    var items = res.data || [];
+    if (!items.length) { list.innerHTML = '<p class="adm-empty">No schedule items yet. Add one above.</p>'; return; }
+    var groups = { mixer: [], main: [] };
+    items.forEach(function(it) { if (groups[it.event_type]) groups[it.event_type].push(it); });
+    var h = '';
+    [['mixer','🥂 Pre-Event Mixer'],['main','🎪 Main Event']].forEach(function(pair) {
+        var key = pair[0], label = pair[1];
+        if (!groups[key].length) return;
+        h += '<p style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9A1A45;margin:0.75rem 0 0.4rem;">' + label + '</p>';
+        groups[key].forEach(function(it) {
+            h += '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:0.4rem;background:#fafafa;">'
+                + '<div style="flex-shrink:0;font-size:0.72rem;font-weight:700;color:#d97706;width:52px;">' + _esc(it.time_label) + '</div>'
+                + '<div style="flex:1;font-size:0.82rem;color:#111827;">' + _esc(it.description) + '</div>'
+                + '<div style="font-size:0.68rem;color:#9ca3af;flex-shrink:0;margin-right:4px;">#' + it.sort_order + '</div>'
+                + '<button onclick="window.editTimelineItem(\'' + it.id + '\')" style="font-size:0.7rem;padding:3px 7px;background:#1d4ed8;color:#fff;border:none;border-radius:5px;cursor:pointer;">✏️</button>'
+                + '<button onclick="window.deleteTimelineItem(\'' + it.id + '\')" style="font-size:0.7rem;padding:3px 7px;background:#dc2626;color:#fff;border:none;border-radius:5px;cursor:pointer;">🗑️</button>'
+                + '</div>';
+        });
+    });
+    list.innerHTML = h;
+};
+
+window.saveTimelineItem = async function() {
+    var msgEl = document.getElementById('tl-form-msg');
+    var showMsg = function(t, err) { msgEl.style.display=''; msgEl.style.color=err?'#dc2626':'#16a34a'; msgEl.textContent=t; };
+    var editId = document.getElementById('tl-edit-id').value.trim();
+    var time   = document.getElementById('tl-time').value.trim();
+    var type   = document.getElementById('tl-type').value;
+    var desc   = document.getElementById('tl-desc').value.trim();
+    var sort   = parseInt(document.getElementById('tl-sort').value) || 0;
+    if (!time || !desc) { showMsg('Time label and description are required.', true); return; }
+    showMsg('Saving…', false);
+    var payload = { time_label:time, event_type:type, description:desc, sort_order:sort };
+    var res = editId
+        ? await _sb.from('event_timeline').update(payload).eq('id', editId)
+        : await _sb.from('event_timeline').insert([payload]);
+    if (res.error) { showMsg('Error: ' + res.error.message, true); return; }
+    showMsg(editId ? 'Item updated!' : 'Item added!', false);
+    window.clearTimelineForm();
+    window.loadAdminTimeline();
+    window.loadTimeline(_currentTLType);
+};
+
+window.editTimelineItem = async function(id) {
+    var res = await _sb.from('event_timeline').select('*').eq('id', id).single();
+    if (res.error || !res.data) return;
+    var it = res.data;
+    document.getElementById('tl-edit-id').value = it.id;
+    document.getElementById('tl-time').value    = it.time_label || '';
+    document.getElementById('tl-type').value    = it.event_type || 'mixer';
+    document.getElementById('tl-desc').value    = it.description || '';
+    document.getElementById('tl-sort').value    = it.sort_order || 0;
+    document.getElementById('tl-form-msg').style.display = 'none';
+    document.getElementById('adm-tab-timeline').scrollTop = 0;
+};
+
+window.deleteTimelineItem = async function(id) {
+    if (!confirm('Delete this schedule item?')) return;
+    await _sb.from('event_timeline').delete().eq('id', id);
+    window.loadAdminTimeline();
+    window.loadTimeline(_currentTLType);
+};
+
+window.clearTimelineForm = function() {
+    ['tl-edit-id','tl-time','tl-desc','tl-sort'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = '';
+    });
+    var t = document.getElementById('tl-type'); if (t) t.value = 'mixer';
+    var m = document.getElementById('tl-form-msg'); if (m) m.style.display = 'none';
 };
 
 /* ── RUN ── */
