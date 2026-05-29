@@ -3693,20 +3693,56 @@ window.loadAdminTeam = async function() {
     var res = await _sb.from('team_members').select('*').order('sort_order').order('created_at');
     if (res.error) { list.innerHTML='<p class="adm-empty" style="color:#dc2626;">Error: '+res.error.message+'</p>'; return; }
     if (!res.data||!res.data.length) { list.innerHTML='<p class="adm-empty">No team members yet. Add one above.</p>'; return; }
-    list.innerHTML = res.data.map(function(m) {
-        return '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:0.6rem;background:#fafafa;">'
-            +(m.photo_url?'<img src="'+m.photo_url+'" style="width:48px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0;">':'<div style="width:48px;height:56px;background:#f3f4f6;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">👤</div>')
-            +'<div style="flex:1;min-width:0;"><p style="font-weight:700;font-size:0.88rem;color:#111827;margin:0 0 2px;">'+_esc(m.name)+'</p>'
-            +'<p style="font-size:0.75rem;color:#6b7280;margin:0;">'+_esc(m.title)+'</p>'
-            +(m.social_handles?'<p style="font-size:0.7rem;color:#9ca3af;margin:2px 0 0;">📲 '+_esc(m.social_handles)+'</p>':'')
-            +(m.signature_quote?'<p style="font-size:0.7rem;color:#b45309;font-style:italic;margin:2px 0 0;">&ldquo;'+_esc(m.signature_quote)+'&rdquo;</p>':'')+'</div>'
-            +'<div style="display:flex;gap:0.4rem;flex-shrink:0;">'
-            +'<button onclick="window.editTeamMember(\''+m.id+'\')" style="font-size:0.72rem;padding:4px 8px;background:#1d4ed8;color:#fff;border:none;border-radius:6px;cursor:pointer;">✏️ Edit</button>'
-            +'<button onclick="window.deleteTeamMember(\''+m.id+'\')" style="font-size:0.72rem;padding:4px 8px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;">🗑️</button>'
-            +'</div></div>';
-    }).join('');
+    list.innerHTML = '<p style="font-size:0.7rem;color:#9ca3af;margin-bottom:0.6rem;text-align:center;">⠇ Drag rows to reorder · saves automatically</p>'
+        + res.data.map(function(m) {
+            return '<div draggable="true" data-team-id="'+m.id+'" style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:0.6rem;background:#fafafa;cursor:grab;">'
+                +'<span style="font-size:1.2rem;color:#9ca3af;flex-shrink:0;padding:0 2px;cursor:grab;">⠇</span>'
+                +(m.photo_url?'<img src="'+m.photo_url+'" style="width:44px;height:52px;object-fit:cover;border-radius:6px;flex-shrink:0;">':'<div style="width:44px;height:52px;background:#f3f4f6;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">👤</div>')
+                +'<div style="flex:1;min-width:0;"><p style="font-weight:700;font-size:0.88rem;color:#111827;margin:0 0 2px;">'+_esc(m.name)+'</p>'
+                +'<p style="font-size:0.75rem;color:#6b7280;margin:0;">'+_esc(m.title)+'</p>'
+                +(m.social_handles?'<p style="font-size:0.7rem;color:#9ca3af;margin:2px 0 0;">📲 '+_esc(m.social_handles)+'</p>':'')
+                +(m.signature_quote?'<p style="font-size:0.7rem;color:#b45309;font-style:italic;margin:2px 0 0;">&ldquo;'+_esc(m.signature_quote)+'&rdquo;</p>':'')
+                +'</div>'
+                +'<div style="display:flex;gap:0.4rem;flex-shrink:0;">'
+                +'<button onclick="window.editTeamMember(\'' + m.id + '\')" style="font-size:0.72rem;padding:4px 8px;background:#1d4ed8;color:#fff;border:none;border-radius:6px;cursor:pointer;">✏️</button>'
+                +'<button onclick="window.deleteTeamMember(\'' + m.id + '\')" style="font-size:0.72rem;padding:4px 8px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;">🗑️</button>'
+                +'</div></div>';
+        }).join('');
+    window._initTeamDragSort(list);
 };
 
+window._initTeamDragSort = function(list) {
+    var dragging = null;
+    list.querySelectorAll('[data-team-id]').forEach(function(row) {
+        row.addEventListener('dragstart', function(e) {
+            dragging = row;
+            setTimeout(function(){ row.style.opacity='0.4'; }, 0);
+            e.dataTransfer.effectAllowed = 'move';
+        });
+        row.addEventListener('dragend', function() {
+            row.style.opacity = '1';
+            dragging = null;
+            var ids = Array.from(list.querySelectorAll('[data-team-id]')).map(function(r){ return r.getAttribute('data-team-id'); });
+            window._saveTeamOrder(ids);
+        });
+        row.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            if (!dragging || dragging === row) return;
+            var rect = row.getBoundingClientRect();
+            if (e.clientY < rect.top + rect.height / 2) { list.insertBefore(dragging, row); }
+            else { list.insertBefore(dragging, row.nextSibling); }
+        });
+        row.addEventListener('dragenter', function(e){ e.preventDefault(); });
+    });
+};
+
+window._saveTeamOrder = async function(ids) {
+    if (!_sb) return;
+    await Promise.all(ids.map(function(id, idx){
+        return _sb.from('team_members').update({ sort_order: idx + 1 }).eq('id', id);
+    }));
+    renderTeam();
+};
 window.editTeamMember = async function(id) {
     var res = await _sb.from('team_members').select('*').eq('id',id).single();
     if (res.error||!res.data) return;
