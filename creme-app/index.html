@@ -2809,6 +2809,15 @@ html, body {
                 <div id="adm-nominations-list"><p class="adm-empty">Click Refresh to load nominations.</p></div>
             </div>
         </div>
+        <div id="adm-tab-tickets" class="admin-tab-pane">
+            <div class="adm-section-header">
+                <h3 class="adm-section-title">🎟️ Ticket Purchases</h3>
+                <button class="adm-refresh-btn" onclick="window.loadAdminTickets()">&#8635; Refresh</button>
+            </div>
+            <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All ticket orders. Confirm payment after verifying the bank transfer in your Moniepoint app.</p>
+            <div id="adm-tickets-list"><p class="adm-empty">Click Refresh to load ticket orders.</p></div>
+        </div>
+
 
         <!-- JUDGES PANE -->
         <div id="adm-tab-judges" class="admin-tab-pane">
@@ -3458,42 +3467,7 @@ window.castVote = function(categoryId, nomineeId) {
     window.renderVoteList();
 };
 
-window.initiateNominationPayment = function() {
-    var name     = document.getElementById('nom-name').value.trim();
-    var cat      = document.getElementById('nom-category').value;
-    var handle   = document.getElementById('nom-handle').value.trim();
-    var reason   = document.getElementById('nom-reason').value.trim();
-    var whatsapp = document.getElementById('nom-whatsapp').value.trim();
-    var email    = document.getElementById('nom-email').value.trim();
-    var err      = document.getElementById('nominate-error');
-    var suc      = document.getElementById('nominate-success');
-    err.style.display = 'none'; suc.style.display = 'none';
-    if (!name)  { err.textContent = "Please enter the nominee's name."; err.style.display = 'block'; return; }
-    if (!cat)   { err.textContent = 'Please select a category.'; err.style.display = 'block'; return; }
-    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { err.textContent = "Please enter the nominee's valid email address."; err.style.display = 'block'; return; }
-    if (whatsapp && (whatsapp.replace(/\D/g,'').length < 7 || whatsapp.replace(/\D/g,'').length > 15)) {
-        err.textContent = 'Please enter a valid WhatsApp number.'; err.style.display = 'block'; return;
-    }
-    if (!window.currentUser) { window.openAuthModal(); return; }
-    var btn = document.getElementById('nom-pay-btn');
-    if (btn) { btn.textContent = 'Opening payment…'; btn.disabled = true; }
-    var handler = PaystackPop.setup({
-        key: PAYSTACK_KEY,
-        email: window.currentUser.email,
-        amount: 20000,
-        currency: 'NGN',
-        ref: 'CDLS_NOM_' + Date.now() + '_' + Math.random().toString(36).slice(2,8).toUpperCase(),
-        metadata: { user_id: window.currentUser.id, type: 'nomination', nominee_name: name },
-        callback: function(r) {
-            window.onNominationPaymentSuccess(r.reference, { name:name, cat:cat, handle:handle, reason:reason, whatsapp:whatsapp, email:email });
-        },
-        onClose: function() {
-            if (btn) { btn.textContent = 'Pay \u20a6200 & Nominate \u2726'; btn.disabled = false; }
-        }
-    });
-    handler.openIframe();
-};
-
+/* initiateNominationPayment moved to bank transfer system above */
 window.onNominationPaymentSuccess = async function(payRef, data) {
     var btn = document.getElementById('nom-pay-btn');
     var err = document.getElementById('nominate-error');
@@ -3871,6 +3845,7 @@ window.switchAdminTab  = function(tab, btn) {
     if (tab === 'controls')   window.loadAdminControls();
     if (tab === 'candidates')  window.loadAdminCandidates();
     if (tab === 'nominations') window.loadAdminNominations();
+    if (tab === 'tickets') window.loadAdminTickets();
     if (tab === 'judges')      window.loadAdminJudges();
     if (tab === 'team')        window.loadAdminTeam();
     if (tab === 'dispatches') window.loadAdminDispatches();
@@ -5151,28 +5126,7 @@ window.checkRegForm = function() {
     btn.disabled = !ok;
 };
 
-window.proceedToContestantPayment = async function() {
-    if (!window.currentUser) { window.openAuthModal(); return; }
-    var err = document.getElementById('reg-error'); if (err) err.style.display = 'none';
-    var currentCount = await window.fetchContestantCount();
-    if (currentCount >= REG_CAP) {
-        if (err) { err.textContent = 'Sorry — all 30 spots have just been filled.'; err.style.display = 'block'; }
-        window.initRegisterTab(); return;
-    }
-    var btn = document.getElementById('reg-proceed-btn');
-    if (btn) { btn.textContent = 'Opening payment…'; btn.disabled = true; }
-    var handler = PaystackPop.setup({
-        key: PAYSTACK_KEY, email: window.currentUser.email, amount: 300000, currency: 'NGN',
-        ref: 'CDLS-' + Math.random().toString(36).slice(2, 8).toUpperCase(),
-        metadata: { user_id: window.currentUser.id, type: 'contestant_registration' },
-        callback: function(r) { window.onContestantPaymentSuccess(r.reference); },
-        onClose: function() {
-            if (btn) { btn.textContent = '🔐 Proceed to Payment — ₦3,000'; btn.disabled = false; window.checkRegForm(); }
-        }
-    });
-    handler.openIframe();
-};
-
+/* proceedToContestantPayment moved to bank transfer system above */
 window.onContestantPaymentSuccess = async function(payRef) {
     var btn = document.getElementById('reg-proceed-btn');
     if (btn) { btn.textContent = 'Uploading your media…'; btn.disabled = true; }
