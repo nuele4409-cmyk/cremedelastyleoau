@@ -4364,8 +4364,8 @@ window.proceedToContestantPayment = async function() {
 window.confirmTicketPayment = async function(ticketId, btn) {
     if (!_sb) return;
     if (btn) { btn.textContent = 'Confirming…'; btn.disabled = true; }
-    var res = await _sb.from('tickets').update({ payment_status: 'paid' }).eq('id', ticketId);
-    if (res.error) { alert('Error: ' + res.error.message); if(btn){btn.textContent='Confirm';btn.disabled=false;} return; }
+    var res = await _sb.rpc('confirm_ticket_payment', { ticket_id: ticketId });
+    if (res.error) { alert('Error: ' + res.error.message); if(btn){btn.textContent='✅ Confirm Payment';btn.disabled=false;} return; }
     var row = btn ? btn.closest('[data-ticket-row]') : null;
     if (row) { row.querySelector('.btm-badge').textContent = '✓ Paid'; row.querySelector('.btm-badge').style.color = '#4ade80'; btn.remove(); }
     else window.loadAdminTickets();
@@ -4375,7 +4375,7 @@ window.confirmTicketPayment = async function(ticketId, btn) {
 window.confirmNominationPayment = async function(nomId, btn) {
     if (!_sb) return;
     if (btn) { btn.textContent = 'Confirming…'; btn.disabled = true; }
-    var res = await _sb.from('nominations').update({ payment_confirmed: true }).eq('id', nomId);
+    var res = await _sb.rpc('confirm_nomination_payment', { nom_id: nomId });
     if (res.error) { alert('Error: ' + res.error.message); if(btn){btn.textContent='✅ Confirm Payment';btn.disabled=false;} return; }
     var row = btn ? btn.closest('[data-nom-row]') : null;
     if (row) {
