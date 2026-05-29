@@ -3773,24 +3773,36 @@ window.loadAdminNominations = async function() {
         entrepreneur:'Most Fashionable Entrepreneur', comedian:'Most Fashionable Comedian',
         influencer:'Most Fashionable Influencer', student:'Most Fashionable Student Personality'
     };
-    list.innerHTML = res.data.map(function(n, i) {
+    var pending = res.data.filter(function(n){ return !n.payment_confirmed; });
+    var confirmed = res.data.filter(function(n){ return n.payment_confirmed; });
+    var makeNomRow = function(n, i) {
         var date = new Date(n.created_at).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
         var catLabel = catLabels[n.category] || n.category || '—';
-        return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:1rem;margin-bottom:0.75rem;background:#fafafa;">'
+        var isConfirmed = !!n.payment_confirmed;
+        return '<div data-nom-row="1" style="border:1px solid '+(isConfirmed?'#e5e7eb':'rgba(251,191,36,0.4)')+';border-radius:10px;padding:1rem;margin-bottom:0.75rem;background:'+(isConfirmed?'#fafafa':'rgba(251,191,36,0.04)')+';">'
             +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.6rem;">'
             +'<div><strong style="font-size:0.95rem;color:#111827;">'+(i+1)+'. '+_esc(n.nominee_name||'—')+'</strong>'
             +'<span style="display:block;font-size:0.72rem;color:#9A1A45;font-weight:700;margin-top:2px;">'+catLabel+'</span></div>'
-            +'<span style="font-size:0.68rem;color:#6b7280;">'+date+'</span></div>'
+            +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">'
+            +'<span style="font-size:0.68rem;color:#6b7280;">'+date+'</span>'
+            +'<span class="nom-pay-badge" style="display:inline-block;padding:0.15rem 0.55rem;border-radius:50px;font-size:0.65rem;font-weight:700;'
+            +(isConfirmed?'background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.4);':'background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);')
+            +'">'+(isConfirmed?'✓ Paid':'⏳ Pending')+'</span>'
+            +'</div></div>'
             +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem 1rem;font-size:0.78rem;color:#374151;margin-bottom:0.5rem;">'
             +'<div><span style="color:#6b7280;">📧 Email:</span> '+_esc(n.email||'—')+'</div>'
             +'<div><span style="color:#6b7280;">📱 WhatsApp:</span> '+_esc(n.whatsapp_number||'—')+'</div>'
             +'<div><span style="color:#6b7280;">📲 Handle:</span> '+_esc(n.social_handle||'—')+'</div>'
             +'<div><span style="color:#6b7280;">💳 Ref:</span> <span style="font-size:0.68rem;">'+_esc(n.payment_ref||'—')+'</span></div>'
             +'</div>'
-            +(n.reason ? '<div style="font-size:0.78rem;color:#4b5563;background:#f3f4f6;border-radius:6px;padding:0.5rem 0.75rem;">'
+            +(n.reason ? '<div style="font-size:0.78rem;color:#4b5563;background:#f3f4f6;border-radius:6px;padding:0.5rem 0.75rem;margin-bottom:0.6rem;">'
             +'<em>"'+_esc(n.reason)+'"</em></div>' : '')
+            +(!isConfirmed ? '<button onclick="window.confirmNominationPayment(\'' + n.id + '\',this)" style="padding:0.35rem 0.9rem;background:var(--gold);color:#0a0005;border:none;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:inherit;">✅ Confirm Payment</button>' : '')
             +'</div>';
-    }).join('');
+    };
+    list.innerHTML =
+        (pending.length ? '<div style="font-size:0.72rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;">⏳ Awaiting Confirmation ('+pending.length+')</div>'+pending.map(makeNomRow).join(''):'')
+        +(confirmed.length ? '<div style="font-size:0.72rem;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:0.1em;margin:0.75rem 0 0.5rem;">✓ Confirmed ('+confirmed.length+')</div>'+confirmed.map(makeNomRow).join(''):'');
 };
 
 window.submitNomination = window.initiateNominationPayment;
@@ -4357,6 +4369,21 @@ window.confirmTicketPayment = async function(ticketId, btn) {
     var row = btn ? btn.closest('[data-ticket-row]') : null;
     if (row) { row.querySelector('.btm-badge').textContent = '✓ Paid'; row.querySelector('.btm-badge').style.color = '#4ade80'; btn.remove(); }
     else window.loadAdminTickets();
+};
+
+
+window.confirmNominationPayment = async function(nomId, btn) {
+    if (!_sb) return;
+    if (btn) { btn.textContent = 'Confirming…'; btn.disabled = true; }
+    var res = await _sb.from('nominations').update({ payment_confirmed: true }).eq('id', nomId);
+    if (res.error) { alert('Error: ' + res.error.message); if(btn){btn.textContent='✅ Confirm Payment';btn.disabled=false;} return; }
+    var row = btn ? btn.closest('[data-nom-row]') : null;
+    if (row) {
+        var badge = row.querySelector('.nom-pay-badge');
+        if (badge) { badge.textContent = '✓ Paid'; badge.style.color = '#4ade80'; badge.style.background = 'rgba(74,222,128,0.1)'; badge.style.borderColor = 'rgba(74,222,128,0.4)'; }
+        row.style.borderColor = '#e5e7eb'; row.style.background = '#fafafa';
+        btn.remove();
+    } else { window.loadAdminNominations(); }
 };
 
 
