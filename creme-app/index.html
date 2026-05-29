@@ -1576,6 +1576,26 @@ html, body {
 .adm-table th { text-align:left; padding:0.5rem 0.75rem; background:#f9fafb; border-bottom:2px solid #e5e7eb; color:#374151; font-weight:600; }
 .adm-table td { padding:0.55rem 0.75rem; border-bottom:1px solid #f3f4f6; vertical-align:middle; color:#374151; }
 .adm-table tr:last-child td { border-bottom:none; }
+
+/* ── Bank Transfer Modal ── */
+#bank-transfer-overlay{position:fixed;inset:0;z-index:99999;background:rgba(10,0,4,0.93);display:flex;align-items:center;justify-content:center;padding:1.25rem;animation:fadeIn 0.25s ease;}
+#bank-transfer-overlay.hidden{display:none;}
+.bank-modal{background:#1a0a12;border:1px solid rgba(255,215,0,0.25);border-radius:20px;padding:2rem 1.5rem;width:100%;max-width:420px;text-align:center;}
+.bank-modal-title{font-size:1.1rem;font-weight:800;color:var(--cream);margin-bottom:0.25rem;}
+.bank-modal-sub{font-size:0.78rem;color:var(--cream-60);margin-bottom:1.5rem;line-height:1.5;}
+.bank-detail-card{background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:14px;padding:1.25rem;margin-bottom:1.25rem;text-align:left;}
+.bank-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;}
+.bank-row:last-child{margin-bottom:0;}
+.bank-lbl{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--cream-40);}
+.bank-val{font-size:0.88rem;font-weight:700;color:var(--cream);}
+.bank-val.gold{color:var(--gold);font-size:1.05rem;}
+.bank-ref-box{background:rgba(255,215,0,0.1);border:1.5px dashed var(--gold);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1.25rem;}
+.bank-ref-lbl{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--gold);margin-bottom:0.3rem;}
+.bank-ref-val{font-size:0.95rem;font-weight:900;color:var(--cream);word-break:break-all;}
+.bank-ref-hint{font-size:0.65rem;color:var(--cream-60);margin-top:0.3rem;line-height:1.4;}
+.bank-ok-btn{width:100%;padding:0.9rem;background:var(--gold);color:#0a0005;font-weight:800;font-size:0.93rem;border:none;border-radius:50px;cursor:pointer;margin-bottom:0.65rem;font-family:inherit;}
+.bank-ok-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.bank-cx-btn{width:100%;padding:0.5rem;background:transparent;color:var(--cream-60);font-size:0.8rem;border:none;cursor:pointer;font-family:inherit;}
 </style>
 </head>
 <body>
@@ -1785,7 +1805,7 @@ html, body {
                     <input type="email" id="nom-email" class="nominate-input" placeholder="e.g. nominee@gmail.com">
                 </div>
                 <div id="nominate-pay-info" style="background:rgba(154,26,69,0.12);border:1px solid rgba(154,26,69,0.3);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:var(--cream-80);line-height:1.5;">
-                    💳 A non-refundable fee of <strong style="color:var(--gold);">₦200</strong> is required to submit a nomination. Payment is processed securely via Paystack.
+                    💳 A non-refundable fee of <strong style="color:var(--gold);">₦200</strong> is required to submit a nomination. You'll receive bank transfer instructions after clicking below.
                 </div>
                 <button class="nominate-submit-btn" id="nom-pay-btn" onclick="initiateNominationPayment()">Pay ₦200 &amp; Nominate ✦</button>
             </div>
@@ -2099,9 +2119,9 @@ html, body {
                         </div>
                         <div id="reg-error" class="nominate-error" style="display:none;"></div>
                         <button class="reg-proceed-btn" id="reg-proceed-btn" onclick="proceedToContestantPayment()" disabled>
-                            🔐 Proceed to Payment — ₦3,000
+                            🏦 Proceed to Payment — ₦3,050
                         </button>
-                        <p style="font-size:0.72rem;color:var(--cream-60);text-align:center;margin-top:0.75rem;line-height:1.6;">Secured by Paystack · All required fields must be completed before proceeding.</p>
+                        <p style="font-size:0.72rem;color:var(--cream-60);text-align:center;margin-top:0.75rem;line-height:1.6;">Pay via bank transfer · All required fields must be completed before proceeding.</p>
                     </div>
 
                 </div><!-- end reg-form-content -->
@@ -4134,34 +4154,179 @@ async function fetchEventDate() {
     startCountdown();
 }
 
-window.initiateTicketPurchase = function(tierName, amount, btn) {
-    if (!window.currentUser) { window.openAuthModal(); return; }
-    if (btn) { btn.textContent = 'Processing...'; btn.disabled = true; }
-    var ref     = 'CDLS_' + Date.now() + '_' + Math.random().toString(36).substr(2,6).toUpperCase();
-    var restore = function() { if (btn) { btn.textContent = 'BUY TICKET →'; btn.disabled = false; } };
-    try {
-        var handler = PaystackPop.setup({
-            key: PAYSTACK_KEY, email: window.currentUser.email,
-            amount: amount * 100, currency: 'NGN', ref: ref,
-            metadata: { tier: tierName, user_id: window.currentUser.id },
-            callback: function(response) { restore(); onPaymentSuccess(tierName, amount, response.reference); },
-            onClose: function() { restore(); }
+
+/* ════════════════════════════════════════════════
+   BANK TRANSFER PAYMENT SYSTEM
+   Moniepoint · 6696364421 · SONDIRO OLADIMEJI NIFEMI
+   Surcharge: ₦50
+   ════════════════════════════════════════════════ */
+var _BTM_SURCHARGE = 50;
+
+window.openBankModal = function(opts) {
+    /* opts: { label, base, ref, onConfirm } */
+    var total = opts.base + _BTM_SURCHARGE;
+    document.getElementById('btm-sub').innerHTML = '<strong>' + opts.label + '</strong> — includes ₦50 processing fee.';
+    document.getElementById('btm-amount').textContent = '₦' + total.toLocaleString();
+    document.getElementById('btm-ref').textContent = opts.ref;
+    var btn = document.getElementById('btm-ok-btn');
+    btn.textContent = '✅ I Have Paid'; btn.disabled = false;
+    document.getElementById('btm-err').style.display = 'none';
+    window._btmConfirm = function() {
+        btn.textContent = 'Saving…'; btn.disabled = true;
+        opts.onConfirm(opts.ref, total, function(err) {
+            if (err) {
+                btn.textContent = '✅ I Have Paid'; btn.disabled = false;
+                var e = document.getElementById('btm-err');
+                e.textContent = err; e.style.display = 'block';
+            } else { window.closeBankModal(); }
         });
-        handler.openIframe();
-    } catch(e) { restore(); alert('Payment system unavailable. Please add your Paystack public key.'); }
+    };
+    document.getElementById('bank-transfer-overlay').classList.remove('hidden');
+};
+window.closeBankModal = function() {
+    document.getElementById('bank-transfer-overlay').classList.add('hidden');
+    window._btmConfirm = null;
 };
 
-async function onPaymentSuccess(tierName, amount, reference) {
-    if (!_sb || !window.currentUser) { alert('Payment received but could not save ticket — please contact support. Ref: ' + reference); return; }
-    var entryToken = 'CDLS-' + window.currentUser.id.substr(0,8).toUpperCase() + '-' + reference.substr(-6).toUpperCase();
-    var res = await _sb.from('tickets').insert([{
-        user_id: window.currentUser.id, tier_name: tierName, amount: amount,
-        payment_status: 'paid', payment_reference: reference, entry_token: entryToken
-    }]);
-    if (res.error) { console.error('Ticket insert error:', res.error); alert('Payment received but ticket save failed: ' + res.error.message + '\nRef: ' + reference); return; }
-    alert('Payment successful! Opening your ticket now...');
-    window.openWallet();
-}
+/* Ticket purchase */
+window.initiateTicketPurchase = function(tierName, amount, btn) {
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    var ref = 'CDLS-TKT-' + tierName.replace(/\s/g,'').substr(0,3).toUpperCase() + '-' + Date.now().toString(36).toUpperCase().substr(-5);
+    window.openBankModal({
+        label: 'Ticket — ' + tierName + ' (₦' + amount.toLocaleString() + ')',
+        base: amount, ref: ref,
+        onConfirm: async function(payRef, totalPaid, done) {
+            if (!_sb || !window.currentUser) { done('Please sign in first.'); return; }
+            var entryToken = 'CDLS-' + window.currentUser.id.substr(0,8).toUpperCase() + '-' + payRef.substr(-6).toUpperCase();
+            var res = await _sb.from('tickets').insert([{
+                user_id: window.currentUser.id, tier_name: tierName, amount: amount,
+                payment_status: 'pending', payment_reference: payRef, entry_token: entryToken
+            }]);
+            if (res.error) { done('Could not save: ' + res.error.message); return; }
+            done(null);
+            alert('✅ Payment recorded! Your ticket is held pending confirmation. Open "My Tickets" to view it — it will activate once we confirm your transfer.');
+            window.openWallet();
+        }
+    });
+};
+
+/* Nomination payment */
+window.initiateNominationPayment = function() {
+    var name     = (document.getElementById('nom-name')||{}).value && document.getElementById('nom-name').value.trim();
+    var cat      = (document.getElementById('nom-category')||{}).value;
+    var handle   = document.getElementById('nom-handle') ? document.getElementById('nom-handle').value.trim() : '';
+    var reason   = document.getElementById('nom-reason') ? document.getElementById('nom-reason').value.trim() : '';
+    var whatsapp = document.getElementById('nom-whatsapp') ? document.getElementById('nom-whatsapp').value.trim() : '';
+    var email    = document.getElementById('nom-email') ? document.getElementById('nom-email').value.trim() : '';
+    var err      = document.getElementById('nominate-error');
+    var suc      = document.getElementById('nominate-success');
+    if (err) err.style.display = 'none'; if (suc) suc.style.display = 'none';
+    if (!name)  { if(err){err.textContent="Please enter the nominee's name.";err.style.display='block';} return; }
+    if (!cat)   { if(err){err.textContent='Please select a category.';err.style.display='block';} return; }
+    if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { if(err){err.textContent="Please enter the nominee's valid email.";err.style.display='block';} return; }
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    var ref = 'CDLS-NOM-' + Date.now().toString(36).toUpperCase().substr(-6);
+    window.openBankModal({
+        label: 'Nomination fee — ' + name,
+        base: 200, ref: ref,
+        onConfirm: async function(payRef, totalPaid, done) {
+            if (!_sb || !window.currentUser) { done('Not signed in.'); return; }
+            var r = await _sb.from('nominations').insert([{
+                user_id: window.currentUser.id,
+                nominee_name: name, category: cat,
+                social_handle: handle||null, reason: reason||null,
+                whatsapp_number: whatsapp||null, email: email,
+                payment_ref: payRef, amount_paid: 200
+            }]);
+            if (r.error) { done('Failed: ' + r.error.message + ' · Ref: ' + payRef); return; }
+            done(null);
+            ['nom-name','nom-category','nom-handle','nom-reason','nom-whatsapp','nom-email'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+            window.showNominationSuccessOverlay(name);
+        }
+    });
+};
+window.submitNomination = window.initiateNominationPayment;
+
+/* Contestant registration */
+window.proceedToContestantPayment = async function() {
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    var err = document.getElementById('reg-error'); if (err) err.style.display = 'none';
+    var currentCount = await window.fetchContestantCount();
+    if (currentCount >= REG_CAP) {
+        if (err) { err.textContent = 'Sorry — all spots have been filled.'; err.style.display = 'block'; }
+        window.initRegisterTab(); return;
+    }
+    var ref = 'CDLS-REG-' + Date.now().toString(36).toUpperCase().substr(-7);
+    window.openBankModal({
+        label: 'Contestant Registration',
+        base: 3000, ref: ref,
+        onConfirm: async function(payRef, totalPaid, done) {
+            var btn = document.getElementById('reg-proceed-btn');
+            if (btn) { btn.textContent = 'Uploading media…'; btn.disabled = true; }
+            try {
+                var session = await _sb.auth.getSession();
+                var token = session.data.session ? session.data.session.access_token : null;
+                var uid = window.currentUser.id;
+                if (btn) btn.textContent = 'Uploading headshot…';
+                var hsFile = document.getElementById('rf-headshot').files[0];
+                var hsUrl = await _uploadToStorage(hsFile, 'contestant-headshots', uid+'/headshot_'+Date.now()+'.'+hsFile.name.split('.').pop(), token);
+                if (btn) btn.textContent = 'Uploading full body photo…';
+                var fbFile = document.getElementById('rf-fullbody').files[0];
+                var fbUrl = await _uploadToStorage(fbFile, 'contestant-fullbody', uid+'/fullbody_'+Date.now()+'.'+fbFile.name.split('.').pop(), token);
+                if (btn) btn.textContent = 'Uploading video…';
+                var vidFile = document.getElementById('rf-video').files[0];
+                var vidUrl = await _uploadVideoTUS(vidFile, 'contestant-videos', uid+'/video_'+Date.now()+'.'+vidFile.name.split('.').pop(), token);
+                if (btn) btn.textContent = 'Saving application…';
+                var res = await _sb.from('contestants').insert([{
+                    user_id: uid,
+                    full_name: document.getElementById('rf-name').value.trim(),
+                    email: document.getElementById('rf-email').value.trim(),
+                    phone: document.getElementById('rf-phone').value.trim(),
+                    department: document.getElementById('rf-dept').value.trim(),
+                    social_handles: document.getElementById('rf-social-handles').value.trim(),
+                    headshot_url: hsUrl, fullbody_url: fbUrl,
+                    age: parseInt(document.getElementById('rf-age').value),
+                    gender: document.getElementById('rf-gender').value,
+                    level: document.getElementById('rf-level').value,
+                    clothing_size: document.getElementById('rf-clothing').value,
+                    shoe_size: parseFloat(document.getElementById('rf-shoe').value),
+                    height: parseFloat(document.getElementById('rf-height').value),
+                    chest: parseFloat(document.getElementById('rf-chest').value),
+                    shoulder_width: parseFloat(document.getElementById('rf-shoulder').value),
+                    inseam: parseFloat(document.getElementById('rf-inseam').value),
+                    experience: _regExperience==='yes'?(document.getElementById('rf-experience-detail').value.trim()||'Yes'):'None',
+                    bio: document.getElementById('rf-bio').value.trim(),
+                    favorite_quote: document.getElementById('rf-quote').value.trim(),
+                    video_url: vidUrl, payment_ref: payRef, is_approved: false
+                }]);
+                if (res.error) throw new Error(res.error.message);
+                done(null);
+                var bEl=document.getElementById('reg-spot-banner'), wEl=document.getElementById('reg-form-wrap');
+                if(bEl)bEl.style.display='none'; if(wEl)wEl.style.display='none';
+                var rcptName=document.getElementById('rcpt-name'), rcptRef=document.getElementById('rcpt-ref'), rcptDate=document.getElementById('rcpt-date');
+                if(rcptName)rcptName.textContent=document.getElementById('rf-name').value.trim();
+                if(rcptRef)rcptRef.textContent=payRef;
+                if(rcptDate)rcptDate.textContent=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+                var sEl=document.getElementById('reg-success-screen'); if(sEl)sEl.style.display='flex';
+            } catch(e) {
+                done('Error: ' + e.message);
+                if(btn){btn.textContent='🏦 Proceed to Payment — ₦3,050';btn.disabled=false;window.checkRegForm();}
+            }
+        }
+    });
+};
+
+/* Admin: confirm ticket payment */
+window.confirmTicketPayment = async function(ticketId, btn) {
+    if (!_sb) return;
+    if (btn) { btn.textContent = 'Confirming…'; btn.disabled = true; }
+    var res = await _sb.from('tickets').update({ payment_status: 'paid' }).eq('id', ticketId);
+    if (res.error) { alert('Error: ' + res.error.message); if(btn){btn.textContent='Confirm';btn.disabled=false;} return; }
+    var row = btn ? btn.closest('[data-ticket-row]') : null;
+    if (row) { row.querySelector('.btm-badge').textContent = '✓ Paid'; row.querySelector('.btm-badge').style.color = '#4ade80'; btn.remove(); }
+    else window.loadAdminTickets();
+};
+
 
 window.openWallet = async function() {
     document.getElementById('wallet-overlay').classList.remove('hidden');
@@ -6589,5 +6754,27 @@ boot();
 
 
 
+
+<!-- Bank Transfer Modal -->
+<div id="bank-transfer-overlay" class="hidden">
+  <div class="bank-modal">
+    <div class="bank-modal-title">🏦 Bank Transfer</div>
+    <div class="bank-modal-sub" id="btm-sub">Transfer the exact amount to our account, then tap <em>I Have Paid</em>.</div>
+    <div class="bank-detail-card">
+      <div class="bank-row"><span class="bank-lbl">Bank</span><span class="bank-val">Moniepoint</span></div>
+      <div class="bank-row"><span class="bank-lbl">Account No.</span><span class="bank-val" style="letter-spacing:0.12em;font-size:1rem;">6696364421</span></div>
+      <div class="bank-row"><span class="bank-lbl">Name</span><span class="bank-val" style="font-size:0.78rem;">SONDIRO OLADIMEJI NIFEMI</span></div>
+      <div class="bank-row"><span class="bank-lbl">Amount</span><span class="bank-val gold" id="btm-amount">—</span></div>
+    </div>
+    <div class="bank-ref-box">
+      <div class="bank-ref-lbl">Use as Transfer Narration</div>
+      <div class="bank-ref-val" id="btm-ref">—</div>
+      <div class="bank-ref-hint">⚠️ Include this reference in the transfer description so we can identify your payment.</div>
+    </div>
+    <button class="bank-ok-btn" id="btm-ok-btn" onclick="window._btmConfirm && window._btmConfirm()">✅ I Have Paid</button>
+    <button class="bank-cx-btn" onclick="window.closeBankModal()">Cancel</button>
+    <div id="btm-err" style="font-size:0.76rem;color:#fbbf24;margin-top:0.5rem;display:none;"></div>
+  </div>
+</div>
 </body>
 </html>
