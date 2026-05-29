@@ -3729,6 +3729,36 @@ window.deleteTeamMember = async function(id) {
     window.loadAdminTeam(); renderTeam();
 };
 
+window.loadAdminTickets = async function() {
+    var list = document.getElementById('adm-tickets-list');
+    if (!list || !_sb) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('tickets').select('*').order('created_at', { ascending: false });
+    if (res.error) { list.innerHTML = '<p class="adm-empty" style="color:#dc2626;">Error: ' + res.error.message + '</p>'; return; }
+    if (!res.data || !res.data.length) { list.innerHTML = '<p class="adm-empty">No ticket orders yet.</p>'; return; }
+    var pending = res.data.filter(function(t){ return t.payment_status !== 'paid'; });
+    var paid    = res.data.filter(function(t){ return t.payment_status === 'paid'; });
+    var makeRow = function(t) {
+        var date = new Date(t.created_at).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+        var isPending = t.payment_status !== 'paid';
+        return '<div data-ticket-row="1" style="border:1px solid '+(isPending?'rgba(251,191,36,0.4)':'#e5e7eb')+';border-radius:10px;padding:0.85rem 1rem;margin-bottom:0.6rem;background:'+(isPending?'rgba(251,191,36,0.04)':'#fafafa')+';">'
+            +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">'
+            +'<div><strong style="font-size:0.9rem;color:#111827;">'+_esc(t.tier_name||'—')+'</strong>'
+            +'<span style="margin-left:0.5rem;font-size:0.72rem;color:#6b7280;">₦'+(t.amount||0).toLocaleString()+'</span></div>'
+            +'<span class="btm-badge" style="display:inline-block;padding:0.2rem 0.6rem;border-radius:50px;font-size:0.68rem;font-weight:700;'
+            +(isPending?'background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);':'background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.4);')
+            +'">'+(isPending?'⏳ Pending':'✓ Paid')+'</span>'
+            +'</div>'
+            +'<div style="font-size:0.73rem;color:#6b7280;margin-bottom:0.25rem;">Ref: <code>'+_esc(t.payment_reference||'—')+'</code></div>'
+            +'<div style="font-size:0.73rem;color:#6b7280;margin-bottom:'+(isPending?'0.6rem':'0')+';">Token: '+_esc(t.entry_token||'—')+' · '+date+'</div>'
+            +(isPending?'<button onclick="window.confirmTicketPayment(\'' + t.id + '\',this)" style="padding:0.35rem 0.9rem;background:var(--gold);color:#0a0005;border:none;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:inherit;">✅ Confirm Payment</button>':'')
+            +'</div>';
+    };
+    list.innerHTML =
+        (pending.length ? '<div style="font-size:0.72rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;">⏳ Awaiting Confirmation ('+pending.length+')</div>'+pending.map(makeRow).join(''):'')
+        +(paid.length ? '<div style="font-size:0.72rem;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:0.1em;margin:0.75rem 0 0.5rem;">✓ Confirmed ('+paid.length+')</div>'+paid.map(makeRow).join(''):'');
+};
+
 window.loadAdminNominations = async function() {
     var list = document.getElementById('adm-nominations-list');
     if (!list || !_sb) return;
@@ -4350,17 +4380,25 @@ window.openWallet = async function() {
             '<div class="ticket-meta">' +
                 '<div class="ticket-meta-item"><span class="ticket-meta-label">Holder</span><span class="ticket-meta-val">' + window.currentUser.email.split('@')[0] + '</span></div>' +
                 '<div class="ticket-meta-item"><span class="ticket-meta-label">Amount</span><span class="ticket-meta-val">&#8358;' + t.amount.toLocaleString() + '</span></div>' +
-                '<div class="ticket-meta-item"><span class="ticket-meta-label">Status</span><span class="ticket-meta-val" style="color:#4ade80;">' + (t.payment_status === 'paid' ? '&#10003; Paid' : t.payment_status) + '</span></div>' +
+                '<div class="ticket-meta-item"><span class="ticket-meta-label">Status</span><span class="ticket-meta-val" style="color:#4ade80;">' + (t.payment_status === 'paid' ? '<span style="color:#4ade80;">&#10003; Confirmed</span>' : '<span style="color:#fbbf24;">⏳ Pending</span>') + '</div>' +
             '</div>' +
-            '<div class="ticket-qr-wrap" id="qr-slot-' + idx + '"></div>' +
-            '<button class="ticket-print-btn" onclick="printTicket(' + idx + ')">&#128424; Print / Save as PDF</button>';
+            '<div class="ticket-qr-wrap" id="qr-slot-' + idx + '">' +
+            (t.payment_status === 'paid' ? '' : '<div style="background:rgba(251,191,36,0.08);border:1.5px dashed rgba(251,191,36,0.4);border-radius:10px;padding:1.25rem;text-align:center;">' +
+            '<div style="font-size:1.5rem;margin-bottom:0.4rem;">⏳</div>' +
+            '<p style="font-size:0.8rem;color:#fbbf24;font-weight:700;margin:0 0 0.25rem;">Payment Pending</p>' +
+            '<p style="font-size:0.72rem;color:var(--cream-60);margin:0;line-height:1.5;">Your QR code will appear here once we confirm your bank transfer — usually within a few hours.</p>' +
+            '</div>') +
+            '</div>' +
+            (t.payment_status === 'paid' ? '<button class="ticket-print-btn" onclick="printTicket(' + idx + ')">&#128424; Print / Save as PDF</button>' : '');
         content.appendChild(wrap);
-        try {
-            new QRCode(document.getElementById('qr-slot-' + idx), {
-                text: t.entry_token || t.id, width: 140, height: 140,
-                colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H
-            });
-        } catch(e) {}
+        if (t.payment_status === 'paid') {
+            try {
+                new QRCode(document.getElementById('qr-slot-' + idx), {
+                    text: t.entry_token || t.id, width: 140, height: 140,
+                    colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch(e) {}
+        }
     });
 };
 
