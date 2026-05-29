@@ -2161,6 +2161,11 @@ html, body {
                 <h2 class="page-title">Volunteer</h2>
                 <p class="page-sub">Join the team that makes Crème de la Style possible.</p>
             </div>
+            <div id="volunteer-lock-banner" class="tab-lock-banner" style="display:none;">
+                <span class="tab-lock-banner-icon">🔐</span>
+                <p><strong>Volunteer applications are closed.</strong> We have reached our required team capacity. Thank you for your interest!</p>
+            </div>
+            <div id="volunteer-content">
             <!-- Status card: shown after applying / on approval -->
             <div id="vol-status-section" style="display:none;padding:1rem;">
                 <div id="vol-status-card"></div>
@@ -2282,25 +2287,9 @@ html, body {
                 <p class="page-sub">Stories, features and fashion dispatches from OAU.</p>
             </div>
             <div class="journal-list">
-                <div class="journal-card">
-                    <span class="journal-tag">FASHION</span>
-                    <h3 class="journal-title">What Does It Mean to Be the Most Fashionable?</h3>
-                    <p class="journal-excerpt">Style is more than fabric. It's attitude, confidence, and the ability to make a room stop and stare. We explore what sets the truly fashionable apart.</p>
-                    <span class="journal-date">Coming Soon</span>
-                </div>
-                <div class="journal-card">
-                    <span class="journal-tag">CULTURE</span>
-                    <h3 class="journal-title">OAU's Most Stylish: A History</h3>
-                    <p class="journal-excerpt">From the front gates to the faculty halls, some students have always stood out. A look at the campus style icons who came before.</p>
-                    <span class="journal-date">Coming Soon</span>
-                </div>
-                <div class="journal-card">
-                    <span class="journal-tag">BEHIND THE SCENES</span>
-                    <h3 class="journal-title">Inside the Making of Crème De La Style</h3>
-                    <p class="journal-excerpt">The late nights, the creative debates, and the vision that sparked the most anticipated fashion event OAU has ever seen.</p>
-                    <span class="journal-date">Coming Soon</span>
-                </div>
+                <div id="dynamic-journal-list"><p style="color:var(--cream-60);font-size:0.88rem;text-align:center;">Loading journal...</p></div>
             </div>
+            </div><!-- /volunteer-content -->
         </div>
 
         <!-- THE LINEUP -->
@@ -2539,6 +2528,7 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('polls', this)">📣 Polls</button>
         <button class="admin-tab" onclick="switchAdminTab('messages', this)">✉️ Messages</button>
         <button class="admin-tab" onclick="switchAdminTab('timeline', this)">📅 Timeline</button>
+        <button class="admin-tab" onclick="switchAdminTab('journal', this)">📓 Journal</button>
         <button class="admin-tab" onclick="switchAdminTab('sponsors', this)">🤝 Sponsors</button>
     </nav>
     <main class="admin-body">
@@ -2726,6 +2716,17 @@ html, body {
                     </div>
                     <label class="ctrl-toggle">
                         <input type="checkbox" id="ctrl-lineup" onchange="saveAppControl('show_lineup', this.checked)">
+                        <span class="ctrl-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ctrl-row">
+                    <div class="ctrl-info">
+                        <div class="ctrl-label">Volunteer Applications</div>
+                        <div class="ctrl-desc">Show or hide the volunteer application form.</div>
+                    </div>
+                    <label class="ctrl-toggle">
+                        <input type="checkbox" id="ctrl-volunteer" onchange="saveAppControl('show_volunteer', this.checked)">
                         <span class="ctrl-slider"></span>
                     </label>
                 </div>
@@ -2984,8 +2985,33 @@ html, body {
                     <button class="adm-refresh-btn" onclick="window.loadAdminSponsors()">↻ Refresh</button>
                 </div>
                 <div id="adm-sponsors-list"><p class="adm-empty">Click Refresh to load sponsors.</p></div>
+            </div><!-- /admin-section -->
+        </div><!-- /adm-tab-sponsors -->
+
+        <!-- JOURNAL PANE -->
+        <div id="adm-tab-journal" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2>➕ Add / Edit Entry</h2>
+                <input type="hidden" id="journal-edit-id">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                    <div class="adm-field"><label>Tag</label><input type="text" id="journal-tag" class="nominate-input" placeholder="e.g. FASHION, CULTURE, BTS"></div>
+                    <div class="adm-field"><label>Title</label><input type="text" id="journal-title" class="nominate-input" placeholder="Entry title"></div>
+                </div>
+                <div class="adm-field"><label>Excerpt</label><textarea id="journal-excerpt" class="nominate-input nominate-textarea" rows="3" placeholder="Short description or teaser..."></textarea></div>
+                <div style="display:flex;gap:0.6rem;">
+                    <button class="adm-submit-btn" onclick="window.saveJournalEntry()" style="flex:1;">💾 Save Entry</button>
+                    <button class="adm-refresh-btn" onclick="window.clearJournalForm()" style="flex-shrink:0;padding:0 1rem;">✕ Clear</button>
+                </div>
+                <div id="journal-form-msg" style="display:none;margin-top:0.6rem;text-align:center;font-size:0.85rem;"></div>
             </div>
-        </div>
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1rem;">
+                    <h2>📓 Current Journal Entries</h2>
+                    <button class="adm-refresh-btn" onclick="window.loadAdminJournal()">↻ Refresh</button>
+                </div>
+                <div id="adm-journal-list"><p class="adm-empty">Click Refresh to load entries.</p></div>
+            </div>
+        </div><!-- /adm-tab-journal -->
 
     </main>
 </div>
@@ -3123,6 +3149,7 @@ window.loadAdminControls = async function() {
         'ctrl-team':         'show_team',
         'ctrl-lineup':       'show_lineup',
         'ctrl-pre-event':    'show_pre_event',
+        'ctrl-volunteer':    'show_volunteer',
         'ctrl-main-event':   'show_main_event',
         'ctrl-fan-points':   'apply_fan_points'
     };
@@ -3132,11 +3159,101 @@ window.loadAdminControls = async function() {
     });
 };
 
+
+
+/* ── Feature 72+73: Journal Manager ── */
+window.loadJournal = async function() {
+    var list = document.getElementById('dynamic-journal-list');
+    if (!list || !_sb) return;
+    var res = await _sb.from('journal_entries').select('*').order('created_at', { ascending: false });
+    if (res.error || !res.data || !res.data.length) {
+        list.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;text-align:center;">No journal entries yet.</p>';
+        return;
+    }
+    list.innerHTML = res.data.map(function(e) {
+        var d = new Date(e.created_at);
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var dateStr = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+        return '<div class="journal-card">'
+            + '<span class="journal-tag">' + _esc(e.tag || '') + '</span>'
+            + '<h3 class="journal-title">' + _esc(e.title || '') + '</h3>'
+            + '<p class="journal-excerpt">' + _esc(e.excerpt || '') + '</p>'
+            + '<span class="journal-date">' + dateStr + '</span>'
+            + '</div>';
+    }).join('');
+};
+
+window.loadAdminJournal = async function() {
+    var list = document.getElementById('adm-journal-list');
+    if (!list || !_sb) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('journal_entries').select('*').order('created_at', { ascending: false });
+    if (res.error) { list.innerHTML = '<p class="adm-empty" style="color:#dc2626;">Error: ' + res.error.message + '</p>'; return; }
+    var items = res.data || [];
+    if (!items.length) { list.innerHTML = '<p class="adm-empty">No journal entries yet. Add one above.</p>'; return; }
+    list.innerHTML = items.map(function(it) {
+        var eid = it.id;
+        return '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:0.4rem;background:#fafafa;">'
+            + '<div style="flex-shrink:0;font-size:0.68rem;font-weight:700;color:#9A1A45;width:60px;">' + _esc(it.tag || '') + '</div>'
+            + '<div style="flex:1;font-size:0.82rem;color:#111827;">' + _esc(it.title || '') + '</div>'
+            + '<button onclick="window.editJournalEntry(\'' + eid + '\')" style="font-size:0.7rem;padding:3px 7px;background:#1d4ed8;color:#fff;border:none;border-radius:5px;cursor:pointer;">Edit ✏️</button>'
+            + '<button onclick="window.deleteJournalEntry(\'' + eid + '\')" style="font-size:0.7rem;padding:3px 7px;background:#dc2626;color:#fff;border:none;border-radius:5px;cursor:pointer;">Delete 🗑️</button>'
+            + '</div>';
+    }).join('');
+};
+
+window.saveJournalEntry = async function() {
+    var msgEl = document.getElementById('journal-form-msg');
+    var showMsg = function(t, err) { msgEl.style.display=''; msgEl.style.color=err?'#dc2626':'#16a34a'; msgEl.textContent=t; };
+    var editId  = document.getElementById('journal-edit-id').value.trim();
+    var tag     = document.getElementById('journal-tag').value.trim();
+    var title   = document.getElementById('journal-title').value.trim();
+    var excerpt = document.getElementById('journal-excerpt').value.trim();
+    if (!tag || !title || !excerpt) { showMsg('Tag, title and excerpt are required.', true); return; }
+    showMsg('Saving…', false);
+    var payload = { tag: tag, title: title, excerpt: excerpt };
+    var res = editId
+        ? await _sb.from('journal_entries').update(payload).eq('id', editId)
+        : await _sb.from('journal_entries').insert([payload]);
+    if (res.error) { showMsg('Error: ' + res.error.message, true); return; }
+    showMsg(editId ? 'Entry updated!' : 'Entry published!', false);
+    window.clearJournalForm();
+    window.loadAdminJournal();
+    window.loadJournal();
+};
+
+window.editJournalEntry = async function(id) {
+    var res = await _sb.from('journal_entries').select('*').eq('id', id).single();
+    if (res.error || !res.data) return;
+    var it = res.data;
+    document.getElementById('journal-edit-id').value  = it.id;
+    document.getElementById('journal-tag').value      = it.tag || '';
+    document.getElementById('journal-title').value    = it.title || '';
+    document.getElementById('journal-excerpt').value  = it.excerpt || '';
+    document.getElementById('journal-form-msg').style.display = 'none';
+    document.getElementById('adm-tab-journal').scrollTop = 0;
+};
+
+window.deleteJournalEntry = async function(id) {
+    if (!confirm('Delete this journal entry?')) return;
+    await _sb.from('journal_entries').delete().eq('id', id);
+    window.loadAdminJournal();
+    window.loadJournal();
+};
+
+window.clearJournalForm = function() {
+    ['journal-edit-id','journal-tag','journal-title','journal-excerpt'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = '';
+    });
+    var m = document.getElementById('journal-form-msg'); if (m) m.style.display = 'none';
+};
+
 function boot() {
     if (window.supabase) {
         try {
             _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             window.loadDispatches();
+            window.loadJournal();
             _subscribeDispatches();
             _sb.auth.onAuthStateChange(function(_e, session) {
                 window.currentUser = session ? session.user : null;
@@ -3762,6 +3879,7 @@ window.switchAdminTab  = function(tab, btn) {
     if (tab === 'messages')   window.loadAdminMessages();
     if (tab === 'volunteers') window.loadAdminVolunteers();
     if (tab === 'timeline')   window.loadAdminTimeline();
+    if (tab === 'journal')    window.loadAdminJournal();
     if (tab === 'sponsors')   window.loadAdminSponsors();
     if (tab === 'analytics')  window.loadAdminAnalytics();
 };
@@ -4517,7 +4635,8 @@ function applyTabGates(loggedIn) {
         { lock: 'tickets-lock-banner', content: 'tickets-content', key: 'show_tickets'  },
         { lock: 'judges-lock-banner',  content: 'judges-content',  key: 'show_judges'   },
         { lock: 'team-lock-banner',    content: 'team-content',    key: 'show_team'      },
-        { lock: 'lineup-lock-banner',  content: 'lineup-content',  key: 'show_lineup'    }
+        { lock: 'lineup-lock-banner',  content: 'lineup-content',  key: 'show_lineup'    },
+        { lock: 'volunteer-lock-banner', content: 'volunteer-content', key: 'show_volunteer' }
     ].forEach(function(cfg) {
         var lockEl    = document.getElementById(cfg.lock);
         var contentEl = document.getElementById(cfg.content);
