@@ -1805,9 +1805,9 @@ html, body {
                     <input type="email" id="nom-email" class="nominate-input" placeholder="e.g. nominee@gmail.com">
                 </div>
                 <div id="nominate-pay-info" style="background:rgba(154,26,69,0.12);border:1px solid rgba(154,26,69,0.3);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:var(--cream-80);line-height:1.5;">
-                    💳 A non-refundable fee of <strong style="color:var(--gold);">₦200</strong> is required to submit a nomination. You'll receive bank transfer instructions after clicking below.
+                    💳 A non-refundable fee of <strong style="color:var(--gold);">₦100</strong> is required to submit a nomination. You'll receive bank transfer instructions after clicking below.
                 </div>
-                <button class="nominate-submit-btn" id="nom-pay-btn" onclick="initiateNominationPayment()">Pay ₦200 &amp; Nominate ✦</button>
+                <button class="nominate-submit-btn" id="nom-pay-btn" onclick="initiateNominationPayment()">Pay ₦100 &amp; Nominate ✦</button>
             </div>
             </div><!-- end nominate-content -->
         </div>
@@ -2826,7 +2826,7 @@ html, body {
                     <h2>📋 Submitted Nominations</h2>
                     <button class="adm-refresh-btn" onclick="window.loadAdminNominations()">&#8635; Refresh</button>
                 </div>
-                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All nominations submitted with a ₦200 payment. Each entry shows full nominee details.</p>
+                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All nominations submitted with a ₦100 payment. Each entry shows full nominee details.</p>
                 <div id="adm-nominations-list"><p class="adm-empty">Click Refresh to load nominations.</p></div>
             </div>
         </div>
@@ -4240,7 +4240,7 @@ async function fetchEventDate() {
    Moniepoint · 6696364421 · SONDIRO OLADIMEJI NIFEMI
    Surcharge: ₦50
    ════════════════════════════════════════════════ */
-var _BTM_SURCHARGE = 50;
+var _BTM_SURCHARGE = 0;
 
 window.openBankModal = function(opts) {
     /* opts: { label, base, ref, onConfirm } */
@@ -4308,7 +4308,7 @@ window.initiateNominationPayment = function() {
     var ref = 'CDLS-NOM-' + Date.now().toString(36).toUpperCase().substr(-6);
     window.openBankModal({
         label: 'Nomination fee — ' + name,
-        base: 200, ref: ref,
+        base: 100, ref: ref,
         onConfirm: async function(payRef, totalPaid, done) {
             if (!_sb || !window.currentUser) { done('Not signed in.'); return; }
             var r = await _sb.from('nominations').insert([{
@@ -4316,7 +4316,7 @@ window.initiateNominationPayment = function() {
                 nominee_name: name, category: cat,
                 social_handle: handle||null, reason: reason||null,
                 whatsapp_number: whatsapp||null, email: email,
-                payment_ref: payRef, amount_paid: 200
+                payment_ref: payRef, amount_paid: 100
             }]);
             if (r.error) { done('Failed: ' + r.error.message + ' · Ref: ' + payRef); return; }
             done(null);
