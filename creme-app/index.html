@@ -3338,7 +3338,7 @@ window.switchTab = function(tab) {
     if (tab === 'home')          { window.loadDispatches(); }
     if (tab === 'gallery')       { window.loadGallery(); }
     if (tab === 'home')          { window.checkActivePoll && window.checkActivePoll(); }
-    if (tab === 'event')         { window.switchTimeline && window.switchTimeline('mixer'); }
+    if (tab === 'event')         { window.switchTimeline && window.switchTimeline('mixer'); window.loadPublicSponsors && window.loadPublicSponsors(); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -6372,18 +6372,24 @@ window.loadAdminSponsors = async function() {
         var row = document.createElement('div');
         row.style.cssText = 'display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0;border-bottom:1px solid #f3f4f6;';
         var logo = sp.logo_url ? '<img src="' + sp.logo_url + '" style="width:40px;height:32px;object-fit:contain;border-radius:4px;border:1px solid #e5e7eb;" onerror="this.style.display=\'none\'">' : '<div style="width:40px;height:32px;background:#f3f4f6;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1rem;"></div>';
+        var sid = sp.id;
+        window._sponsorCache = window._sponsorCache || {};
+        window._sponsorCache[sid] = sp;
         row.innerHTML = logo + '<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _esc(sp.name) + '</div><div style="font-size:0.75rem;color:#6b7280;">' + (sp.tier || '') + '</div></div>' +
-            '<button onclick="window.editSponsor(' + JSON.stringify(sp) + ')" style="background:transparent;border:1px solid #d1d5db;border-radius:7px;padding:0.3rem 0.6rem;font-size:0.75rem;cursor:pointer;">✏️</button>' +
-            '<button onclick="window.deleteSponsor(\'' + sp.id + '\')" style="background:transparent;border:1px solid #fca5a5;border-radius:7px;padding:0.3rem 0.6rem;font-size:0.75rem;cursor:pointer;color:#E3004F;">\u{1f5d1}</button>';
+            '<button onclick="window.editSponsor(\'' + sid + '\')" style="background:transparent;border:1px solid #d1d5db;border-radius:7px;padding:0.3rem 0.6rem;font-size:0.75rem;cursor:pointer;">✏️</button>' +
+            '<button onclick="window.deleteSponsor(\'' + sid + '\')" style="background:transparent;border:1px solid #fca5a5;border-radius:7px;padding:0.3rem 0.6rem;font-size:0.75rem;cursor:pointer;color:#E3004F;">🗑️</button>';
         list.appendChild(row);
     });
 };
 
-window.editSponsor = function(sp) {
+window.editSponsor = function(id) {
+    var sp = (window._sponsorCache || {})[id];
+    if (!sp) return;
     document.getElementById('sp-edit-id').value = sp.id;
     document.getElementById('sp-name').value = sp.name || '';
     document.getElementById('sp-logo').value = sp.logo_url || '';
     var t = document.getElementById('sp-tier'); if (t) t.value = sp.tier || '';
+    document.getElementById('adm-tab-sponsors').scrollTop = 0;
 };
 
 window.saveSponsor = async function() {
