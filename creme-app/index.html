@@ -1596,6 +1596,11 @@ html, body {
 .bank-ok-btn{width:100%;padding:0.9rem;background:var(--gold);color:#0a0005;font-weight:800;font-size:0.93rem;border:none;border-radius:50px;cursor:pointer;margin-bottom:0.65rem;font-family:inherit;}
 .bank-ok-btn:disabled{opacity:0.5;cursor:not-allowed;}
 .bank-cx-btn{width:100%;padding:0.5rem;background:transparent;color:var(--cream-60);font-size:0.8rem;border:none;cursor:pointer;font-family:inherit;}
+
+/* ── Developer credit ── */
+.dev-credit { text-align:center; padding: 0.6rem 1rem 1.5rem; font-size:0.65rem; color:var(--cream-40); letter-spacing:0.05em; }
+.dev-credit a { color:var(--cream-40); text-decoration:none; border-bottom:1px solid rgba(255,248,220,0.2); padding-bottom:1px; transition:color 0.2s,border-color 0.2s; }
+.dev-credit a:hover { color:var(--gold); border-color:var(--gold); }
 </style>
 </head>
 <body>
@@ -2426,6 +2431,7 @@ html, body {
 
     <button class="admin-fab" onclick="openAdminPanel()">⚙️</button>
 
+    <div class="dev-credit">Developed by <a href="https://akangbe.netlify.app" target="_blank" rel="noopener">Big NIFS</a></div>
     <nav class="bottom-nav">
         <button class="nav-btn active" data-tab="home" onclick="switchTab('home')">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
