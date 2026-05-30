@@ -6776,8 +6776,8 @@ window.loadAdminAnalytics = async function() {
 
         var spRes = await _sb.from('sponsors').select('id', { count: 'exact' });
         set('stat-sponsors', spRes.count != null ? spRes.count : '—');
-        var uRes = await _sb.from('user_roles').select('id', { count: 'exact', head: true });
-        set('stat-users', uRes.count != null ? uRes.count : '—');
+        var uRes = await _sb.rpc('get_user_count');
+        set('stat-users', uRes.data != null ? uRes.data : '—');
 
     } catch(e) { console.warn('Analytics error', e); }
 };
