@@ -2588,6 +2588,7 @@ html, body {
                     <div class="adm-stat-card" style="border-top-color:#16a34a;"><div class="adm-stat-num" id="stat-contestants">—</div><div class="adm-stat-label">Contestants</div><div class="adm-stat-change" id="stat-cont-rev">Revenue: —</div></div>
                     <div class="adm-stat-card" style="border-top-color:#a855f7;"><div class="adm-stat-num" id="stat-judges">—</div><div class="adm-stat-label">Judges</div><div class="adm-stat-change" id="stat-team-c">Team members: —</div></div>
                     <div class="adm-stat-card" style="border-top-color:#f97316;"><div class="adm-stat-num" id="stat-sponsors">—</div><div class="adm-stat-label">Sponsors</div><div class="adm-stat-change">Across all tiers</div></div>
+                    <div class="adm-stat-card" style="border-top-color:#06b6d4;"><div class="adm-stat-num" id="stat-users">—</div><div class="adm-stat-label">App Sign-ups</div><div class="adm-stat-change" id="stat-users-sub">Total registered users</div></div>
                 </div>
             </div>
         </div>
@@ -6750,7 +6751,7 @@ window.loadAdminAnalytics = async function() {
     if (!_sb) return;
     var set = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; };
     set('stat-tickets','…'); set('stat-votes','…'); set('stat-nominations','…');
-    set('stat-contestants','…'); set('stat-judges','…'); set('stat-sponsors','…');
+    set('stat-contestants','…'); set('stat-judges','…'); set('stat-sponsors','…'); set('stat-users','…');
     try {
         var tRes = await _sb.from('tickets').select('id,amount_paid', { count: 'exact' });
         set('stat-tickets', tRes.count != null ? tRes.count : '—');
@@ -6775,6 +6776,9 @@ window.loadAdminAnalytics = async function() {
 
         var spRes = await _sb.from('sponsors').select('id', { count: 'exact' });
         set('stat-sponsors', spRes.count != null ? spRes.count : '—');
+        var uRes = await _sb.from('user_roles').select('id', { count: 'exact', head: true });
+        set('stat-users', uRes.count != null ? uRes.count : '—');
+
     } catch(e) { console.warn('Analytics error', e); }
 };
 
