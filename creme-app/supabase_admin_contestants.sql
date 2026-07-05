@@ -32,12 +32,26 @@ create unique index if not exists one_free_ticket_per_user
     on tickets (user_id) where (tier_name = 'General Entry');
 
 -- ── 3. Admins can manually add and delete contestants ──────
+--  NOTE: policies must not query user_roles directly — its own
+--  RLS policies self-reference and cause infinite recursion.
+--  is_admin() is SECURITY DEFINER so it bypasses that RLS.
+create or replace function is_admin()
+returns boolean
+language sql stable security definer
+set search_path = public
+as $$
+    select exists (
+        select 1 from user_roles
+        where user_id = auth.uid() and role = 'admin'
+    );
+$$;
+
 drop policy if exists "Admins insert contestants" on contestants;
 create policy "Admins insert contestants" on contestants
     for insert to authenticated
-    with check (exists (select 1 from user_roles where user_id = auth.uid() and role = 'admin'));
+    with check (is_admin());
 
 drop policy if exists "Admins delete contestants" on contestants;
 create policy "Admins delete contestants" on contestants
     for delete to authenticated
-    using (exists (select 1 from user_roles where user_id = auth.uid() and role = 'admin'));
+    using (is_admin());
