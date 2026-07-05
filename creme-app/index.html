@@ -2125,7 +2125,7 @@ html, body {
                         </div>
                         <div id="reg-error" class="nominate-error" style="display:none;"></div>
                         <button class="reg-proceed-btn" id="reg-proceed-btn" onclick="proceedToContestantPayment()" disabled>
-                            🏦 Proceed to Payment — ₦3,050
+                            💳 Proceed to Payment — ₦3,000
                         </button>
                         <p style="font-size:0.72rem;color:var(--cream-60);text-align:center;margin-top:0.75rem;line-height:1.6;">Pay via bank transfer · All required fields must be completed before proceeding.</p>
                     </div>
@@ -3077,7 +3077,7 @@ html, body {
 <script src="https://cdn.jsdelivr.net/npm/tus-js-client@3.1.0/dist/tus.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Paystack removed — using manual bank transfer -->
+<script src="https://checkout.flutterwave.com/v3.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
@@ -3086,7 +3086,9 @@ html, body {
 /* ── Config ── */
 var SUPABASE_URL = 'https://nfoeltjcmemcpwdwewbq.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mb2VsdGpjbWVtY3B3ZHdld2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1Nzc5MDgsImV4cCI6MjA5NTE1MzkwOH0.YIp_5dRhsSYCdwpNy51RRqmKtzx4qZY5yHXfbBlnxMk';
-var PAYSTACK_KEY = 'pk_test_1a022423120fb68879a89f257cecb2a4e668b59c';
+/* Flutterwave LIVE public key — safe to expose in frontend code.
+   The secret key lives ONLY in the Supabase Edge Function secrets, never here. */
+var FLW_PUBLIC_KEY = 'FLWPUBK-8040f852fae2fd6090f53ed48f5cd671-X';
 var TEAM_WHATSAPP_LINKS = {
     'Publicity':             'https://chat.whatsapp.com/LUGT8JDQqPs5U31wDjPHtY',
     'Media Team':            'https://chat.whatsapp.com/Dcf28Dv51CnEIFJ8pmS7ht',
@@ -4243,12 +4245,106 @@ async function fetchEventDate() {
 
 
 /* ════════════════════════════════════════════════
-   BANK TRANSFER PAYMENT SYSTEM
-   Moniepoint · 6696364421 · SONDIRO OLADIMEJI NIFEMI
-   Surcharge: ₦50
+   FLUTTERWAVE PAYMENT SYSTEM
+   Inline Checkout v3 · card / bank transfer / USSD.
+   Every payment is re-verified server-side by the
+   `verify-flw-payment` Supabase Edge Function before
+   a record is marked paid — the client callback alone
+   is never trusted.
    ════════════════════════════════════════════════ */
 
 var _BTM_SURCHARGE = 0;
+
+window._flwPay = function(opts) {
+    /* opts: { amount, ref, label, onApproved(payment), onAbandon() } */
+    if (typeof FlutterwaveCheckout !== 'function') {
+        alert('Payment system failed to load. Please check your connection and refresh.');
+        if (opts.onAbandon) opts.onAbandon();
+        return;
+    }
+    var paid = false;
+    var modal = FlutterwaveCheckout({
+        public_key: FLW_PUBLIC_KEY,
+        tx_ref: opts.ref,
+        amount: opts.amount,
+        currency: 'NGN',
+        payment_options: 'card, banktransfer, ussd',
+        /* If a payment method forces a full-page redirect (3DS, some bank
+           transfers), Flutterwave sends the user back here with
+           ?status=&tx_ref=&transaction_id= — picked up by _handleFlwReturn. */
+        redirect_url: window.location.origin + window.location.pathname,
+        customer: {
+            email: window.currentUser.email,
+            name: (window.currentUser.user_metadata && window.currentUser.user_metadata.full_name) || window.currentUser.email
+        },
+        customizations: { title: 'Crème De La Style', description: opts.label },
+        callback: function(payment) {
+            paid = true;
+            modal.close();
+            opts.onApproved(payment);
+        },
+        onclose: function() { if (!paid && opts.onAbandon) opts.onAbandon(); }
+    });
+};
+
+window._flwVerify = async function(payment, kind) {
+    try {
+        var sess = await _sb.auth.getSession();
+        var token = (sess.data && sess.data.session) ? sess.data.session.access_token : SUPABASE_KEY;
+        var res = await fetch(SUPABASE_URL + '/functions/v1/verify-flw-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, 'apikey': SUPABASE_KEY },
+            body: JSON.stringify({ transaction_id: payment.transaction_id, tx_ref: payment.tx_ref, kind: kind })
+        });
+        var j = null; try { j = await res.json(); } catch(e) {}
+        return { ok: !!(res.ok && j && j.ok), error: (j && j.error) || ('HTTP ' + res.status) };
+    } catch(e) {
+        return { ok: false, error: e.message };
+    }
+};
+
+/* Handles users sent back to the site after a full-page Flutterwave
+   redirect (3DS cards, some bank transfers). Reads the query params,
+   verifies the payment server-side, and shows the right success UI. */
+window._handleFlwReturn = function() {
+    var qs;
+    try { qs = new URLSearchParams(window.location.search); } catch(e) { return; }
+    var status = qs.get('status'), txRef = qs.get('tx_ref'), txId = qs.get('transaction_id');
+    if (!status || !txRef || txRef.indexOf('CDLS-') !== 0) return;
+    try { history.replaceState(null, '', window.location.pathname + window.location.hash); } catch(e) {}
+    var kind = txRef.indexOf('CDLS-TKT-') === 0 ? 'ticket'
+             : txRef.indexOf('CDLS-NOM-') === 0 ? 'nomination'
+             : txRef.indexOf('CDLS-REG-') === 0 ? 'contestant' : null;
+    if (!kind) return;
+    if (status !== 'successful' && status !== 'completed') {
+        alert('Your payment was not completed (' + status + '). No charge was confirmed. Reference: ' + txRef);
+        return;
+    }
+    var tries = 0;
+    (function waitReady() {
+        if (!_sb || !window.currentUser) {
+            if (++tries < 60) { setTimeout(waitReady, 250); return; }
+        }
+        if (!txId) {
+            alert('✅ Payment received (ref ' + txRef + '). Confirmation is processing — it will reflect shortly.');
+            return;
+        }
+        window._flwVerify({ transaction_id: txId, tx_ref: txRef }, kind).then(function(v) {
+            if (kind === 'ticket') {
+                if (v.ok) alert('✅ Payment confirmed! Your ticket is active — opening "My Tickets" now.');
+                else alert('Payment received — your ticket will activate shortly. Keep this reference: ' + txRef);
+                if (window.currentUser) window.openWallet();
+            } else if (kind === 'nomination') {
+                if (v.ok) alert('✅ Nomination payment confirmed — your nomination has been submitted!');
+                else alert('Payment received — your nomination will be confirmed shortly. Reference: ' + txRef);
+            } else {
+                if (v.ok) alert('✅ Registration payment confirmed!');
+                else alert('Your registration payment (ref ' + txRef + ') was received, but the page reloaded before your application details were saved. Please contact the team with this reference — your slot is secured.');
+            }
+        });
+    })();
+};
+window._handleFlwReturn();
 
 window.openBankModal = function(opts) {
     var total = opts.base + _BTM_SURCHARGE;
@@ -4276,24 +4372,30 @@ window.closeBankModal = function() {
 };
 
 /* Ticket purchase */
-window.initiateTicketPurchase = function(tierName, amount, btn) {
+window.initiateTicketPurchase = async function(tierName, amount, btn) {
     if (!window.currentUser) { window.openAuthModal(); return; }
+    if (!_sb) { alert('Please refresh and try again.'); return; }
     var ref = 'CDLS-TKT-' + tierName.replace(/\s/g,'').substr(0,3).toUpperCase() + '-' + Date.now().toString(36).toUpperCase().substr(-5);
-    window.openBankModal({
-        label: 'Ticket — ' + tierName + ' (₦' + amount.toLocaleString() + ')',
-        base: amount, ref: ref,
-        onConfirm: async function(payRef, totalPaid, done) {
-            if (!_sb || !window.currentUser) { done('Please sign in first.'); return; }
-            var entryToken = 'CDLS-' + window.currentUser.id.substr(0,8).toUpperCase() + '-' + payRef.substr(-6).toUpperCase();
-            var res = await _sb.from('tickets').insert([{
-                user_id: window.currentUser.id, tier_name: tierName, amount: amount,
-                payment_status: 'pending', payment_reference: payRef, entry_token: entryToken
-            }]);
-            if (res.error) { done('Could not save: ' + res.error.message); return; }
-            done(null);
-            alert('✅ Payment recorded! Your ticket is held pending confirmation. Open "My Tickets" to view it — it will activate once we confirm your transfer.');
+    var entryToken = 'CDLS-' + window.currentUser.id.substr(0,8).toUpperCase() + '-' + ref.substr(-6).toUpperCase();
+    if (btn) btn.disabled = true;
+    var res = await _sb.from('tickets').insert([{
+        user_id: window.currentUser.id, tier_name: tierName, amount: amount,
+        payment_status: 'pending', payment_reference: ref, entry_token: entryToken
+    }]);
+    if (res.error) { if (btn) btn.disabled = false; alert('Could not start purchase: ' + res.error.message); return; }
+    window._flwPay({
+        amount: amount, ref: ref, label: 'Ticket — ' + tierName,
+        onApproved: async function(payment) {
+            var v = await window._flwVerify(payment, 'ticket');
+            if (btn) btn.disabled = false;
+            if (v.ok) {
+                alert('✅ Payment confirmed! Your ticket is active — open "My Tickets" to view and print it.');
+            } else {
+                alert('Your payment went through but confirmation is still processing. Your ticket is in "My Tickets" and will activate shortly. Keep this reference: ' + ref);
+            }
             window.openWallet();
-        }
+        },
+        onAbandon: function() { if (btn) btn.disabled = false; }
     });
 };
 
@@ -4312,24 +4414,35 @@ window.initiateNominationPayment = function() {
     if (!cat)   { if(err){err.textContent='Please select a category.';err.style.display='block';} return; }
     if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { if(err){err.textContent="Please enter the nominee's valid email.";err.style.display='block';} return; }
     if (!window.currentUser) { window.openAuthModal(); return; }
+    if (!_sb) { if(err){err.textContent='Please refresh and try again.';err.style.display='block';} return; }
     var ref = 'CDLS-NOM-' + Date.now().toString(36).toUpperCase().substr(-6);
-    window.openBankModal({
-        label: 'Nomination fee — ' + name,
-        base: 100, ref: ref,
-        onConfirm: async function(payRef, totalPaid, done) {
-            if (!_sb || !window.currentUser) { done('Not signed in.'); return; }
-            var r = await _sb.from('nominations').insert([{
-                user_id: window.currentUser.id,
-                nominee_name: name, category: cat,
-                social_handle: handle||null, reason: reason||null,
-                whatsapp_number: whatsapp||null, email: email,
-                payment_ref: payRef, amount_paid: 100
-            }]);
-            if (r.error) { done('Failed: ' + r.error.message + ' · Ref: ' + payRef); return; }
-            done(null);
-            ['nom-name','nom-category','nom-handle','nom-reason','nom-whatsapp','nom-email'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-            window.showNominationSuccessOverlay(name);
+    var payBtn = document.getElementById('nom-pay-btn');
+    if (payBtn) payBtn.disabled = true;
+    _sb.from('nominations').insert([{
+        user_id: window.currentUser.id,
+        nominee_name: name, category: cat,
+        social_handle: handle||null, reason: reason||null,
+        whatsapp_number: whatsapp||null, email: email,
+        payment_ref: ref, amount_paid: 100
+    }]).then(function(r) {
+        if (r.error) {
+            if (payBtn) payBtn.disabled = false;
+            if (err) { err.textContent = 'Failed: ' + r.error.message; err.style.display = 'block'; }
+            return;
         }
+        window._flwPay({
+            amount: 100, ref: ref, label: 'Nomination fee — ' + name,
+            onApproved: async function(payment) {
+                await window._flwVerify(payment, 'nomination');
+                if (payBtn) payBtn.disabled = false;
+                ['nom-name','nom-category','nom-handle','nom-reason','nom-whatsapp','nom-email'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+                window.showNominationSuccessOverlay(name);
+            },
+            onAbandon: function() {
+                if (payBtn) payBtn.disabled = false;
+                if (err) { err.textContent = 'Payment was not completed — your nomination has not been submitted.'; err.style.display = 'block'; }
+            }
+        });
     });
 };
 window.submitNomination = window.initiateNominationPayment;
@@ -4344,10 +4457,19 @@ window.proceedToContestantPayment = async function() {
         window.initRegisterTab(); return;
     }
     var ref = 'CDLS-REG-' + Date.now().toString(36).toUpperCase().substr(-7);
-    window.openBankModal({
-        label: 'Contestant Registration',
-        base: 3000, ref: ref,
-        onConfirm: async function(payRef, totalPaid, done) {
+    var btn = document.getElementById('reg-proceed-btn');
+    if (btn) btn.disabled = true;
+    window._flwPay({
+        amount: 3000, ref: ref, label: 'Contestant Registration',
+        onApproved: function(payment) { window._finishContestantReg(payment, ref); },
+        onAbandon: function() { if (btn) { btn.disabled = false; window.checkRegForm(); } }
+    });
+};
+
+/* Runs after a successful registration payment: uploads media,
+   saves the application, then triggers server-side verification. */
+window._finishContestantReg = function(payment, payRef) {
+    (async function(payRef) {
             var btn = document.getElementById('reg-proceed-btn');
             if (btn) { btn.textContent = 'Uploading media…'; btn.disabled = true; }
             try {
@@ -4387,7 +4509,7 @@ window.proceedToContestantPayment = async function() {
                     video_url: vidUrl, payment_ref: payRef, is_approved: false
                 }]);
                 if (res.error) throw new Error(res.error.message);
-                done(null);
+                await window._flwVerify(payment, 'contestant');
                 var bEl=document.getElementById('reg-spot-banner'), wEl=document.getElementById('reg-form-wrap');
                 if(bEl)bEl.style.display='none'; if(wEl)wEl.style.display='none';
                 var rcptName=document.getElementById('rcpt-name'), rcptRef=document.getElementById('rcpt-ref'), rcptDate=document.getElementById('rcpt-date');
@@ -4396,11 +4518,15 @@ window.proceedToContestantPayment = async function() {
                 if(rcptDate)rcptDate.textContent=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
                 var sEl=document.getElementById('reg-success-screen'); if(sEl)sEl.style.display='flex';
             } catch(e) {
-                done('Error: ' + e.message);
-                if(btn){btn.textContent='🏦 Proceed to Payment — ₦3,050';btn.disabled=false;window.checkRegForm();}
+                /* Payment already went through — never send them back to pay again. */
+                if (confirm('Your payment (ref ' + payRef + ') was received, but saving your application failed: ' + e.message + '\n\nPress OK to retry saving. You will NOT be charged again.')) {
+                    window._finishContestantReg(payment, payRef);
+                } else {
+                    alert('Please contact the team with your payment reference: ' + payRef + ' — your slot will be registered manually.');
+                    if (btn) btn.textContent = 'Contact support · Ref ' + payRef;
+                }
             }
-        }
-    });
+    })(payRef);
 };
 
 /* Admin: confirm ticket payment */
