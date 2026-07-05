@@ -912,20 +912,16 @@ html, body {
 .gallery-placeholder span { font-size: 1.8rem; opacity: 0.4; }
 .gallery-placeholder p { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 
-/* JOURNAL */
-.journal-list { display: flex; flex-direction: column; gap: 1rem; }
-.journal-card {
-    background: rgba(42,0,16,0.45); border: 1px solid var(--border);
-    border-radius: 20px; padding: 1.5rem 1.75rem; transition: all 0.2s; cursor: pointer;
-}
-.journal-card:hover { border-color: rgba(227,0,79,0.5); background: rgba(74,0,28,0.45); }
-.journal-tag {
-    font-size: 0.6rem; font-weight: 800; letter-spacing: 0.18em;
-    text-transform: uppercase; color: var(--crimson); display: block; margin-bottom: 0.5rem;
-}
-.journal-title { font-size: 1rem; font-weight: 800; color: var(--cream); line-height: 1.4; margin-bottom: 0.5rem; }
-.journal-excerpt { font-size: 0.85rem; color: var(--cream-60); line-height: 1.65; margin-bottom: 0.75rem; }
-.journal-date { font-size: 0.72rem; color: var(--cream-40); font-weight: 600; }
+/* HOME FEED */
+.feed-item { padding: 0.85rem 0.25rem; border-bottom: 1px solid rgba(244,241,222,0.08); display: flex; gap: 0.7rem; align-items: flex-start; }
+.feed-item:last-child { border-bottom: none; }
+.feed-item p { font-size: 0.85rem; color: var(--cream-60); line-height: 1.55; }
+.feed-item p strong { color: var(--cream); }
+.feed-click { cursor: pointer; border-radius: 10px; transition: background 0.2s; }
+.feed-click:hover { background: rgba(227,0,79,0.08); }
+.feed-thumb { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(212,175,55,0.5); }
+.feed-thumb-wide { border-radius: 10px; width: 64px; height: 48px; border-color: rgba(227,0,79,0.35); }
+.feed-icon { font-size: 1.4rem; flex-shrink: 0; }
 
 /* COUNTDOWN */
 .countdown-widget {
@@ -1707,10 +1703,10 @@ html, body {
                     <button class="apply-runway-btn" onclick="switchTab('register')" style="margin-top:0.75rem;">📝 Apply for the Runway</button>
                 </div>
                 <div class="dispatch-card">
-                    <h3 class="dispatch-header"><span class="live-dot"></span> Live Dispatches</h3>
-                    <div id="dispatch-list">
+                    <h3 class="dispatch-header"><span class="live-dot"></span> The Pulse — Live Feed</h3>
+                    <div id="home-feed">
                         <div class="dispatch-item no-border">
-                            <p style="color:var(--cream-40);font-size:0.82rem;">Loading dispatches…</p>
+                            <p style="color:var(--cream-40);font-size:0.82rem;">Loading the feed…</p>
                         </div>
                     </div>
                 </div>
@@ -1834,7 +1830,6 @@ html, body {
                 <button class="explore-card" onclick="switchTab('judges')"><span class="explore-icon">⚖️</span><span class="explore-label">Judges</span></button>
                 <button class="explore-card" onclick="switchTab('gallery')"><span class="explore-icon">📸</span><span class="explore-label">Gallery</span></button>
                 <button class="explore-card" onclick="switchTab('team')"><span class="explore-icon">👥</span><span class="explore-label">Team</span></button>
-                <button class="explore-card" onclick="switchTab('journal')"><span class="explore-icon">📓</span><span class="explore-label">Journal</span></button>
                 <button class="explore-card" onclick="switchTab('lineup')"><span class="explore-icon">👗</span><span class="explore-label">The Lineup</span></button>
                 <button class="explore-card" onclick="switchTab('contact')"><span class="explore-icon">✉️</span><span class="explore-label">Contact</span></button>
                 <button class="explore-card" onclick="switchTab('event')"><span class="explore-icon">🎪</span><span class="explore-label">The Event</span></button>
@@ -1853,41 +1848,29 @@ html, body {
                 <p><strong>Tickets are not yet on sale.</strong> Check back soon — sales will open before the event.</p>
             </div>
             <div id="tickets-content">
-            <div class="ticket-tiers-3">
-                <div class="tier-card tier-satins">
-                    <div class="tier-badge">EARLY BIRD</div>
-                    <h3 class="tier-name">Satins</h3>
-                    <p class="tier-price">₦3,000</p>
+            <div class="ticket-tiers">
+                <div class="tier-card tier-regular">
+                    <div class="tier-badge">GENERAL ENTRY</div>
+                    <h3 class="tier-name">General Entry</h3>
+                    <p class="tier-price">FREE</p>
                     <ul class="tier-perks">
                         <li>General Admission</li>
                         <li>Runway Access</li>
-                        <li>Event Keepsake</li>
+                        <li>QR Entry Pass</li>
                     </ul>
-                    <button class="ticket-btn" onclick="initiateTicketPurchase('Satins', 3000, this)">BUY TICKET →</button>
-                </div>
-                <div class="tier-card tier-oppulent">
-                    <div class="tier-badge">✦ REGULAR</div>
-                    <h3 class="tier-name">Oppulents</h3>
-                    <p class="tier-price">₦5,000</p>
-                    <ul class="tier-perks">
-                        <li>Premium Seating</li>
-                        <li>Runway Access</li>
-                        <li>Event Keepsake</li>
-                        <li>Welcome Refreshment</li>
-                    </ul>
-                    <button class="ticket-btn" onclick="initiateTicketPurchase('Oppulents', 5000, this)">BUY TICKET →</button>
+                    <button class="ticket-btn" onclick="claimFreeTicket(this)">GET FREE TICKET →</button>
                 </div>
                 <div class="tier-card tier-coutured">
                     <div class="tier-badge">✦✦ VIP</div>
                     <h3 class="tier-name">The Coutured</h3>
-                    <p class="tier-price">₦9,000</p>
+                    <p class="tier-price">₦7,000</p>
                     <ul class="tier-perks">
                         <li>Front Row Seating</li>
                         <li>Welcome Cocktail</li>
                         <li>Backstage Meet & Greet</li>
                         <li>Exclusive Gift Bag</li>
                     </ul>
-                    <button class="ticket-btn" onclick="initiateTicketPurchase('The Coutured', 9000, this)">BUY TICKET →</button>
+                    <button class="ticket-btn" onclick="initiateTicketPurchase('The Coutured', 7000, this)">BUY VIP TICKET →</button>
                 </div>
             </div>
             <p class="tickets-note">⚠️ Seats are strictly limited. All sales are final. Tickets must be presented at entry.</p>
@@ -2307,17 +2290,6 @@ html, body {
             </div>
         </div>
 
-        <!-- JOURNAL -->
-        <div id="tab-journal" class="tab-screen">
-            <div class="page-header">
-                <h2 class="page-title">Journal</h2>
-                <p class="page-sub">Stories, features and fashion dispatches from OAU.</p>
-            </div>
-            <div class="journal-list">
-                <div id="dynamic-journal-list"><p style="color:var(--cream-60);font-size:0.88rem;text-align:center;">Loading journal...</p></div>
-            </div>
-        </div>
-
         <!-- THE LINEUP -->
         <div id="tab-lineup" class="tab-screen">
             <div class="page-header">
@@ -2555,7 +2527,6 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('polls', this)">📣 Polls</button>
         <button class="admin-tab" onclick="switchAdminTab('messages', this)">✉️ Messages</button>
         <button class="admin-tab" onclick="switchAdminTab('timeline', this)">📅 Timeline</button>
-        <button class="admin-tab" onclick="switchAdminTab('journal', this)">📓 Journal</button>
         <button class="admin-tab" onclick="switchAdminTab('sponsors', this)">🤝 Sponsors</button>
     </nav>
     <main class="admin-body">
@@ -2817,11 +2788,32 @@ html, body {
                 <div class="adm-rankings-header" style="margin-bottom:1.2rem;">
                     <h2>👥 Registered Candidates</h2>
                     <div style="display:flex;gap:0.5rem;">
+                        <button class="adm-refresh-btn" onclick="window.toggleAddContestant()" style="background:#16a34a;color:#fff;border-color:#16a34a;">➕ Add Contestant</button>
                         <button class="adm-refresh-btn" onclick="window.loadAdminCandidates()">↻ Refresh</button>
                         <button class="adm-refresh-btn" onclick="window.exportCandidatesPDF()" style="background:#9A1A45;color:#fff;border-color:#9A1A45;">⬇ PDF</button>
                     </div>
                 </div>
-                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All applicants who have paid the ₦3,000 registration fee. Approve a candidate to add them to the public lineup.</p>
+                <div id="adm-add-contestant-form" style="display:none;border:1.5px dashed #16a34a;border-radius:10px;padding:1rem;margin-bottom:1.2rem;background:#f0fdf4;">
+                    <h3 style="font-size:0.95rem;margin-bottom:0.75rem;color:#166534;">➕ Manually Add Contestant</h3>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+                        <div class="adm-field"><label>Full name *</label><input type="text" id="adm-nc-name" class="nominate-input"></div>
+                        <div class="adm-field"><label>Email</label><input type="email" id="adm-nc-email" class="nominate-input"></div>
+                        <div class="adm-field"><label>Phone</label><input type="text" id="adm-nc-phone" class="nominate-input"></div>
+                        <div class="adm-field"><label>Department</label><input type="text" id="adm-nc-dept" class="nominate-input"></div>
+                        <div class="adm-field"><label>Level</label><input type="text" id="adm-nc-level" class="nominate-input" placeholder="e.g. 300"></div>
+                        <div class="adm-field"><label>Gender</label><select id="adm-nc-gender" class="nominate-input"><option value="">—</option><option>Male</option><option>Female</option></select></div>
+                        <div class="adm-field"><label>Age</label><input type="number" id="adm-nc-age" class="nominate-input"></div>
+                        <div class="adm-field"><label>Headshot (optional)</label><input type="file" id="adm-nc-headshot" class="nominate-input" accept="image/*"></div>
+                    </div>
+                    <div class="adm-field"><label>Bio (optional)</label><textarea id="adm-nc-bio" class="nominate-input nominate-textarea" rows="2"></textarea></div>
+                    <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:#374151;margin:0.5rem 0;"><input type="checkbox" id="adm-nc-approve" checked> Approve immediately (show in public lineup)</label>
+                    <div style="display:flex;gap:0.6rem;">
+                        <button class="adm-submit-btn" id="adm-nc-save" onclick="window.adminAddContestant()" style="flex:1;">💾 Add Contestant</button>
+                        <button class="adm-refresh-btn" onclick="window.toggleAddContestant()" style="flex-shrink:0;padding:0 1rem;">✕ Cancel</button>
+                    </div>
+                    <div id="adm-nc-msg" style="display:none;margin-top:0.5rem;font-size:0.82rem;"></div>
+                </div>
+                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All registered applicants. Approve a candidate to add them to the public lineup, or delete an entry to remove it permanently.</p>
                 <div id="adm-candidates-list"><p class="adm-empty">Click Refresh to load candidates.</p></div>
             </div>
         </div>
@@ -3025,30 +3017,6 @@ html, body {
             </div><!-- /admin-section -->
         </div><!-- /adm-tab-sponsors -->
 
-        <!-- JOURNAL PANE -->
-        <div id="adm-tab-journal" class="admin-tab-pane">
-            <div class="admin-section">
-                <h2>➕ Add / Edit Entry</h2>
-                <input type="hidden" id="journal-edit-id">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-                    <div class="adm-field"><label>Tag</label><input type="text" id="journal-tag" class="nominate-input" placeholder="e.g. FASHION, CULTURE, BTS"></div>
-                    <div class="adm-field"><label>Title</label><input type="text" id="journal-title" class="nominate-input" placeholder="Entry title"></div>
-                </div>
-                <div class="adm-field"><label>Excerpt</label><textarea id="journal-excerpt" class="nominate-input nominate-textarea" rows="3" placeholder="Short description or teaser..."></textarea></div>
-                <div style="display:flex;gap:0.6rem;">
-                    <button class="adm-submit-btn" onclick="window.saveJournalEntry()" style="flex:1;">💾 Save Entry</button>
-                    <button class="adm-refresh-btn" onclick="window.clearJournalForm()" style="flex-shrink:0;padding:0 1rem;">✕ Clear</button>
-                </div>
-                <div id="journal-form-msg" style="display:none;margin-top:0.6rem;text-align:center;font-size:0.85rem;"></div>
-            </div>
-            <div class="admin-section">
-                <div class="adm-rankings-header" style="margin-bottom:1rem;">
-                    <h2>📓 Current Journal Entries</h2>
-                    <button class="adm-refresh-btn" onclick="window.loadAdminJournal()">↻ Refresh</button>
-                </div>
-                <div id="adm-journal-list"><p class="adm-empty">Click Refresh to load entries.</p></div>
-            </div>
-        </div><!-- /adm-tab-journal -->
 
     </main>
 </div>
@@ -3102,6 +3070,7 @@ var VOLUNTEER_GENERAL_LINK = 'https://chat.whatsapp.com/GxESsKpFCom7oERmblOQFl';
 var _sb = null;
 var _statUnit = 'cm';
 var _eventDate = new Date('2026-11-21T19:00:00+01:00');
+var _preEventDate = new Date('2026-08-01T19:00:00+01:00');
 var _countdownTimer = null;
 var _walletTickets = [];
 
@@ -3200,99 +3169,11 @@ window.loadAdminControls = async function() {
 
 
 
-/* ── Feature 72+73: Journal Manager ── */
-window.loadJournal = async function() {
-    var list = document.getElementById('dynamic-journal-list');
-    if (!list || !_sb) return;
-    var res = await _sb.from('journal_entries').select('*').order('created_at', { ascending: false });
-    if (res.error || !res.data || !res.data.length) {
-        list.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;text-align:center;">No journal entries yet.</p>';
-        return;
-    }
-    list.innerHTML = res.data.map(function(e) {
-        var d = new Date(e.created_at);
-        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        var dateStr = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
-        return '<div class="journal-card">'
-            + '<span class="journal-tag">' + _esc(e.tag || '') + '</span>'
-            + '<h3 class="journal-title">' + _esc(e.title || '') + '</h3>'
-            + '<p class="journal-excerpt">' + _esc(e.excerpt || '') + '</p>'
-            + '<span class="journal-date">' + dateStr + '</span>'
-            + '</div>';
-    }).join('');
-};
-
-window.loadAdminJournal = async function() {
-    var list = document.getElementById('adm-journal-list');
-    if (!list || !_sb) return;
-    list.innerHTML = '<p class="adm-empty">Loading…</p>';
-    var res = await _sb.from('journal_entries').select('*').order('created_at', { ascending: false });
-    if (res.error) { list.innerHTML = '<p class="adm-empty" style="color:#dc2626;">Error: ' + res.error.message + '</p>'; return; }
-    var items = res.data || [];
-    if (!items.length) { list.innerHTML = '<p class="adm-empty">No journal entries yet. Add one above.</p>'; return; }
-    list.innerHTML = items.map(function(it) {
-        var eid = it.id;
-        return '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.75rem;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:0.4rem;background:#fafafa;">'
-            + '<div style="flex-shrink:0;font-size:0.68rem;font-weight:700;color:#9A1A45;width:60px;">' + _esc(it.tag || '') + '</div>'
-            + '<div style="flex:1;font-size:0.82rem;color:#111827;">' + _esc(it.title || '') + '</div>'
-            + '<button onclick="window.editJournalEntry(\'' + eid + '\')" style="font-size:0.7rem;padding:3px 7px;background:#1d4ed8;color:#fff;border:none;border-radius:5px;cursor:pointer;">Edit ✏️</button>'
-            + '<button onclick="window.deleteJournalEntry(\'' + eid + '\')" style="font-size:0.7rem;padding:3px 7px;background:#dc2626;color:#fff;border:none;border-radius:5px;cursor:pointer;">Delete 🗑️</button>'
-            + '</div>';
-    }).join('');
-};
-
-window.saveJournalEntry = async function() {
-    var msgEl = document.getElementById('journal-form-msg');
-    var showMsg = function(t, err) { msgEl.style.display=''; msgEl.style.color=err?'#dc2626':'#16a34a'; msgEl.textContent=t; };
-    var editId  = document.getElementById('journal-edit-id').value.trim();
-    var tag     = document.getElementById('journal-tag').value.trim();
-    var title   = document.getElementById('journal-title').value.trim();
-    var excerpt = document.getElementById('journal-excerpt').value.trim();
-    if (!tag || !title || !excerpt) { showMsg('Tag, title and excerpt are required.', true); return; }
-    showMsg('Saving…', false);
-    var payload = { tag: tag, title: title, excerpt: excerpt };
-    var res = editId
-        ? await _sb.from('journal_entries').update(payload).eq('id', editId)
-        : await _sb.from('journal_entries').insert([payload]);
-    if (res.error) { showMsg('Error: ' + res.error.message, true); return; }
-    showMsg(editId ? 'Entry updated!' : 'Entry published!', false);
-    window.clearJournalForm();
-    window.loadAdminJournal();
-    window.loadJournal();
-};
-
-window.editJournalEntry = async function(id) {
-    var res = await _sb.from('journal_entries').select('*').eq('id', id).single();
-    if (res.error || !res.data) return;
-    var it = res.data;
-    document.getElementById('journal-edit-id').value  = it.id;
-    document.getElementById('journal-tag').value      = it.tag || '';
-    document.getElementById('journal-title').value    = it.title || '';
-    document.getElementById('journal-excerpt').value  = it.excerpt || '';
-    document.getElementById('journal-form-msg').style.display = 'none';
-    document.getElementById('adm-tab-journal').scrollTop = 0;
-};
-
-window.deleteJournalEntry = async function(id) {
-    if (!confirm('Delete this journal entry?')) return;
-    await _sb.from('journal_entries').delete().eq('id', id);
-    window.loadAdminJournal();
-    window.loadJournal();
-};
-
-window.clearJournalForm = function() {
-    ['journal-edit-id','journal-tag','journal-title','journal-excerpt'].forEach(function(id) {
-        var el = document.getElementById(id); if (el) el.value = '';
-    });
-    var m = document.getElementById('journal-form-msg'); if (m) m.style.display = 'none';
-};
-
 function boot() {
     if (window.supabase) {
         try {
             _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            window.loadDispatches();
-            window.loadJournal();
+            window.loadHomeFeed();
             _subscribeDispatches();
             _sb.auth.onAuthStateChange(function(_e, session) {
                 window.currentUser = session ? session.user : null;
@@ -3374,7 +3255,7 @@ window.switchTab = function(tab) {
     if (tab === 'judging')  { window.loadJudgingRoster(); }
     if (tab === 'register') { window.initRegisterTab(); }
     if (tab === 'vote')          { window.initVoteTab(); }
-    if (tab === 'home')          { window.loadDispatches(); }
+    if (tab === 'home')          { window.loadHomeFeed(); }
     if (tab === 'gallery')       { window.loadGallery(); }
     if (tab === 'home')          { window.checkActivePoll && window.checkActivePoll(); }
     if (tab === 'event')         { window.switchTimeline && window.switchTimeline('mixer'); window.loadPublicSponsors && window.loadPublicSponsors(); }
@@ -3963,7 +3844,6 @@ window.switchAdminTab  = function(tab, btn) {
     if (tab === 'messages')   window.loadAdminMessages();
     if (tab === 'volunteers') window.loadAdminVolunteers();
     if (tab === 'timeline')   window.loadAdminTimeline();
-    if (tab === 'journal')    window.loadAdminJournal();
     if (tab === 'sponsors')   window.loadAdminSponsors();
     if (tab === 'analytics')  window.loadAdminAnalytics();
 };
@@ -4152,7 +4032,7 @@ window.postDispatch = async function() {
     document.getElementById('adm-message').value  = '';
     setTimeout(function() { msgEl.style.display = 'none'; }, 3000);
     window.loadAdminDispatches();
-    window.loadDispatches();
+    window.loadHomeFeed();
 };
 
 /* Admin — load recent dispatches into admin panel list */
@@ -4180,31 +4060,48 @@ window.loadAdminDispatches = async function() {
 };
 
 /* Public — load 5 most recent dispatches into home tab */
-window.loadDispatches = async function() {
-    var list = document.getElementById('dispatch-list');
+/* Unified home feed: dispatches + new lineup contestants + gallery drops, newest first */
+window.loadHomeFeed = async function() {
+    var list = document.getElementById('home-feed');
     if (!list) return;
     if (!_sb) {
         list.innerHTML = '<div class="dispatch-item no-border"><p style="color:var(--cream-40);font-size:0.82rem;">Connecting…</p></div>';
         return;
     }
-    var res = await _sb.from('dispatches').select('*').order('created_at', { ascending: false }).limit(5);
-    if (res.error) {
-        list.innerHTML = '<div class="dispatch-item no-border"><p style="color:var(--cream-40);font-size:0.82rem;">No dispatches yet. Check back soon.</p></div>';
+    var results = await Promise.all([
+        _sb.from('dispatches').select('*').order('created_at', { ascending: false }).limit(8),
+        _sb.from('contestants').select('id, full_name, headshot_url, department, created_at').eq('is_approved', true).order('created_at', { ascending: false }).limit(5),
+        _sb.from('gallery_media').select('*').order('created_at', { ascending: false }).limit(5)
+    ]);
+    var items = [];
+    (results[0].data || []).forEach(function(d) { items.push({ t: 'dispatch',   at: d.created_at, d: d }); });
+    (results[1].data || []).forEach(function(c) { items.push({ t: 'contestant', at: c.created_at, d: c }); });
+    (results[2].data || []).forEach(function(g) { items.push({ t: 'gallery',    at: g.created_at, d: g }); });
+    items.sort(function(a, b) { return new Date(b.at) - new Date(a.at); });
+    items = items.slice(0, 12);
+    if (!items.length) {
+        list.innerHTML = '<div class="dispatch-item no-border"><p style="color:var(--cream-40);font-size:0.82rem;font-style:italic;">Nothing here yet. Watch this space.</p></div>';
         return;
     }
-    if (!res.data || !res.data.length) {
-        list.innerHTML = '<div class="dispatch-item no-border"><p style="color:var(--cream-40);font-size:0.82rem;font-style:italic;">No dispatches yet. Watch this space.</p></div>';
-        return;
-    }
-    list.innerHTML = res.data.map(function(d, i) {
-        var isLast = i === res.data.length - 1;
-        var ago    = _timeAgo(d.created_at);
-        var tag    = (d.tag || 'announcement').toLowerCase();
-        return '<div class="dispatch-item' + (isLast ? ' no-border' : '') + '">' +
-            '<span class="dispatch-tag ' + tag + '">' + tag + '</span>' +
-            '<p><strong>' + _esc(d.headline) + ':</strong> ' + _esc(d.message) + '</p>' +
-            '<span class="dispatch-time">' + ago + '</span>' +
-            '</div>';
+    list.innerHTML = items.map(function(it) {
+        var ago = _timeAgo(it.at);
+        if (it.t === 'dispatch') {
+            var tag = (it.d.tag || 'announcement').toLowerCase();
+            return '<div class="feed-item"><div>' +
+                '<span class="dispatch-tag ' + tag + '">' + tag + '</span>' +
+                '<p><strong>' + _esc(it.d.headline) + ':</strong> ' + _esc(it.d.message) + '</p>' +
+                '<span class="dispatch-time">' + ago + '</span></div></div>';
+        }
+        if (it.t === 'contestant') {
+            return '<div class="feed-item feed-click" onclick="switchTab(\'lineup\')">' +
+                (it.d.headshot_url ? '<img class="feed-thumb" src="' + _esc(it.d.headshot_url) + '" alt="" loading="lazy">' : '<span class="feed-icon">👑</span>') +
+                '<div><p><strong>' + _esc(it.d.full_name) + '</strong> just joined The Lineup' + (it.d.department ? ' · ' + _esc(it.d.department) : '') + '</p>' +
+                '<span class="dispatch-time">' + ago + ' · tap to see the lineup</span></div></div>';
+        }
+        return '<div class="feed-item feed-click" onclick="switchTab(\'gallery\')">' +
+            '<img class="feed-thumb feed-thumb-wide" src="' + _esc(it.d.image_url) + '" alt="" loading="lazy">' +
+            '<div><p>📸 New in the Gallery' + (it.d.caption ? ': <strong>' + _esc(it.d.caption) + '</strong>' : '') + '</p>' +
+            '<span class="dispatch-time">' + ago + ' · tap to open the gallery</span></div></div>';
     }).join('');
 };
 
@@ -4222,7 +4119,12 @@ function _timeAgo(iso) {
 function pad(n) { return n < 10 ? '0' + n : '' + n; }
 function tickCountdown() {
     var now  = new Date();
-    var diff = _eventDate - now;
+    /* Count down to the pre-event first; once it passes, roll over to the main event. */
+    var isPre  = _preEventDate && now < _preEventDate;
+    var target = isPre ? _preEventDate : _eventDate;
+    var lbl = document.querySelector('.countdown-event-label');
+    if (lbl) lbl.textContent = isPre ? '✦ Pre-Event Countdown ✦' : '✦ Event Countdown ✦';
+    var diff = target - now;
     if (diff <= 0) { document.getElementById('countdown-boxes').innerHTML = '<p class="countdown-done">✦ The Night Has Arrived ✦</p>'; clearInterval(_countdownTimer); return; }
     var days  = Math.floor(diff / 86400000);
     var hours = Math.floor((diff % 86400000) / 3600000);
@@ -4237,8 +4139,11 @@ function startCountdown() { tickCountdown(); _countdownTimer = setInterval(tickC
 async function fetchEventDate() {
     if (!_sb) { startCountdown(); return; }
     try {
-        var res = await _sb.from('system_settings').select('event_date').single();
-        if (!res.error && res.data && res.data.event_date) { _eventDate = new Date(res.data.event_date); }
+        var res = await _sb.from('system_settings').select('*').single();
+        if (!res.error && res.data) {
+            if (res.data.event_date)     { _eventDate    = new Date(res.data.event_date); }
+            if (res.data.pre_event_date) { _preEventDate = new Date(res.data.pre_event_date); }
+        }
     } catch(e) {}
     startCountdown();
 }
@@ -4369,6 +4274,31 @@ window.openBankModal = function(opts) {
 window.closeBankModal = function() {
     document.getElementById('bank-transfer-overlay').classList.add('hidden');
     window._btmConfirm = null;
+};
+
+/* Free General Entry ticket — no payment involved */
+window.claimFreeTicket = async function(btn) {
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    if (!_sb) { alert('Please refresh and try again.'); return; }
+    var restore = function() { if (btn) { btn.disabled = false; btn.textContent = 'GET FREE TICKET →'; } };
+    if (btn) { btn.disabled = true; btn.textContent = 'Reserving…'; }
+    var existing = await _sb.from('tickets').select('id').eq('user_id', window.currentUser.id).eq('tier_name', 'General Entry').limit(1);
+    if (existing.data && existing.data.length) {
+        restore();
+        alert('You already have a General Entry ticket — it\'s in "My Tickets".');
+        window.openWallet();
+        return;
+    }
+    var ref = 'CDLS-FREE-' + Date.now().toString(36).toUpperCase().substr(-6);
+    var entryToken = 'CDLS-' + window.currentUser.id.substr(0,8).toUpperCase() + '-' + ref.substr(-6);
+    var res = await _sb.from('tickets').insert([{
+        user_id: window.currentUser.id, tier_name: 'General Entry', amount: 0,
+        payment_status: 'paid', payment_reference: ref, entry_token: entryToken
+    }]);
+    restore();
+    if (res.error) { alert('Could not reserve your ticket: ' + res.error.message); return; }
+    alert('🎟️ Your FREE General Entry ticket is ready! Find it in "My Tickets".');
+    window.openWallet();
 };
 
 /* Ticket purchase */
@@ -4576,7 +4506,7 @@ window.openWallet = async function() {
             '<hr class="ticket-divider">' +
             '<div class="ticket-meta">' +
                 '<div class="ticket-meta-item"><span class="ticket-meta-label">Holder</span><span class="ticket-meta-val">' + window.currentUser.email.split('@')[0] + '</span></div>' +
-                '<div class="ticket-meta-item"><span class="ticket-meta-label">Amount</span><span class="ticket-meta-val">&#8358;' + t.amount.toLocaleString() + '</span></div>' +
+                '<div class="ticket-meta-item"><span class="ticket-meta-label">Amount</span><span class="ticket-meta-val">' + (Number(t.amount) > 0 ? '&#8358;' + t.amount.toLocaleString() : 'FREE') + '</span></div>' +
                 '<div class="ticket-meta-item"><span class="ticket-meta-label">Status</span><span class="ticket-meta-val" style="color:#4ade80;">' + (t.payment_status === 'paid' ? '<span style="color:#4ade80;">&#10003; Confirmed</span>' : '<span style="color:#fbbf24;">⏳ Pending</span>') + '</div>' +
             '</div>' +
             '<div class="ticket-qr-wrap" id="qr-slot-' + idx + '">' +
@@ -5700,6 +5630,7 @@ window.loadAdminCandidates = async function() {
                 ? '<button class="adm-approve-btn" onclick="window.approveCandidate(\'' + safeId + '\',\'' + safeName + '\')">Approve ✓</button>'
                 : '<span style="color:#16a34a;font-size:0.8rem;font-weight:600;">✓ Live</span>') +
             '<br><button onclick="window.openPortfolioModal(\'' + safeId + '\',\'' + safeName + '\')" style="font-size:0.7rem;padding:3px 8px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:0.35rem;white-space:nowrap;">Manage Diary 📔</button>' +
+            '<br><button onclick="window.deleteContestant(\'' + safeId + '\',\'' + safeName + '\', this)" style="font-size:0.7rem;padding:3px 8px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:0.35rem;white-space:nowrap;">Delete 🗑️</button>' +
             '</td>';
         tbody.appendChild(tr);
     });
@@ -5733,6 +5664,73 @@ window.approveCandidate = async function(id, name) {
     window.loadAdminCandidates(); // Refresh the roster
 };
 
+/* ── Admin: manually add / delete contestants ── */
+window.toggleAddContestant = function() {
+    var f = document.getElementById('adm-add-contestant-form');
+    if (f) f.style.display = (f.style.display === 'none' || !f.style.display) ? 'block' : 'none';
+};
+
+window.adminAddContestant = async function() {
+    if (!_sb) return;
+    var msg = document.getElementById('adm-nc-msg');
+    var showMsg = function(t, isErr) { if (msg) { msg.style.display = 'block'; msg.style.color = isErr ? '#dc2626' : '#16a34a'; msg.textContent = t; } };
+    var name = (document.getElementById('adm-nc-name').value || '').trim();
+    if (!name) { showMsg('Full name is required.', true); return; }
+    var saveBtn = document.getElementById('adm-nc-save');
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+    try {
+        var headshotUrl = null;
+        var hsFile = document.getElementById('adm-nc-headshot').files[0];
+        if (hsFile) {
+            showMsg('Uploading headshot…', false);
+            var sess = await _sb.auth.getSession();
+            var token = sess.data.session ? sess.data.session.access_token : null;
+            headshotUrl = await _uploadToStorage(hsFile, 'contestant-headshots', 'admin/' + Date.now() + '_' + hsFile.name.replace(/[^a-zA-Z0-9.]/g, '_'), token);
+        }
+        var ageVal = parseInt(document.getElementById('adm-nc-age').value);
+        var res = await _sb.from('contestants').insert([{
+            user_id: null,
+            full_name: name,
+            email: (document.getElementById('adm-nc-email').value || '').trim() || null,
+            phone: (document.getElementById('adm-nc-phone').value || '').trim() || null,
+            department: (document.getElementById('adm-nc-dept').value || '').trim() || null,
+            level: (document.getElementById('adm-nc-level').value || '').trim() || null,
+            gender: document.getElementById('adm-nc-gender').value || null,
+            age: isNaN(ageVal) ? null : ageVal,
+            bio: (document.getElementById('adm-nc-bio').value || '').trim() || null,
+            headshot_url: headshotUrl,
+            payment_ref: 'ADMIN-' + Date.now().toString(36).toUpperCase(),
+            is_approved: document.getElementById('adm-nc-approve').checked
+        }]);
+        if (res.error) throw new Error(res.error.message);
+        showMsg('✅ ' + name + ' added!', false);
+        ['adm-nc-name','adm-nc-email','adm-nc-phone','adm-nc-dept','adm-nc-level','adm-nc-age','adm-nc-bio'].forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; });
+        document.getElementById('adm-nc-headshot').value = '';
+        window.loadAdminCandidates();
+    } catch(e) {
+        showMsg('Failed: ' + e.message + (e.message.indexOf('policy') > -1 ? ' — run the admin policies SQL (supabase_admin_contestants.sql) in the SQL Editor.' : ''), true);
+    }
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Add Contestant'; }
+};
+
+window.deleteContestant = async function(id, name, btn) {
+    if (!_sb) return;
+    if (!confirm('Permanently delete contestant "' + name + '"? This cannot be undone.')) return;
+    if (btn) { btn.textContent = 'Deleting…'; btn.disabled = true; }
+    var res = await _sb.from('contestants').delete().eq('id', id).select('id');
+    if (res.error) {
+        alert('Delete failed: ' + res.error.message);
+        if (btn) { btn.textContent = 'Delete 🗑️'; btn.disabled = false; }
+        return;
+    }
+    if (!res.data || !res.data.length) {
+        alert('Delete was blocked by database permissions — run the admin policies SQL (supabase_admin_contestants.sql) in the Supabase SQL Editor.');
+        if (btn) { btn.textContent = 'Delete 🗑️'; btn.disabled = false; }
+        return;
+    }
+    window.loadAdminCandidates();
+};
+
 window.saveReceiptAsImage = async function() {
     var card = document.getElementById('reg-receipt-card');
     var btn  = event && event.target;
@@ -5756,7 +5754,7 @@ function _subscribeDispatches() {
     if (_dispatchChannel || !_sb) return;
     _dispatchChannel = _sb.channel('dispatches-realtime')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dispatches' },
-            function() { window.loadDispatches(); })
+            function() { window.loadHomeFeed(); })
         .subscribe();
 }
 
