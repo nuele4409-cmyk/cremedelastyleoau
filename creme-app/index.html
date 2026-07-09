@@ -4172,7 +4172,7 @@ window.loadHomeFeed = async function() {
         return;
     }
     var isAdmin = window.currentUserRole === 'admin';
-    var icons = { dispatch:'📢', contestant:'👑', gallery:'📸', challenge:'🎯', challenge_result:'🏁', poll:'🗳️', sponsor:'🤝', team:'👥', judge:'⚖️' };
+    var icons = { dispatch:'📢', contestant:'👑', gallery:'📸', challenge:'🎯', challenge_result:'🏁', poll:'🗳️', sponsor:'🤝', team:'👥', judge:'⚖️', ticket:'🎟️', control:'🔔' };
     list.innerHTML = items.map(function(it) {
         var ago = _timeAgo(it.created_at);
         var thumb = it.image_url
