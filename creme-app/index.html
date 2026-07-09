@@ -1178,6 +1178,24 @@ html, body {
 
 /* Contestant Roster */
 .judging-roster { display: flex; flex-direction: column; gap: 0.75rem; }
+.judging-roster .judge-card {
+    flex-direction: row; align-items: center; text-align: left;
+    padding: 0.75rem 1rem; gap: 0.85rem;
+}
+.judging-roster .judge-card-img {
+    width: 56px; height: 56px; border-radius: 14px; object-fit: cover;
+    flex-shrink: 0; border: 2px solid rgba(227,0,79,0.3);
+}
+.judging-roster .judge-card-info { flex: 1; min-width: 0; }
+.judging-roster .judge-card-name { font-size: 0.92rem; font-weight: 800; color: var(--cream); }
+.judging-roster .judge-card-dept { font-size: 0.76rem; color: var(--cream-60); margin-top: 0.15rem; }
+.judging-roster .judge-score-btn {
+    flex-shrink: 0; padding: 0.4rem 1rem; border-radius: 50px; border: none;
+    background: var(--crimson); color: #fff; font-size: 0.78rem; font-weight: 700; cursor: pointer;
+}
+.judging-roster .judge-card-scored-badge {
+    flex-shrink: 0; font-size: 0.72rem; font-weight: 700; color: #4ade80;
+}
 .judging-row {
     display: flex; align-items: center; gap: 1rem;
     background: var(--card-bg); border: 1px solid var(--border);
@@ -3739,12 +3757,13 @@ window.loadAdminTickets = async function() {
             +'">'+(isPending?'⏳ Pending':'✓ Paid')+'</span>'
             +'</div>'
             +'<div style="font-size:0.73rem;color:#6b7280;margin-bottom:0.25rem;">Ref: <code>'+_esc(t.payment_reference||'—')+'</code></div>'
-            +'<div style="font-size:0.73rem;color:#6b7280;margin-bottom:'+(isPending?'0.6rem':'0')+';">Token: '+_esc(t.entry_token||'—')+' · '+date+'</div>'
-            +(isPending?'<button onclick="window.confirmTicketPayment(\'' + t.id + '\',this)" style="padding:0.35rem 0.9rem;background:var(--gold);color:#0a0005;border:none;border-radius:50px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:inherit;">✅ Confirm Payment</button>':'')
+            +'<div style="font-size:0.73rem;color:#6b7280;margin-bottom:'+(isPending?'0.5rem':'0')+';">Token: '+_esc(t.entry_token||'—')+' · '+date+'</div>'
+            +(isPending?'<div style="font-size:0.72rem;color:#9ca3af;">Flutterwave confirms this automatically once payment clears. '
+                +'<a onclick="window.confirmTicketPayment(\'' + t.id + '\',this)" style="color:#9A1A45;cursor:pointer;text-decoration:underline;">Still pending after a completed payment? Confirm manually.</a></div>':'')
             +'</div>';
     };
     list.innerHTML =
-        (pending.length ? '<div style="font-size:0.72rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;">⏳ Awaiting Confirmation ('+pending.length+')</div>'+pending.map(makeRow).join(''):'')
+        (pending.length ? '<div style="font-size:0.72rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;">⏳ Awaiting Flutterwave Confirmation ('+pending.length+')</div>'+pending.map(makeRow).join(''):'')
         +(paid.length ? '<div style="font-size:0.72rem;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:0.1em;margin:0.75rem 0 0.5rem;">✓ Confirmed ('+paid.length+')</div>'+paid.map(makeRow).join(''):'');
 };
 
@@ -4558,11 +4577,13 @@ window._finishContestantReg = function(payment, payRef) {
 /* Admin: confirm ticket payment */
 window.confirmTicketPayment = async function(ticketId, btn) {
     if (!_sb) return;
-    if (btn) { btn.textContent = 'Confirming…'; btn.disabled = true; }
+    if (!confirm('Only confirm manually if you have verified this payment actually cleared on Flutterwave. Continue?')) return;
+    var origText = btn ? btn.textContent : '';
+    if (btn) { btn.textContent = 'Confirming…'; btn.style.pointerEvents = 'none'; }
     var res = await _sb.rpc('confirm_ticket_payment', { ticket_id: ticketId });
-    if (res.error) { alert('Error: ' + res.error.message); if(btn){btn.textContent='✅ Confirm Payment';btn.disabled=false;} return; }
+    if (res.error) { alert('Error: ' + res.error.message); if(btn){btn.textContent=origText;btn.style.pointerEvents='';} return; }
     var row = btn ? btn.closest('[data-ticket-row]') : null;
-    if (row) { row.querySelector('.btm-badge').textContent = '✓ Paid'; row.querySelector('.btm-badge').style.color = '#4ade80'; btn.remove(); }
+    if (row) { row.querySelector('.btm-badge').textContent = '✓ Paid'; row.querySelector('.btm-badge').style.color = '#4ade80'; btn.parentElement.remove(); }
     else window.loadAdminTickets();
 };
 
@@ -5110,8 +5131,10 @@ window.loadJudgingRoster = async function() {
         card.innerHTML =
             (c.headshot_url ? '<img class="judge-card-img" src="' + c.headshot_url + '" loading="lazy">' :
                 '<div class="judge-card-img" style="background:var(--rose-dark);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">👤</div>') +
-            '<div class="judge-card-name">' + c.full_name + '</div>' +
-            '<div class="judge-card-dept">' + (c.department || '') + '</div>' +
+            '<div class="judge-card-info">' +
+                '<div class="judge-card-name">' + c.full_name + '</div>' +
+                '<div class="judge-card-dept">' + (c.department || '') + '</div>' +
+            '</div>' +
             (done ? '<div class="judge-card-scored-badge">✓ Scored</div>'
                   : '<button class="judge-score-btn" onclick="window.openScoringModal(\'' + c.id.replace(/'/g, "\\'") + '\')">Score ▸</button>');
         roster.appendChild(card);
@@ -7192,9 +7215,9 @@ window.loadAdminAnalytics = async function() {
     set('stat-tickets','…'); set('stat-votes','…'); set('stat-nominations','…');
     set('stat-contestants','…'); set('stat-judges','…'); set('stat-sponsors','…'); set('stat-users','…');
     try {
-        var tRes = await _sb.from('tickets').select('id,amount_paid', { count: 'exact' });
-        set('stat-tickets', tRes.count != null ? tRes.count : '—');
-        if (tRes.data) { var tRev = tRes.data.reduce(function(s,r){return s+(r.amount_paid||0);},0); set('stat-tickets-rev','Revenue: ₦'+tRev.toLocaleString()); }
+        var tRes = await _sb.from('tickets').select('id,amount,payment_status').eq('payment_status','paid');
+        set('stat-tickets', tRes.data ? tRes.data.length : '—');
+        if (tRes.data) { var tRev = tRes.data.reduce(function(s,r){return s+(Number(r.amount)||0);},0); set('stat-tickets-rev','Revenue: ₦'+tRev.toLocaleString()); }
 
         var vRes = await _sb.from('contestants').select('vote_count').eq('is_approved',true);
         if (!vRes.error && vRes.data) { var tv = vRes.data.reduce(function(s,r){return s+(r.vote_count||0);},0); set('stat-votes',tv.toLocaleString()); }
@@ -7203,9 +7226,9 @@ window.loadAdminAnalytics = async function() {
         set('stat-nominations', nRes.count != null ? nRes.count : '—');
         if (nRes.data) { var nRev = nRes.data.reduce(function(s,r){return s+(r.amount_paid||0);},0); set('stat-noms-rev','Revenue: ₦'+nRev.toLocaleString()); }
 
-        var cRes = await _sb.from('contestants').select('id,amount_paid', { count: 'exact' });
+        var cRes = await _sb.from('contestants').select('id,payment_ref', { count: 'exact' }).not('payment_ref','is',null);
         set('stat-contestants', cRes.count != null ? cRes.count : '—');
-        if (cRes.data) { var cRev = cRes.data.reduce(function(s,r){return s+(r.amount_paid||0);},0); set('stat-cont-rev','Revenue: ₦'+cRev.toLocaleString()); }
+        if (cRes.data) { var cCount = cRes.data.filter(function(r){return (r.payment_ref||'').indexOf('ADMIN-') !== 0;}).length; set('stat-cont-rev','Revenue: ₦'+(cCount*3000).toLocaleString()); }
 
         var jRes = await _sb.from('judges').select('id', { count: 'exact' });
         set('stat-judges', jRes.count != null ? jRes.count : '—');
