@@ -7,7 +7,11 @@
 --  the authoritative record of every account ever created
 --  (Google or email), rather than some other proxy table.
 
-create or replace function get_user_count()
+-- The live function has a different return type (e.g. int vs bigint),
+-- and Postgres won't let CREATE OR REPLACE change that — drop it first.
+drop function if exists get_user_count();
+
+create function get_user_count()
 returns bigint
 language sql stable security definer
 set search_path = public

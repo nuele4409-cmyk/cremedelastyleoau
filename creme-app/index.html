@@ -4632,7 +4632,7 @@ window.openWallet = async function() {
             '<div class="ticket-meta">' +
                 '<div class="ticket-meta-item"><span class="ticket-meta-label">Holder</span><span class="ticket-meta-val">' + window.currentUser.email.split('@')[0] + '</span></div>' +
                 '<div class="ticket-meta-item"><span class="ticket-meta-label">Amount</span><span class="ticket-meta-val">' + (Number(t.amount) > 0 ? '&#8358;' + t.amount.toLocaleString() : 'FREE') + '</span></div>' +
-                '<div class="ticket-meta-item"><span class="ticket-meta-label">Status</span><span class="ticket-meta-val" style="color:#4ade80;">' + (t.payment_status === 'paid' ? '<span style="color:#4ade80;">&#10003; Confirmed</span>' : '<span style="color:#fbbf24;">⏳ Pending</span>') + '</div>' +
+                '<div class="ticket-meta-item"><span class="ticket-meta-label">Status</span><span class="ticket-meta-val">' + (t.is_used ? '<span style="color:#9ca3af;">✅ Used — Checked In</span>' : t.payment_status === 'paid' ? '<span style="color:#4ade80;">&#10003; Confirmed</span>' : '<span style="color:#fbbf24;">⏳ Pending</span>') + '</span></div>' +
             '</div>' +
             '<div class="ticket-qr-wrap" id="qr-slot-' + idx + '">' +
             (t.payment_status === 'paid' ? '' : '<div style="background:rgba(251,191,36,0.08);border:1.5px dashed rgba(251,191,36,0.4);border-radius:10px;padding:1.25rem;text-align:center;">' +
@@ -4672,8 +4672,8 @@ window.printTicket = function(idx) {
     }
     
     var qrBlock     = qrDataUrl ? '<img src="' + qrDataUrl + '" width="180" height="180" style="display:block;margin:0 auto;" alt="Entry QR">' : '<p style="text-align:center;color:#888;font-size:0.8rem;">QR code not available</p>';
-    var statusColor = t.payment_status === 'paid' ? '#22c55e' : '#f59e0b';
-    var statusText  = t.payment_status === 'paid' ? '✓ PAID' : t.payment_status.toUpperCase();
+    var statusColor = t.is_used ? '#9ca3af' : t.payment_status === 'paid' ? '#22c55e' : '#f59e0b';
+    var statusText  = t.is_used ? '✅ USED — CHECKED IN' : t.payment_status === 'paid' ? '✓ PAID' : t.payment_status.toUpperCase();
     var amountStr   = '₦' + Number(t.amount).toLocaleString();
     var ticketId    = (t.entry_token || t.id || '').substring(0, 16).toUpperCase();
 
