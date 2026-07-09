@@ -2494,6 +2494,10 @@ html, body {
         <span class="notif-drawer-title">🔔 Notifications</span>
         <button class="notif-close-btn" onclick="closeNotifications()">✕</button>
     </div>
+    <div id="push-enable-banner" style="display:none;margin:0.75rem;padding:0.75rem 0.9rem;background:rgba(227,0,79,0.1);border:1px solid rgba(227,0,79,0.35);border-radius:12px;">
+        <p style="font-size:0.8rem;color:var(--cream);margin:0 0 0.5rem;">🔔 Get updates straight to your phone's notification bar.</p>
+        <button onclick="window.enablePushNotifications(this)" style="width:100%;padding:0.5rem;background:var(--crimson);color:#fff;border:none;border-radius:8px;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:inherit;">Enable Push Notifications</button>
+    </div>
     <div class="notif-list" id="notif-list">
         <p class="notif-empty">Loading...</p>
     </div>
@@ -3142,6 +3146,9 @@ var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
 /* Flutterwave LIVE public key — safe to expose in frontend code.
    The secret key lives ONLY in the Supabase Edge Function secrets, never here. */
 var FLW_PUBLIC_KEY = 'FLWPUBK-8040f852fae2fd6090f53ed48f5cd671-X';
+/* Web Push VAPID public key — safe to expose. Its private counterpart
+   lives only in the send-push Edge Function's secrets. */
+var VAPID_PUBLIC_KEY = 'BN-vchb_cA8sZVRA6j7v-DssGgcjWilObRRcgMlNZWc_NT64UNOCthvzeQuqHIKesxXwJ5xVYnCyIcwSaSfOyRQ';
 var TEAM_WHATSAPP_LINKS = {
     'Publicity':             'https://chat.whatsapp.com/LUGT8JDQqPs5U31wDjPHtY',
     'Media Team':            'https://chat.whatsapp.com/Dcf28Dv51CnEIFJ8pmS7ht',
@@ -4936,7 +4943,51 @@ function openNotifications() {
     document.getElementById('notif-drawer').classList.add('open');
     document.getElementById('notif-backdrop').classList.add('visible');
     fetchNotifications();
+    _updatePushBanner();
 }
+
+/* ── Web Push: phone notification-bar alerts ── */
+function _urlBase64ToUint8Array(base64String) {
+    var padding = '='.repeat((4 - base64String.length % 4) % 4);
+    var base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    var rawData = window.atob(base64);
+    var outputArray = new Uint8Array(rawData.length);
+    for (var i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+    return outputArray;
+}
+async function _updatePushBanner() {
+    var banner = document.getElementById('push-enable-banner');
+    if (!banner) return;
+    var supported = ('serviceWorker' in navigator) && ('PushManager' in window) && window.currentUser;
+    if (!supported || Notification.permission === 'denied') { banner.style.display = 'none'; return; }
+    try {
+        var reg = await navigator.serviceWorker.ready;
+        var existing = await reg.pushManager.getSubscription();
+        banner.style.display = existing ? 'none' : 'block';
+    } catch(e) { banner.style.display = 'none'; }
+}
+window.enablePushNotifications = async function(btn) {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) { alert('Push notifications are not supported on this browser. On iPhone, add this app to your Home Screen first (Share → Add to Home Screen), then try again from there.'); return; }
+    if (!window.currentUser) { window.openAuthModal(); return; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Enabling…'; }
+    try {
+        var perm = await Notification.requestPermission();
+        if (perm !== 'granted') { alert('Notifications permission was not granted.'); if (btn) { btn.disabled = false; btn.textContent = 'Enable Push Notifications'; } return; }
+        var reg = await navigator.serviceWorker.ready;
+        var sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: _urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
+        var json = sub.toJSON();
+        var res = await _sb.from('push_subscriptions').upsert({
+            user_id: window.currentUser.id, endpoint: json.endpoint,
+            p256dh: json.keys.p256dh, auth_key: json.keys.auth
+        }, { onConflict: 'endpoint' });
+        if (res.error) throw new Error(res.error.message);
+        document.getElementById('push-enable-banner').style.display = 'none';
+        alert('🔔 Notifications enabled on this device!');
+    } catch(e) {
+        alert('Could not enable notifications: ' + e.message);
+        if (btn) { btn.disabled = false; btn.textContent = 'Enable Push Notifications'; }
+    }
+};
 window.closeNotifications = function() {
     _notifOpen = false;
     document.getElementById('notif-drawer').classList.remove('open');
@@ -7319,6 +7370,12 @@ window.triggerPwaInstall = function() {
             navigator.serviceWorker.register('./sw.js', { scope: './' })
               .then(function(r){ console.log('[SW] registered', r.scope); })
               .catch(function(e){ console.warn('[SW] failed', e); });
+        });
+        // Tapping a push notification asks the open tab to jump to the relevant section
+        navigator.serviceWorker.addEventListener('message', function(e) {
+            if (e.data && e.data.type === 'push-nav' && e.data.tab) {
+                try { window.switchTab(e.data.tab); } catch(err) {}
+            }
         });
     }
 /* ── RUN ── */

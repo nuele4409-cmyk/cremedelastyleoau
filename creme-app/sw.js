@@ -1,5 +1,5 @@
 /* Crème De La Style — Service Worker */
-var CACHE = 'creme-v4';
+var CACHE = 'creme-v5';
 var PRECACHE = [
   './index.html',
   './manifest.json',
@@ -35,6 +35,39 @@ self.addEventListener('fetch', function(e) {
   e.respondWith(
     caches.match(e.request).then(function(cached) {
       return cached || fetch(e.request).catch(function() { return caches.match('./index.html'); });
+    })
+  );
+});
+
+/* ── Web Push: puts alerts in the phone's notification bar ── */
+self.addEventListener('push', function(e) {
+  var data = {};
+  try { data = e.data ? e.data.json() : {}; } catch (err) {}
+  var title = data.title || 'Crème De La Style';
+  var options = {
+    body: data.body || '',
+    icon: './icons/icon-192.png',
+    badge: './icons/icon-192.png',
+    image: data.image_url || undefined,
+    data: { link_tab: data.link_tab || null }
+  };
+  e.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', function(e) {
+  e.notification.close();
+  var tab = e.notification.data && e.notification.data.link_tab;
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(list) {
+      for (var i = 0; i < list.length; i++) {
+        var c = list[i];
+        if ('focus' in c) {
+          c.focus();
+          if (tab) c.postMessage({ type: 'push-nav', tab: tab });
+          return;
+        }
+      }
+      if (clients.openWindow) return clients.openWindow('./');
     })
   );
 });
