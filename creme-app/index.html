@@ -7378,6 +7378,21 @@ window.triggerPwaInstall = function() {
             }
         });
     }
+
+    // Refresh once each time the app is (re)opened — e.g. resumed from the
+    // background after being minimized/closed — so tickets, feed, countdown
+    // etc. never show stale data. A short "away" threshold avoids reloading
+    // on brief blips (glancing at another app, a notification shade, etc.).
+    var _cdlsHiddenAt = null;
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') {
+            _cdlsHiddenAt = Date.now();
+        } else if (document.visibilityState === 'visible' && _cdlsHiddenAt) {
+            var awayMs = Date.now() - _cdlsHiddenAt;
+            _cdlsHiddenAt = null;
+            if (awayMs >= 3000) window.location.reload();
+        }
+    });
 /* ── RUN ── */
 boot();
 
