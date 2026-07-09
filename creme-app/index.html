@@ -923,6 +923,27 @@ html, body {
 .feed-thumb-wide { border-radius: 10px; width: 64px; height: 48px; border-color: rgba(227,0,79,0.35); }
 .feed-icon { font-size: 1.4rem; flex-shrink: 0; }
 
+/* CHALLENGES */
+.chal-card {
+    background: rgba(42,0,16,0.45); border: 1px solid var(--border);
+    border-radius: 20px; padding: 1.5rem 1.75rem; margin-bottom: 1rem;
+}
+.chal-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+.chal-title { font-size: 1.05rem; font-weight: 800; color: var(--cream); line-height: 1.35; }
+.chal-badge { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 4px 10px; border-radius: 50px; flex-shrink: 0; }
+.chal-badge.active { color: #4ade80; background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.4); }
+.chal-badge.closed { color: var(--cream-60); background: rgba(244,241,222,0.06); border: 1px solid var(--border); }
+.chal-meta { font-size: 0.74rem; color: var(--cream-40); font-weight: 600; margin-bottom: 0.75rem; }
+.chal-meta .gold { color: var(--gold); }
+.chal-desc { font-size: 0.87rem; color: var(--cream-60); line-height: 1.65; white-space: pre-line; }
+.chal-results { margin-top: 1rem; border-top: 1px dashed rgba(212,175,55,0.35); padding-top: 1rem; }
+.chal-winner { font-size: 0.92rem; color: var(--gold); font-weight: 800; margin-bottom: 0.6rem; }
+.chal-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.chal-table th { text-align: left; font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream-40); padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); }
+.chal-table td { padding: 0.45rem 0.5rem; color: var(--cream-60); border-bottom: 1px solid rgba(244,241,222,0.06); }
+.chal-table tr:first-child td { color: var(--gold); font-weight: 700; }
+.chal-remark { margin-top: 0.75rem; font-size: 0.84rem; color: var(--cream-60); line-height: 1.6; font-style: italic; }
+
 /* COUNTDOWN */
 .countdown-widget {
     text-align: center; margin: 1.75rem 0 2rem;
@@ -1830,6 +1851,7 @@ html, body {
                 <button class="explore-card" onclick="switchTab('judges')"><span class="explore-icon">⚖️</span><span class="explore-label">Judges</span></button>
                 <button class="explore-card" onclick="switchTab('gallery')"><span class="explore-icon">📸</span><span class="explore-label">Gallery</span></button>
                 <button class="explore-card" onclick="switchTab('team')"><span class="explore-icon">👥</span><span class="explore-label">Team</span></button>
+                <button class="explore-card" onclick="switchTab('challenges')"><span class="explore-icon">🎯</span><span class="explore-label">Challenges</span></button>
                 <button class="explore-card" onclick="switchTab('lineup')"><span class="explore-icon">👗</span><span class="explore-label">The Lineup</span></button>
                 <button class="explore-card" onclick="switchTab('contact')"><span class="explore-icon">✉️</span><span class="explore-label">Contact</span></button>
                 <button class="explore-card" onclick="switchTab('event')"><span class="explore-icon">🎪</span><span class="explore-label">The Event</span></button>
@@ -1850,27 +1872,27 @@ html, body {
             <div id="tickets-content">
             <div class="ticket-tiers">
                 <div class="tier-card tier-regular">
-                    <div class="tier-badge">GENERAL ENTRY</div>
-                    <h3 class="tier-name">General Entry</h3>
-                    <p class="tier-price">FREE</p>
+                    <div class="tier-badge">REGULAR</div>
+                    <h3 class="tier-name">Regular</h3>
+                    <p class="tier-price">₦1,000</p>
                     <ul class="tier-perks">
                         <li>General Admission</li>
                         <li>Runway Access</li>
                         <li>QR Entry Pass</li>
                     </ul>
-                    <button class="ticket-btn" onclick="claimFreeTicket(this)">GET FREE TICKET →</button>
+                    <button class="ticket-btn" onclick="initiateTicketPurchase('Regular', 1000, this)">BUY TICKET →</button>
                 </div>
                 <div class="tier-card tier-coutured">
                     <div class="tier-badge">✦✦ VIP</div>
-                    <h3 class="tier-name">The Coutured</h3>
-                    <p class="tier-price">₦7,000</p>
+                    <h3 class="tier-name">VIP</h3>
+                    <p class="tier-price">₦5,000</p>
                     <ul class="tier-perks">
                         <li>Front Row Seating</li>
                         <li>Welcome Cocktail</li>
                         <li>Backstage Meet & Greet</li>
                         <li>Exclusive Gift Bag</li>
                     </ul>
-                    <button class="ticket-btn" onclick="initiateTicketPurchase('The Coutured', 7000, this)">BUY VIP TICKET →</button>
+                    <button class="ticket-btn" onclick="initiateTicketPurchase('VIP', 5000, this)">BUY VIP TICKET →</button>
                 </div>
             </div>
             <p class="tickets-note">⚠️ Seats are strictly limited. All sales are final. Tickets must be presented at entry.</p>
@@ -2360,6 +2382,15 @@ html, body {
         </div>
 
         <!-- CONTACT -->
+        <!-- CHALLENGES -->
+        <div id="tab-challenges" class="tab-screen">
+            <div class="page-header">
+                <h2 class="page-title">Challenges</h2>
+                <p class="page-sub">Contestant tasks, live standings and results.</p>
+            </div>
+            <div id="challenges-list"><p style="color:var(--cream-60);font-size:0.88rem;text-align:center;">Loading challenges…</p></div>
+        </div>
+
         <div id="tab-contact" class="tab-screen">
             <div class="page-header">
                 <h2 class="page-title">Contact</h2>
@@ -2527,6 +2558,7 @@ html, body {
         <button class="admin-tab" onclick="switchAdminTab('polls', this)">📣 Polls</button>
         <button class="admin-tab" onclick="switchAdminTab('messages', this)">✉️ Messages</button>
         <button class="admin-tab" onclick="switchAdminTab('timeline', this)">📅 Timeline</button>
+        <button class="admin-tab" onclick="switchAdminTab('tasks', this)">🎯 Tasks</button>
         <button class="admin-tab" onclick="switchAdminTab('sponsors', this)">🤝 Sponsors</button>
     </nav>
     <main class="admin-body">
@@ -2794,7 +2826,8 @@ html, body {
                     </div>
                 </div>
                 <div id="adm-add-contestant-form" style="display:none;border:1.5px dashed #16a34a;border-radius:10px;padding:1rem;margin-bottom:1.2rem;background:#f0fdf4;">
-                    <h3 style="font-size:0.95rem;margin-bottom:0.75rem;color:#166534;">➕ Manually Add Contestant</h3>
+                    <h3 id="adm-nc-form-title" style="font-size:0.95rem;margin-bottom:0.75rem;color:#166534;">➕ Manually Add Contestant</h3>
+                    <input type="hidden" id="adm-nc-id">
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
                         <div class="adm-field"><label>Full name *</label><input type="text" id="adm-nc-name" class="nominate-input"></div>
                         <div class="adm-field"><label>Email</label><input type="email" id="adm-nc-email" class="nominate-input"></div>
@@ -2803,7 +2836,7 @@ html, body {
                         <div class="adm-field"><label>Level</label><input type="text" id="adm-nc-level" class="nominate-input" placeholder="e.g. 300"></div>
                         <div class="adm-field"><label>Gender</label><select id="adm-nc-gender" class="nominate-input"><option value="">—</option><option>Male</option><option>Female</option></select></div>
                         <div class="adm-field"><label>Age</label><input type="number" id="adm-nc-age" class="nominate-input"></div>
-                        <div class="adm-field"><label>Headshot (optional)</label><input type="file" id="adm-nc-headshot" class="nominate-input" accept="image/*"></div>
+                        <div class="adm-field"><label>Headshot (optional — replaces current)</label><input type="file" id="adm-nc-headshot" class="nominate-input" accept="image/*"></div>
                     </div>
                     <div class="adm-field"><label>Bio (optional)</label><textarea id="adm-nc-bio" class="nominate-input nominate-textarea" rows="2"></textarea></div>
                     <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:#374151;margin:0.5rem 0;"><input type="checkbox" id="adm-nc-approve" checked> Approve immediately (show in public lineup)</label>
@@ -3017,6 +3050,34 @@ html, body {
             </div><!-- /admin-section -->
         </div><!-- /adm-tab-sponsors -->
 
+        <!-- TASKS / CHALLENGES PANE -->
+        <div id="adm-tab-tasks" class="admin-tab-pane">
+            <div class="admin-section">
+                <h2 id="adm-ch-form-title">🎯 Post a Challenge / Task</h2>
+                <input type="hidden" id="adm-ch-id">
+                <div class="adm-field"><label>Title *</label><input type="text" id="adm-ch-title" class="nominate-input" placeholder="e.g. Influence Challenge"></div>
+                <div class="adm-field"><label>Description / instructions</label><textarea id="adm-ch-desc" class="nominate-input nominate-textarea" rows="4" placeholder="What contestants must do, rules, how it will be graded…"></textarea></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;">
+                    <div class="adm-field"><label>Starts</label><input type="date" id="adm-ch-start" class="nominate-input"></div>
+                    <div class="adm-field"><label>Ends</label><input type="date" id="adm-ch-end" class="nominate-input"></div>
+                    <div class="adm-field"><label>Marks</label><input type="number" id="adm-ch-marks" class="nominate-input" placeholder="e.g. 20"></div>
+                </div>
+                <div class="adm-field"><label>Status</label><select id="adm-ch-status" class="nominate-input"><option value="active">Active</option><option value="closed">Closed</option></select></div>
+                <div style="display:flex;gap:0.6rem;">
+                    <button class="adm-submit-btn" id="adm-ch-save" onclick="window.saveChallenge()" style="flex:1;">💾 Publish Challenge</button>
+                    <button class="adm-refresh-btn" onclick="window.clearChallengeForm()" style="flex-shrink:0;padding:0 1rem;">✕ Clear</button>
+                </div>
+                <div id="adm-ch-msg" style="display:none;margin-top:0.6rem;text-align:center;font-size:0.85rem;"></div>
+            </div>
+            <div class="admin-section">
+                <div class="adm-rankings-header" style="margin-bottom:1rem;">
+                    <h2>📋 All Challenges</h2>
+                    <button class="adm-refresh-btn" onclick="window.loadAdminChallenges()">↻ Refresh</button>
+                </div>
+                <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">Use <strong>Results 📊</strong> on a challenge to publish rankings, points and a winner announcement — they appear on the public Challenges page instantly.</p>
+                <div id="adm-ch-list"><p class="adm-empty">Click Refresh to load challenges.</p></div>
+            </div>
+        </div><!-- /adm-tab-tasks -->
 
     </main>
 </div>
@@ -3257,6 +3318,7 @@ window.switchTab = function(tab) {
     if (tab === 'vote')          { window.initVoteTab(); }
     if (tab === 'home')          { window.loadHomeFeed(); }
     if (tab === 'gallery')       { window.loadGallery(); }
+    if (tab === 'challenges')    { window.loadChallenges(); }
     if (tab === 'home')          { window.checkActivePoll && window.checkActivePoll(); }
     if (tab === 'event')         { window.switchTimeline && window.switchTimeline('mixer'); window.loadPublicSponsors && window.loadPublicSponsors(); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3844,6 +3906,7 @@ window.switchAdminTab  = function(tab, btn) {
     if (tab === 'messages')   window.loadAdminMessages();
     if (tab === 'volunteers') window.loadAdminVolunteers();
     if (tab === 'timeline')   window.loadAdminTimeline();
+    if (tab === 'tasks')      window.loadAdminChallenges();
     if (tab === 'sponsors')   window.loadAdminSponsors();
     if (tab === 'analytics')  window.loadAdminAnalytics();
 };
@@ -4070,13 +4133,16 @@ window.loadHomeFeed = async function() {
     }
     var results = await Promise.all([
         _sb.from('dispatches').select('*').order('created_at', { ascending: false }).limit(8),
-        _sb.from('contestants').select('id, full_name, headshot_url, department, created_at').eq('is_approved', true).order('created_at', { ascending: false }).limit(5),
-        _sb.from('gallery_media').select('*').order('created_at', { ascending: false }).limit(5)
+        /* Only admin-featured contestants appear on the homepage */
+        _sb.from('contestants').select('id, full_name, headshot_url, department, created_at').eq('is_approved', true).eq('is_featured', true).order('created_at', { ascending: false }).limit(5),
+        _sb.from('gallery_media').select('*').order('created_at', { ascending: false }).limit(5),
+        _sb.from('challenges').select('*').order('created_at', { ascending: false }).limit(5)
     ]);
     var items = [];
     (results[0].data || []).forEach(function(d) { items.push({ t: 'dispatch',   at: d.created_at, d: d }); });
     (results[1].data || []).forEach(function(c) { items.push({ t: 'contestant', at: c.created_at, d: c }); });
     (results[2].data || []).forEach(function(g) { items.push({ t: 'gallery',    at: g.created_at, d: g }); });
+    (results[3].data || []).forEach(function(ch) { items.push({ t: 'challenge', at: ch.created_at, d: ch }); });
     items.sort(function(a, b) { return new Date(b.at) - new Date(a.at); });
     items = items.slice(0, 12);
     if (!items.length) {
@@ -4098,10 +4164,65 @@ window.loadHomeFeed = async function() {
                 '<div><p><strong>' + _esc(it.d.full_name) + '</strong> just joined The Lineup' + (it.d.department ? ' · ' + _esc(it.d.department) : '') + '</p>' +
                 '<span class="dispatch-time">' + ago + ' · tap to see the lineup</span></div></div>';
         }
+        if (it.t === 'challenge') {
+            var closed = it.d.status === 'closed';
+            return '<div class="feed-item feed-click" onclick="switchTab(\'challenges\')">' +
+                '<span class="feed-icon">' + (closed ? '🏁' : '🎯') + '</span>' +
+                '<div><p>' + (closed
+                    ? 'Results are in: <strong>' + _esc(it.d.title) + '</strong>'
+                    : 'New challenge: <strong>' + _esc(it.d.title) + '</strong>' + (it.d.marks ? ' · ' + it.d.marks + ' marks' : '')) + '</p>' +
+                '<span class="dispatch-time">' + ago + ' · tap to view challenges</span></div></div>';
+        }
         return '<div class="feed-item feed-click" onclick="switchTab(\'gallery\')">' +
             '<img class="feed-thumb feed-thumb-wide" src="' + _esc(it.d.image_url) + '" alt="" loading="lazy">' +
             '<div><p>📸 New in the Gallery' + (it.d.caption ? ': <strong>' + _esc(it.d.caption) + '</strong>' : '') + '</p>' +
             '<span class="dispatch-time">' + ago + ' · tap to open the gallery</span></div></div>';
+    }).join('');
+};
+
+/* Public Challenges page: tasks with status, marks, dates, and published results */
+window.loadChallenges = async function() {
+    var list = document.getElementById('challenges-list');
+    if (!list) return;
+    if (!_sb) { list.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;text-align:center;">Connecting…</p>'; return; }
+    var res = await _sb.from('challenges').select('*').order('created_at', { ascending: false });
+    if (res.error) { list.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;text-align:center;">Challenges are coming soon — watch this space.</p>'; return; }
+    var chals = res.data || [];
+    if (!chals.length) { list.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;text-align:center;">No challenges yet — watch this space.</p>'; return; }
+    var ids = chals.map(function(c) { return c.id; });
+    var rres = await _sb.from('challenge_results').select('*').in('challenge_id', ids).order('position', { ascending: true });
+    var byChal = {};
+    (rres.data || []).forEach(function(r) { (byChal[r.challenge_id] = byChal[r.challenge_id] || []).push(r); });
+    var fmt = function(iso) { return iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : null; };
+    list.innerHTML = chals.map(function(c) {
+        var active = c.status !== 'closed';
+        var metaBits = [];
+        if (c.marks) metaBits.push('<span class="gold">🏅 ' + c.marks + ' marks</span>');
+        var s = fmt(c.starts_at), e = fmt(c.ends_at);
+        if (s && e) metaBits.push(s + ' → ' + e);
+        else if (e) metaBits.push('Ends ' + e);
+        else if (s) metaBits.push('Starts ' + s);
+        var rows = byChal[c.id] || [];
+        var resultsHtml = '';
+        if (rows.length) {
+            var winners = rows.filter(function(r) { return r.position === 1; }).map(function(r) { return _esc(r.name); });
+            resultsHtml = '<div class="chal-results">'
+                + (winners.length ? '<p class="chal-winner">🏆 Winner' + (winners.length > 1 ? 's' : '') + ': ' + winners.join(', ') + '</p>' : '')
+                + '<table class="chal-table"><thead><tr><th>#</th><th>Name</th><th>Points</th></tr></thead><tbody>'
+                + rows.map(function(r) { return '<tr><td>' + r.position + '</td><td>' + _esc(r.name) + '</td><td>' + (r.points != null ? r.points : '—') + '</td></tr>'; }).join('')
+                + '</tbody></table>'
+                + (c.result_remark ? '<p class="chal-remark">“' + _esc(c.result_remark) + '”</p>' : '')
+                + '</div>';
+        } else if (!active && c.result_remark) {
+            resultsHtml = '<div class="chal-results"><p class="chal-remark">“' + _esc(c.result_remark) + '”</p></div>';
+        }
+        return '<div class="chal-card">'
+            + '<div class="chal-head"><h3 class="chal-title">' + _esc(c.title) + '</h3>'
+            + '<span class="chal-badge ' + (active ? 'active' : 'closed') + '">' + (active ? '● Active' : 'Closed') + '</span></div>'
+            + (metaBits.length ? '<p class="chal-meta">' + metaBits.join(' &nbsp;·&nbsp; ') + '</p>' : '')
+            + (c.description ? '<p class="chal-desc">' + _esc(c.description) + '</p>' : '')
+            + resultsHtml
+            + '</div>';
     }).join('');
 };
 
@@ -4274,31 +4395,6 @@ window.openBankModal = function(opts) {
 window.closeBankModal = function() {
     document.getElementById('bank-transfer-overlay').classList.add('hidden');
     window._btmConfirm = null;
-};
-
-/* Free General Entry ticket — no payment involved */
-window.claimFreeTicket = async function(btn) {
-    if (!window.currentUser) { window.openAuthModal(); return; }
-    if (!_sb) { alert('Please refresh and try again.'); return; }
-    var restore = function() { if (btn) { btn.disabled = false; btn.textContent = 'GET FREE TICKET →'; } };
-    if (btn) { btn.disabled = true; btn.textContent = 'Reserving…'; }
-    var existing = await _sb.from('tickets').select('id').eq('user_id', window.currentUser.id).eq('tier_name', 'General Entry').limit(1);
-    if (existing.data && existing.data.length) {
-        restore();
-        alert('You already have a General Entry ticket — it\'s in "My Tickets".');
-        window.openWallet();
-        return;
-    }
-    var ref = 'CDLS-FREE-' + Date.now().toString(36).toUpperCase().substr(-6);
-    var entryToken = 'CDLS-' + window.currentUser.id.substr(0,8).toUpperCase() + '-' + ref.substr(-6);
-    var res = await _sb.from('tickets').insert([{
-        user_id: window.currentUser.id, tier_name: 'General Entry', amount: 0,
-        payment_status: 'paid', payment_reference: ref, entry_token: entryToken
-    }]);
-    restore();
-    if (res.error) { alert('Could not reserve your ticket: ' + res.error.message); return; }
-    alert('🎟️ Your FREE General Entry ticket is ready! Find it in "My Tickets".');
-    window.openWallet();
 };
 
 /* Ticket purchase */
@@ -5629,6 +5725,8 @@ window.loadAdminCandidates = async function() {
             '<td>' + (!c.is_approved
                 ? '<button class="adm-approve-btn" onclick="window.approveCandidate(\'' + safeId + '\',\'' + safeName + '\')">Approve ✓</button>'
                 : '<span style="color:#16a34a;font-size:0.8rem;font-weight:600;">✓ Live</span>') +
+            '<br><button onclick="window.openEditContestant(\'' + safeId + '\')" style="font-size:0.7rem;padding:3px 8px;background:#1d4ed8;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:0.35rem;white-space:nowrap;">Edit ✏️</button>' +
+            '<br><button onclick="window.toggleFeatureContestant(\'' + safeId + '\', ' + (c.is_featured ? 'false' : 'true') + ', this)" style="font-size:0.7rem;padding:3px 8px;background:' + (c.is_featured ? '#d97706' : '#0891b2') + ';color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:0.35rem;white-space:nowrap;">' + (c.is_featured ? '★ Unfeature' : '⭐ Feature') + '</button>' +
             '<br><button onclick="window.openPortfolioModal(\'' + safeId + '\',\'' + safeName + '\')" style="font-size:0.7rem;padding:3px 8px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:0.35rem;white-space:nowrap;">Manage Diary 📔</button>' +
             '<br><button onclick="window.deleteContestant(\'' + safeId + '\',\'' + safeName + '\', this)" style="font-size:0.7rem;padding:3px 8px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-top:0.35rem;white-space:nowrap;">Delete 🗑️</button>' +
             '</td>';
@@ -5667,29 +5765,33 @@ window.approveCandidate = async function(id, name) {
 /* ── Admin: manually add / delete contestants ── */
 window.toggleAddContestant = function() {
     var f = document.getElementById('adm-add-contestant-form');
-    if (f) f.style.display = (f.style.display === 'none' || !f.style.display) ? 'block' : 'none';
+    if (!f) return;
+    var opening = (f.style.display === 'none' || !f.style.display);
+    if (opening) window.clearContestantForm();
+    f.style.display = opening ? 'block' : 'none';
+};
+
+window.clearContestantForm = function() {
+    ['adm-nc-id','adm-nc-name','adm-nc-email','adm-nc-phone','adm-nc-dept','adm-nc-level','adm-nc-age','adm-nc-bio','adm-nc-headshot'].forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; });
+    var g = document.getElementById('adm-nc-gender'); if (g) g.value = '';
+    var a = document.getElementById('adm-nc-approve'); if (a) a.checked = true;
+    var t = document.getElementById('adm-nc-form-title'); if (t) t.textContent = '➕ Manually Add Contestant';
+    var b = document.getElementById('adm-nc-save'); if (b) b.textContent = '💾 Add Contestant';
+    var m = document.getElementById('adm-nc-msg'); if (m) m.style.display = 'none';
 };
 
 window.adminAddContestant = async function() {
     if (!_sb) return;
     var msg = document.getElementById('adm-nc-msg');
     var showMsg = function(t, isErr) { if (msg) { msg.style.display = 'block'; msg.style.color = isErr ? '#dc2626' : '#16a34a'; msg.textContent = t; } };
+    var editId = (document.getElementById('adm-nc-id').value || '').trim();
     var name = (document.getElementById('adm-nc-name').value || '').trim();
     if (!name) { showMsg('Full name is required.', true); return; }
     var saveBtn = document.getElementById('adm-nc-save');
     if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
     try {
-        var headshotUrl = null;
-        var hsFile = document.getElementById('adm-nc-headshot').files[0];
-        if (hsFile) {
-            showMsg('Uploading headshot…', false);
-            var sess = await _sb.auth.getSession();
-            var token = sess.data.session ? sess.data.session.access_token : null;
-            headshotUrl = await _uploadToStorage(hsFile, 'contestant-headshots', 'admin/' + Date.now() + '_' + hsFile.name.replace(/[^a-zA-Z0-9.]/g, '_'), token);
-        }
         var ageVal = parseInt(document.getElementById('adm-nc-age').value);
-        var res = await _sb.from('contestants').insert([{
-            user_id: null,
+        var payload = {
             full_name: name,
             email: (document.getElementById('adm-nc-email').value || '').trim() || null,
             phone: (document.getElementById('adm-nc-phone').value || '').trim() || null,
@@ -5698,19 +5800,227 @@ window.adminAddContestant = async function() {
             gender: document.getElementById('adm-nc-gender').value || null,
             age: isNaN(ageVal) ? null : ageVal,
             bio: (document.getElementById('adm-nc-bio').value || '').trim() || null,
-            headshot_url: headshotUrl,
-            payment_ref: 'ADMIN-' + Date.now().toString(36).toUpperCase(),
             is_approved: document.getElementById('adm-nc-approve').checked
-        }]);
-        if (res.error) throw new Error(res.error.message);
-        showMsg('✅ ' + name + ' added!', false);
-        ['adm-nc-name','adm-nc-email','adm-nc-phone','adm-nc-dept','adm-nc-level','adm-nc-age','adm-nc-bio'].forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; });
-        document.getElementById('adm-nc-headshot').value = '';
+        };
+        var hsFile = document.getElementById('adm-nc-headshot').files[0];
+        if (hsFile) {
+            showMsg('Uploading headshot…', false);
+            var sess = await _sb.auth.getSession();
+            var token = sess.data.session ? sess.data.session.access_token : null;
+            payload.headshot_url = await _uploadToStorage(hsFile, 'contestant-headshots', 'admin/' + Date.now() + '_' + hsFile.name.replace(/[^a-zA-Z0-9.]/g, '_'), token);
+        }
+        if (editId) {
+            var res = await _sb.from('contestants').update(payload).eq('id', editId).select('id');
+            if (res.error) throw new Error(res.error.message);
+            if (!res.data || !res.data.length) throw new Error('Update was blocked by database permissions — run supabase_challenges.sql in the SQL Editor.');
+            showMsg('✅ Changes to ' + name + ' saved!', false);
+        } else {
+            payload.user_id = null;
+            payload.payment_ref = 'ADMIN-' + Date.now().toString(36).toUpperCase();
+            var ins = await _sb.from('contestants').insert([payload]);
+            if (ins.error) throw new Error(ins.error.message);
+            showMsg('✅ ' + name + ' added!', false);
+        }
+        window.clearContestantForm();
         window.loadAdminCandidates();
     } catch(e) {
-        showMsg('Failed: ' + e.message + (e.message.indexOf('policy') > -1 ? ' — run the admin policies SQL (supabase_admin_contestants.sql) in the SQL Editor.' : ''), true);
+        showMsg('Failed: ' + e.message, true);
     }
-    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Add Contestant'; }
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = (document.getElementById('adm-nc-id').value ? '💾 Save Changes' : '💾 Add Contestant'); }
+};
+
+window.openEditContestant = async function(id) {
+    if (!_sb) return;
+    var res = await _sb.from('contestants').select('*').eq('id', id).single();
+    if (res.error || !res.data) { alert('Could not load contestant: ' + (res.error ? res.error.message : 'not found')); return; }
+    var c = res.data;
+    document.getElementById('adm-nc-id').value    = c.id;
+    document.getElementById('adm-nc-name').value  = c.full_name || '';
+    document.getElementById('adm-nc-email').value = c.email || '';
+    document.getElementById('adm-nc-phone').value = c.phone || '';
+    document.getElementById('adm-nc-dept').value  = c.department || '';
+    document.getElementById('adm-nc-level').value = c.level || '';
+    document.getElementById('adm-nc-gender').value = c.gender || '';
+    document.getElementById('adm-nc-age').value   = c.age || '';
+    document.getElementById('adm-nc-bio').value   = c.bio || '';
+    document.getElementById('adm-nc-headshot').value = '';
+    document.getElementById('adm-nc-approve').checked = !!c.is_approved;
+    document.getElementById('adm-nc-form-title').textContent = '✏️ Edit Contestant — ' + (c.full_name || '');
+    document.getElementById('adm-nc-save').textContent = '💾 Save Changes';
+    var m = document.getElementById('adm-nc-msg'); if (m) m.style.display = 'none';
+    var f = document.getElementById('adm-add-contestant-form');
+    f.style.display = 'block';
+    f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+window.toggleFeatureContestant = async function(id, feature, btn) {
+    if (!_sb) return;
+    if (btn) { btn.disabled = true; btn.textContent = '…'; }
+    var res = await _sb.from('contestants').update({ is_featured: feature }).eq('id', id).select('id');
+    if (res.error || !res.data || !res.data.length) {
+        alert('Could not update: ' + (res.error ? res.error.message : 'blocked by database permissions — run supabase_challenges.sql.'));
+    }
+    window.loadAdminCandidates();
+};
+
+/* ── Admin: Challenges / Tasks manager ── */
+window.clearChallengeForm = function() {
+    ['adm-ch-id','adm-ch-title','adm-ch-desc','adm-ch-start','adm-ch-end','adm-ch-marks'].forEach(function(id){ var el = document.getElementById(id); if (el) el.value = ''; });
+    var s = document.getElementById('adm-ch-status'); if (s) s.value = 'active';
+    var t = document.getElementById('adm-ch-form-title'); if (t) t.textContent = '🎯 Post a Challenge / Task';
+    var b = document.getElementById('adm-ch-save'); if (b) b.textContent = '💾 Publish Challenge';
+    var m = document.getElementById('adm-ch-msg'); if (m) m.style.display = 'none';
+};
+
+window.saveChallenge = async function() {
+    if (!_sb) return;
+    var msg = document.getElementById('adm-ch-msg');
+    var showMsg = function(t, isErr) { msg.style.display = 'block'; msg.style.color = isErr ? '#dc2626' : '#16a34a'; msg.textContent = t; };
+    var editId = (document.getElementById('adm-ch-id').value || '').trim();
+    var title = (document.getElementById('adm-ch-title').value || '').trim();
+    if (!title) { showMsg('Title is required.', true); return; }
+    var marksVal = parseFloat(document.getElementById('adm-ch-marks').value);
+    var payload = {
+        title: title,
+        description: (document.getElementById('adm-ch-desc').value || '').trim() || null,
+        starts_at: document.getElementById('adm-ch-start').value || null,
+        ends_at: document.getElementById('adm-ch-end').value || null,
+        marks: isNaN(marksVal) ? null : marksVal,
+        status: document.getElementById('adm-ch-status').value
+    };
+    var res = editId
+        ? await _sb.from('challenges').update(payload).eq('id', editId).select('id')
+        : await _sb.from('challenges').insert([payload]).select('id');
+    if (res.error) { showMsg('Error: ' + res.error.message + (res.error.message.indexOf('does not exist') > -1 ? ' — run supabase_challenges.sql in the SQL Editor first.' : ''), true); return; }
+    if (!res.data || !res.data.length) { showMsg('Blocked by database permissions — run supabase_challenges.sql in the SQL Editor.', true); return; }
+    showMsg(editId ? '✅ Challenge updated!' : '✅ Challenge published!', false);
+    window.clearChallengeForm();
+    window.loadAdminChallenges();
+    window.loadHomeFeed();
+};
+
+window.loadAdminChallenges = async function() {
+    var list = document.getElementById('adm-ch-list');
+    if (!list || !_sb) return;
+    list.innerHTML = '<p class="adm-empty">Loading…</p>';
+    var res = await _sb.from('challenges').select('*').order('created_at', { ascending: false });
+    if (res.error) { list.innerHTML = '<p class="adm-empty" style="color:#dc2626;">Error: ' + _esc(res.error.message) + (res.error.message.indexOf('does not exist') > -1 ? ' — run supabase_challenges.sql in the SQL Editor.' : '') + '</p>'; return; }
+    var items = res.data || [];
+    if (!items.length) { list.innerHTML = '<p class="adm-empty">No challenges yet. Post one above.</p>'; return; }
+    list.innerHTML = items.map(function(c) {
+        var active = c.status !== 'closed';
+        var btnCss = 'font-size:0.7rem;padding:3px 9px;border:none;border-radius:6px;cursor:pointer;color:#fff;';
+        return '<div style="border:1px solid #e5e7eb;border-radius:10px;padding:0.75rem 0.9rem;margin-bottom:0.6rem;background:#fafafa;">'
+            + '<div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">'
+            + '<span style="font-size:0.66rem;font-weight:800;padding:2px 8px;border-radius:50px;' + (active ? 'background:#dcfce7;color:#166534;' : 'background:#f3f4f6;color:#6b7280;') + '">' + (active ? 'ACTIVE' : 'CLOSED') + '</span>'
+            + '<strong style="flex:1;font-size:0.88rem;color:#111827;">' + _esc(c.title) + '</strong>'
+            + (c.marks ? '<span style="font-size:0.72rem;color:#b45309;font-weight:700;">🏅 ' + c.marks + '</span>' : '')
+            + '</div>'
+            + '<div style="display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap;">'
+            + '<button onclick="window.editChallenge(\'' + c.id + '\')" style="' + btnCss + 'background:#1d4ed8;">Edit ✏️</button>'
+            + '<button onclick="window.toggleChallengeStatus(\'' + c.id + '\',\'' + (active ? 'closed' : 'active') + '\')" style="' + btnCss + 'background:' + (active ? '#d97706' : '#16a34a') + ';">' + (active ? 'Close 🏁' : 'Reopen 🔓') + '</button>'
+            + '<button onclick="window.toggleChallengeResults(\'' + c.id + '\')" style="' + btnCss + 'background:#7c3aed;">Results 📊</button>'
+            + '<button onclick="window.deleteChallenge(\'' + c.id + '\')" style="' + btnCss + 'background:#dc2626;">Delete 🗑️</button>'
+            + '</div>'
+            + '<div id="adm-ch-results-' + c.id + '" style="display:none;margin-top:0.7rem;border-top:1px dashed #d1d5db;padding-top:0.7rem;"></div>'
+            + '</div>';
+    }).join('');
+};
+
+window.editChallenge = async function(id) {
+    var res = await _sb.from('challenges').select('*').eq('id', id).single();
+    if (res.error || !res.data) { alert('Could not load challenge.'); return; }
+    var c = res.data;
+    document.getElementById('adm-ch-id').value     = c.id;
+    document.getElementById('adm-ch-title').value  = c.title || '';
+    document.getElementById('adm-ch-desc').value   = c.description || '';
+    document.getElementById('adm-ch-start').value  = c.starts_at ? c.starts_at.slice(0, 10) : '';
+    document.getElementById('adm-ch-end').value    = c.ends_at ? c.ends_at.slice(0, 10) : '';
+    document.getElementById('adm-ch-marks').value  = (c.marks != null) ? c.marks : '';
+    document.getElementById('adm-ch-status').value = c.status || 'active';
+    document.getElementById('adm-ch-form-title').textContent = '✏️ Edit Challenge — ' + (c.title || '');
+    document.getElementById('adm-ch-save').textContent = '💾 Save Changes';
+    document.getElementById('adm-ch-form-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+window.toggleChallengeStatus = async function(id, status) {
+    var res = await _sb.from('challenges').update({ status: status }).eq('id', id).select('id');
+    if (res.error || !res.data || !res.data.length) { alert('Could not update status' + (res.error ? ': ' + res.error.message : ' — blocked by database permissions.')); return; }
+    window.loadAdminChallenges();
+    window.loadHomeFeed();
+};
+
+window.deleteChallenge = async function(id) {
+    if (!confirm('Permanently delete this challenge and its results?')) return;
+    var res = await _sb.from('challenges').delete().eq('id', id).select('id');
+    if (res.error || !res.data || !res.data.length) { alert('Delete failed' + (res.error ? ': ' + res.error.message : ' — blocked by database permissions.')); return; }
+    window.loadAdminChallenges();
+    window.loadHomeFeed();
+};
+
+window.toggleChallengeResults = async function(id) {
+    var box = document.getElementById('adm-ch-results-' + id);
+    if (!box) return;
+    if (box.style.display === 'none' || !box.style.display) {
+        box.style.display = 'block';
+        await window._renderResultsEditor(id);
+    } else {
+        box.style.display = 'none';
+    }
+};
+
+window._renderResultsEditor = async function(id) {
+    var box = document.getElementById('adm-ch-results-' + id);
+    if (!box) return;
+    box.innerHTML = '<p style="font-size:0.78rem;color:#6b7280;">Loading results…</p>';
+    var res = await _sb.from('challenge_results').select('*').eq('challenge_id', id).order('position', { ascending: true });
+    var chRes = await _sb.from('challenges').select('result_remark').eq('id', id).single();
+    var rows = res.data || [];
+    var html = '';
+    if (rows.length) {
+        html += rows.map(function(r) {
+            return '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.3rem 0;font-size:0.8rem;color:#374151;">'
+                + '<span style="width:28px;font-weight:800;color:' + (r.position === 1 ? '#b45309' : '#6b7280') + ';">#' + r.position + '</span>'
+                + '<span style="flex:1;">' + _esc(r.name) + '</span>'
+                + '<span style="color:#6b7280;">' + (r.points != null ? r.points + ' pts' : '') + '</span>'
+                + '<button onclick="window.deleteChallengeResult(\'' + r.id + '\',\'' + id + '\')" style="background:#dc2626;color:#fff;border:none;border-radius:5px;font-size:0.68rem;padding:2px 7px;cursor:pointer;">✕</button>'
+                + '</div>';
+        }).join('');
+    } else {
+        html += '<p style="font-size:0.78rem;color:#6b7280;">No results posted yet — add rankings below.</p>';
+    }
+    html += '<div style="display:flex;gap:0.4rem;margin-top:0.5rem;align-items:center;">'
+        + '<input type="number" id="adm-chr-pos-' + id + '" placeholder="#" class="nominate-input" style="width:56px;flex-shrink:0;">'
+        + '<input type="text" id="adm-chr-name-' + id + '" placeholder="Contestant name" class="nominate-input" style="flex:1;min-width:0;">'
+        + '<input type="number" id="adm-chr-pts-' + id + '" placeholder="Points" class="nominate-input" style="width:84px;flex-shrink:0;">'
+        + '<button onclick="window.addChallengeResult(\'' + id + '\')" class="adm-refresh-btn" style="background:#16a34a;color:#fff;border-color:#16a34a;flex-shrink:0;">＋ Add</button>'
+        + '</div>'
+        + '<textarea id="adm-chr-remark-' + id + '" class="nominate-input nominate-textarea" rows="2" placeholder="Announcement / remark (shown publicly with the results)" style="margin-top:0.5rem;">' + _esc((chRes.data && chRes.data.result_remark) || '') + '</textarea>'
+        + '<button onclick="window.saveChallengeRemark(\'' + id + '\')" class="adm-refresh-btn" style="margin-top:0.4rem;">💾 Save Remark</button>';
+    box.innerHTML = html;
+};
+
+window.addChallengeResult = async function(id) {
+    var pos  = parseInt(document.getElementById('adm-chr-pos-' + id).value);
+    var name = (document.getElementById('adm-chr-name-' + id).value || '').trim();
+    var pts  = parseFloat(document.getElementById('adm-chr-pts-' + id).value);
+    if (!name || isNaN(pos)) { alert('Position (#) and name are required.'); return; }
+    var res = await _sb.from('challenge_results').insert([{ challenge_id: id, position: pos, name: name, points: isNaN(pts) ? null : pts }]);
+    if (res.error) { alert('Error: ' + res.error.message); return; }
+    await window._renderResultsEditor(id);
+};
+
+window.deleteChallengeResult = async function(rid, cid) {
+    var res = await _sb.from('challenge_results').delete().eq('id', rid).select('id');
+    if (res.error || !res.data || !res.data.length) { alert('Delete failed' + (res.error ? ': ' + res.error.message : ' — blocked by database permissions.')); return; }
+    await window._renderResultsEditor(cid);
+};
+
+window.saveChallengeRemark = async function(id) {
+    var v = (document.getElementById('adm-chr-remark-' + id).value || '').trim();
+    var res = await _sb.from('challenges').update({ result_remark: v || null }).eq('id', id).select('id');
+    if (res.error || !res.data || !res.data.length) { alert('Save failed' + (res.error ? ': ' + res.error.message : ' — blocked by database permissions.')); return; }
+    alert('✅ Remark saved — it now shows on the public Challenges page.');
 };
 
 window.deleteContestant = async function(id, name, btn) {
@@ -6518,9 +6828,14 @@ window.uploadPortfolioFiles = async function(files) {
 };
 
 window.deletePortfolioItem = async function(mediaId) {
-    if (!confirm('Delete this diary entry?')) return;
+    if (!confirm('Delete this picture/video?')) return;
     try {
-        await _sb.from('contestant_media').delete().eq('id', mediaId);
+        var res = await _sb.from('contestant_media').delete().eq('id', mediaId).select('id');
+        if (res.error) throw res.error;
+        if (!res.data || !res.data.length) {
+            alert('Delete was blocked by database permissions — run supabase_challenges.sql in the Supabase SQL Editor.');
+            return;
+        }
         await window.loadPortfolioMedia();
     } catch(e) {
         alert('Delete failed: ' + e.message);
