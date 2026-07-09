@@ -922,6 +922,12 @@ html, body {
 .feed-thumb { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid rgba(212,175,55,0.5); }
 .feed-thumb-wide { border-radius: 10px; width: 64px; height: 48px; border-color: rgba(227,0,79,0.35); }
 .feed-icon { font-size: 1.4rem; flex-shrink: 0; }
+.feed-del-btn {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; border: none;
+    background: rgba(220,38,38,0.15); color: #f87171; font-size: 0.8rem; cursor: pointer;
+    line-height: 1; margin-top: 0.1rem;
+}
+.feed-del-btn:hover { background: rgba(220,38,38,0.3); }
 
 /* CHALLENGES */
 .chal-card {
@@ -3253,7 +3259,7 @@ function boot() {
         try {
             _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             window.loadHomeFeed();
-            _subscribeDispatches();
+            _subscribeActivityFeed();
             _sb.auth.onAuthStateChange(function(_e, session) {
                 window.currentUser = session ? session.user : null;
                 window.updateTopBar();
@@ -4143,6 +4149,11 @@ window.loadAdminDispatches = async function() {
 
 /* Public — load 5 most recent dispatches into home tab */
 /* Unified home feed: dispatches + new lineup contestants + gallery drops, newest first */
+/* Unified home feed backed by activity_feed — populated automatically
+   by DB triggers whenever a dispatch, gallery photo, challenge/result,
+   featured contestant, poll, sponsor, judge or team member is added,
+   so nothing can go stale here. Deleting an item only hides it from
+   the feed; it never touches the underlying record. */
 window.loadHomeFeed = async function() {
     var list = document.getElementById('home-feed');
     if (!list) return;
@@ -4150,53 +4161,50 @@ window.loadHomeFeed = async function() {
         list.innerHTML = '<div class="dispatch-item no-border"><p style="color:var(--cream-40);font-size:0.82rem;">Connecting…</p></div>';
         return;
     }
-    var results = await Promise.all([
-        _sb.from('dispatches').select('*').order('created_at', { ascending: false }).limit(8),
-        /* Only admin-featured contestants appear on the homepage */
-        _sb.from('contestants').select('id, full_name, headshot_url, department, created_at').eq('is_approved', true).eq('is_featured', true).order('created_at', { ascending: false }).limit(5),
-        _sb.from('gallery_media').select('*').order('created_at', { ascending: false }).limit(5),
-        _sb.from('challenges').select('*').order('created_at', { ascending: false }).limit(5)
-    ]);
-    var items = [];
-    (results[0].data || []).forEach(function(d) { items.push({ t: 'dispatch',   at: d.created_at, d: d }); });
-    (results[1].data || []).forEach(function(c) { items.push({ t: 'contestant', at: c.created_at, d: c }); });
-    (results[2].data || []).forEach(function(g) { items.push({ t: 'gallery',    at: g.created_at, d: g }); });
-    (results[3].data || []).forEach(function(ch) { items.push({ t: 'challenge', at: ch.created_at, d: ch }); });
-    items.sort(function(a, b) { return new Date(b.at) - new Date(a.at); });
-    items = items.slice(0, 12);
+    var res = await _sb.from('activity_feed').select('*').order('created_at', { ascending: false }).limit(15);
+    if (res.error) {
+        list.innerHTML = '<div class="dispatch-item no-border"><p style="color:var(--cream-40);font-size:0.82rem;">' + (res.error.message.indexOf('does not exist') > -1 ? 'Feed not set up yet.' : 'Could not load the feed.') + '</p></div>';
+        return;
+    }
+    var items = res.data || [];
     if (!items.length) {
         list.innerHTML = '<div class="dispatch-item no-border"><p style="color:var(--cream-40);font-size:0.82rem;font-style:italic;">Nothing here yet. Watch this space.</p></div>';
         return;
     }
+    var isAdmin = window.currentUserRole === 'admin';
+    var icons = { dispatch:'📢', contestant:'👑', gallery:'📸', challenge:'🎯', challenge_result:'🏁', poll:'🗳️', sponsor:'🤝', team:'👥', judge:'⚖️' };
     list.innerHTML = items.map(function(it) {
-        var ago = _timeAgo(it.at);
-        if (it.t === 'dispatch') {
-            var tag = (it.d.tag || 'announcement').toLowerCase();
-            return '<div class="feed-item"><div>' +
-                '<span class="dispatch-tag ' + tag + '">' + tag + '</span>' +
-                '<p><strong>' + _esc(it.d.headline) + ':</strong> ' + _esc(it.d.message) + '</p>' +
-                '<span class="dispatch-time">' + ago + '</span></div></div>';
+        var ago = _timeAgo(it.created_at);
+        var thumb = it.image_url
+            ? '<img class="feed-thumb' + (it.kind === 'gallery' ? ' feed-thumb-wide' : '') + '" src="' + _esc(it.image_url) + '" alt="" loading="lazy">'
+            : '<span class="feed-icon">' + (icons[it.kind] || '✦') + '</span>';
+        var body;
+        if (it.kind === 'dispatch') {
+            var tag = (it.tag || 'announcement').toLowerCase();
+            body = '<span class="dispatch-tag ' + tag + '">' + tag + '</span><p>' + (it.title ? '<strong>' + _esc(it.title) + ':</strong> ' : '') + _esc(it.message) + '</p>';
+        } else {
+            body = '<p>' + _esc(it.message) + '</p>';
         }
-        if (it.t === 'contestant') {
-            return '<div class="feed-item feed-click" onclick="switchTab(\'lineup\')">' +
-                (it.d.headshot_url ? '<img class="feed-thumb" src="' + _esc(it.d.headshot_url) + '" alt="" loading="lazy">' : '<span class="feed-icon">👑</span>') +
-                '<div><p><strong>' + _esc(it.d.full_name) + '</strong> just joined The Lineup' + (it.d.department ? ' · ' + _esc(it.d.department) : '') + '</p>' +
-                '<span class="dispatch-time">' + ago + ' · tap to see the lineup</span></div></div>';
-        }
-        if (it.t === 'challenge') {
-            var closed = it.d.status === 'closed';
-            return '<div class="feed-item feed-click" onclick="switchTab(\'challenges\')">' +
-                '<span class="feed-icon">' + (closed ? '🏁' : '🎯') + '</span>' +
-                '<div><p>' + (closed
-                    ? 'Results are in: <strong>' + _esc(it.d.title) + '</strong>'
-                    : 'New challenge: <strong>' + _esc(it.d.title) + '</strong>' + (it.d.marks ? ' · ' + it.d.marks + ' marks' : '')) + '</p>' +
-                '<span class="dispatch-time">' + ago + ' · tap to view challenges</span></div></div>';
-        }
-        return '<div class="feed-item feed-click" onclick="switchTab(\'gallery\')">' +
-            '<img class="feed-thumb feed-thumb-wide" src="' + _esc(it.d.image_url) + '" alt="" loading="lazy">' +
-            '<div><p>📸 New in the Gallery' + (it.d.caption ? ': <strong>' + _esc(it.d.caption) + '</strong>' : '') + '</p>' +
-            '<span class="dispatch-time">' + ago + ' · tap to open the gallery</span></div></div>';
+        var delBtn = isAdmin ? '<button class="feed-del-btn" onclick="event.stopPropagation();window.deleteFeedItem(\'' + it.id + '\',this)" title="Remove from feed">✕</button>' : '';
+        var clickable = !!it.link_tab;
+        return '<div class="feed-item' + (clickable ? ' feed-click' : '') + '"' + (clickable ? ' onclick="switchTab(\'' + it.link_tab + '\')"' : '') + '>' +
+            thumb +
+            '<div style="flex:1;min-width:0;">' + body +
+            '<span class="dispatch-time">' + ago + (clickable ? ' · tap to view' : '') + '</span></div>' +
+            delBtn + '</div>';
     }).join('');
+};
+
+window.deleteFeedItem = async function(id, btn) {
+    if (!confirm('Remove this item from the live feed? The underlying content, if any, will not be deleted.')) return;
+    if (btn) btn.disabled = true;
+    var res = await _sb.from('activity_feed').delete().eq('id', id).select('id');
+    if (res.error || !res.data || !res.data.length) {
+        alert('Could not remove: ' + (res.error ? res.error.message : 'blocked by database permissions — run supabase_activity_feed.sql.'));
+        if (btn) btn.disabled = false;
+        return;
+    }
+    window.loadHomeFeed();
 };
 
 /* Public Challenges page: tasks with status, marks, dates, and published results */
@@ -6081,12 +6089,12 @@ window.saveReceiptAsImage = async function() {
     if (btn) { btn.textContent = origText; btn.disabled = false; }
 };
 
-/* ── Live dispatch realtime subscription ── */
-var _dispatchChannel = null;
-function _subscribeDispatches() {
-    if (_dispatchChannel || !_sb) return;
-    _dispatchChannel = _sb.channel('dispatches-realtime')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dispatches' },
+/* ── Live activity feed realtime subscription ── */
+var _feedChannel = null;
+function _subscribeActivityFeed() {
+    if (_feedChannel || !_sb) return;
+    _feedChannel = _sb.channel('activity-feed-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'activity_feed' },
             function() { window.loadHomeFeed(); })
         .subscribe();
 }
