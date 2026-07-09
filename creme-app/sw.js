@@ -1,8 +1,9 @@
 /* Crème De La Style — Service Worker */
-var CACHE = 'creme-v5';
+var CACHE = 'creme-v6';
 var PRECACHE = [
   './index.html',
   './manifest.json',
+  './logo-mark.png',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];
