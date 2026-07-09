@@ -29,6 +29,12 @@ create policy "Users manage own push subscription" on push_subscriptions
 --  key, which bypasses RLS entirely — no separate "admin read all"
 --  policy is needed for sending.
 
+--  RLS policies alone aren't enough — Postgres also needs the
+--  underlying table GRANT, which the SQL Editor doesn't add
+--  automatically (see supabase_fix_permissions.sql for the same
+--  issue on other tables from this session).
+grant select, insert, update, delete on push_subscriptions to authenticated;
+
 create extension if not exists pg_net with schema extensions;
 
 create or replace function trg_push_activity_feed() returns trigger
