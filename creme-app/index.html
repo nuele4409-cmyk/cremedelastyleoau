@@ -4957,16 +4957,26 @@ function _urlBase64ToUint8Array(base64String) {
     return outputArray;
 }
 var _pushPromptShown = false;
+/* A browser push subscription belongs to this device+origin, not to any
+   one account — on a shared/test device it can already exist under a
+   DIFFERENT user. Only count it as "this user is set up" if their own
+   user_id is actually attached to that endpoint in the database. */
+async function _ownPushSubscriptionExists(reg) {
+    try {
+        var existing = await reg.pushManager.getSubscription();
+        if (!existing || !window.currentUser || !_sb) return false;
+        var res = await _sb.from('push_subscriptions').select('id')
+            .eq('user_id', window.currentUser.id).eq('endpoint', existing.endpoint).maybeSingle();
+        return !res.error && !!res.data;
+    } catch(e) { return false; }
+}
 async function _maybeShowPushPrompt() {
     if (_pushPromptShown || !window.currentUser) return;
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
     if (typeof Notification === 'undefined' || Notification.permission === 'denied') return;
     if (localStorage.getItem('cdls_push_prompt_dismissed')) return;
-    try {
-        var reg = await navigator.serviceWorker.ready;
-        var existing = await reg.pushManager.getSubscription();
-        if (existing) return; // already subscribed on this device
-    } catch(e) { return; }
+    var reg = await navigator.serviceWorker.ready;
+    if (await _ownPushSubscriptionExists(reg)) return; // this user is already set up on this device
     _pushPromptShown = true;
     setTimeout(function() {
         var b = document.getElementById('push-prompt-banner');
@@ -4983,11 +4993,8 @@ async function _updatePushBanner() {
     if (!banner) return;
     var supported = ('serviceWorker' in navigator) && ('PushManager' in window) && window.currentUser;
     if (!supported || Notification.permission === 'denied') { banner.style.display = 'none'; return; }
-    try {
-        var reg = await navigator.serviceWorker.ready;
-        var existing = await reg.pushManager.getSubscription();
-        banner.style.display = existing ? 'none' : 'block';
-    } catch(e) { banner.style.display = 'none'; }
+    var reg = await navigator.serviceWorker.ready;
+    banner.style.display = (await _ownPushSubscriptionExists(reg)) ? 'none' : 'block';
 }
 window.enablePushNotifications = async function(btn) {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) { alert('Push notifications are not supported on this browser. On iPhone, add this app to your Home Screen first (Share → Add to Home Screen), then try again from there.'); return; }
@@ -5003,6 +5010,19 @@ window.enablePushNotifications = async function(btn) {
             user_id: window.currentUser.id, endpoint: json.endpoint,
             p256dh: json.keys.p256dh, auth_key: json.keys.auth
         }, { onConflict: 'endpoint' });
+        if (res.error && /row-level security/i.test(res.error.message)) {
+            /* This browser's push endpoint is already claimed by a different
+               account (common on a shared/test device) — the row-level
+               security policy correctly blocked overwriting someone else's
+               subscription. Drop it and get a fresh endpoint for this user. */
+            await sub.unsubscribe();
+            sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: _urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
+            json = sub.toJSON();
+            res = await _sb.from('push_subscriptions').upsert({
+                user_id: window.currentUser.id, endpoint: json.endpoint,
+                p256dh: json.keys.p256dh, auth_key: json.keys.auth
+            }, { onConflict: 'endpoint' });
+        }
         if (res.error) throw new Error(res.error.message);
         document.getElementById('push-enable-banner').style.display = 'none';
         var pb = document.getElementById('push-prompt-banner'); if (pb) pb.style.display = 'none';
