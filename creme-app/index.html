@@ -3557,14 +3557,14 @@ window.clearPersonForm = function(type) {
 window._uploadPersonPhoto = async function(fileInputId, bucket) {
     var fileInput = document.getElementById(fileInputId);
     if (!fileInput || !fileInput.files[0]) return null;
-    var file = fileInput.files[0];
+    var file = await _compressImage(fileInput.files[0], 800, 0.85); /* small circular avatar — never displayed large */
     var session = await _sb.auth.getSession();
     var token = session.data.session ? session.data.session.access_token : null;
     if (!token) throw new Error('Not authenticated');
     var path = Date.now() + '_' + file.name.replace(/[^a-z0-9.]/gi,'_');
     var fd = new FormData(); fd.append('', file, file.name);
     var r = await fetch(SUPABASE_URL+'/storage/v1/object/'+bucket+'/'+path,
-        { method:'POST', headers:{ Authorization:'Bearer '+token,'x-upsert':'true' }, body:fd });
+        { method:'POST', headers:{ Authorization:'Bearer '+token,'x-upsert':'true', 'Cache-Control':'max-age=31536000' }, body:fd });
     if (!r.ok) throw new Error(await r.text());
     return SUPABASE_URL+'/storage/v1/object/public/'+bucket+'/'+path;
 };
@@ -5755,10 +5755,44 @@ window.saveReceiptAsImage = async function() {
     if (btn) { btn.textContent = origText; btn.disabled = false; }
 };
 
+/* Downscales/recompresses an image client-side before upload to cut
+   storage + egress costs — a raw phone photo (3000-4000px, several MB)
+   becomes a ~1600px JPEG at a fraction of the size with no visible
+   quality loss for how these are actually displayed. Never blocks the
+   upload: falls back to the original file untouched on any failure
+   (unsupported format like HEIC on some browsers, decode error, etc.)
+   and leaves GIFs alone so animation isn't destroyed. */
+function _compressImage(file, maxDim, quality) {
+    return new Promise(function(resolve) {
+        if (!file || !file.type || file.type.indexOf('image/') !== 0 || file.type === 'image/gif') { resolve(file); return; }
+        var url = URL.createObjectURL(file);
+        var img = new Image();
+        img.onload = function() {
+            URL.revokeObjectURL(url);
+            var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+            if (scale >= 1) { resolve(file); return; }
+            try {
+                var canvas = document.createElement('canvas');
+                canvas.width = Math.round(img.width * scale);
+                canvas.height = Math.round(img.height * scale);
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                canvas.toBlob(function(blob) {
+                    if (!blob) { resolve(file); return; }
+                    var newName = file.name.replace(/\.\w+$/, '') + '.jpg';
+                    resolve(new File([blob], newName, { type: 'image/jpeg' }));
+                }, 'image/jpeg', quality);
+            } catch(e) { resolve(file); }
+        };
+        img.onerror = function() { URL.revokeObjectURL(url); resolve(file); };
+        img.src = url;
+    });
+}
+
 async function _uploadToStorage(file, bucket, path, token) {
+    file = await _compressImage(file, 1600, 0.82);
     var fd = new FormData(); fd.append('', file, file.name);
     var res = await fetch(SUPABASE_URL + '/storage/v1/object/' + bucket + '/' + path,
-        { method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'x-upsert': 'true' }, body: fd });
+        { method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'x-upsert': 'true', 'Cache-Control': 'max-age=31536000' }, body: fd });
     if (!res.ok) throw new Error('Upload failed: ' + await res.text());
     return SUPABASE_URL + '/storage/v1/object/public/' + bucket + '/' + path;
 }
@@ -5771,7 +5805,7 @@ function _uploadVideoTUS(file, bucket, objectPath, token) {
             endpoint: SUPABASE_URL + '/storage/v1/upload/resumable',
             retryDelays: [0, 3000, 5000, 10000, 20000],
             headers: { authorization: 'Bearer ' + token, 'x-upsert': 'true' },
-            metadata: { bucketName: bucket, objectName: objectPath, contentType: file.type, cacheControl: '3600' },
+            metadata: { bucketName: bucket, objectName: objectPath, contentType: file.type, cacheControl: '31536000' },
             chunkSize: 6 * 1024 * 1024,
             onProgress: function(up, tot) { if (bar) bar.style.width = Math.round(up / tot * 100) + '%'; },
             onSuccess:  function() { if (wrap) wrap.style.display = 'none'; resolve(SUPABASE_URL + '/storage/v1/object/public/' + bucket + '/' + objectPath); },
@@ -6335,10 +6369,11 @@ window.uploadGalleryImage = async function() {
     var msgEl = document.getElementById('gallery-upload-msg');
     if (msgEl) msgEl.style.display = 'none';
     try {
+        file = await _compressImage(file, 1600, 0.82);
         var ext = file.name.split('.').pop().toLowerCase();
         var path = 'gallery/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
         console.log('[Gallery Upload] uploading to path:', path, 'category:', category);
-        var up = await _sb.storage.from('gallery-media').upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+        var up = await _sb.storage.from('gallery-media').upload(path, file, { cacheControl: '31536000', upsert: false, contentType: file.type });
         if (up.error) throw new Error('Storage error: ' + up.error.message);
         var pub = _sb.storage.from('gallery-media').getPublicUrl(path);
         var image_url = pub.data.publicUrl;
