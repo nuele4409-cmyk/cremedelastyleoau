@@ -5358,28 +5358,29 @@ window.loadLiveRankings = async function() {
         totals[s.contestant_id][s.look_category].sum += s.look_total;
         totals[s.contestant_id][s.look_category].n   += 1;
     });
-    // Fan vote bonus — fetch vote counts from votes table when fan points toggle is on
+    // Fan vote bonus — each contestant's share of the TOTAL fan votes cast,
+    // scaled to a max of 20 pts. A 50/50 tie between two people is 10 pts
+    // each, not 20 each — only sweeping essentially all votes gets near 20.
     var voteMap = {};
-    var maxVotes = 1;
+    var totalVotes = 0;
     if (applyFan) {
         var vRes = await _sb.from('votes').select('nominee_id').eq('category_id', 'fan_favourite');
         if (!vRes.error && vRes.data) {
-            vRes.data.forEach(function(v) { voteMap[v.nominee_id] = (voteMap[v.nominee_id] || 0) + 1; });
-            Object.values(voteMap).forEach(function(n) { if (n > maxVotes) maxVotes = n; });
+            vRes.data.forEach(function(v) { voteMap[v.nominee_id] = (voteMap[v.nominee_id] || 0) + 1; totalVotes++; });
         }
     }
     var ranked = cRes.data.map(function(c) {
         var d = totals[c.id] || {}, judgeScore = 0;
         Object.keys(d).forEach(function(lk) { judgeScore += d[lk].sum / d[lk].n; });
         var votes = voteMap[c.id] || 0;
-        var fanBonus = applyFan ? Math.round((votes / maxVotes) * 20) : 0;
+        var fanBonus = (applyFan && totalVotes > 0) ? Math.round((votes / totalVotes) * 20) : 0;
         var grand = Math.round(judgeScore) + fanBonus;
         return { name: c.full_name, img: c.headshot_url, grand: grand, judgeScore: Math.round(judgeScore), fanBonus: fanBonus, votes: votes };
     }).sort(function(a, b) { return b.grand - a.grand; });
     // update note
     var note = document.getElementById('rankings-denominator-note');
     if (note) {
-        if (applyFan) note.textContent = 'Grand Total = avg judge scores + fan vote bonus (scaled 0–20 pts, max ' + maxVotes + ' votes).';
+        if (applyFan) note.textContent = 'Grand Total = avg judge scores + fan vote bonus (0–20 pts, based on share of ' + totalVotes + ' total fan votes).';
         else note.textContent = 'Grand Total = avg Look 1 + avg Look 2 + avg Look 3 + avg Look 4 across all judges (max 200).';
     }
     container.innerHTML = '';
