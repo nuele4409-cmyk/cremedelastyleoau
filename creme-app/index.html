@@ -2894,9 +2894,13 @@ html, body {
         <div id="adm-tab-tickets" class="admin-tab-pane">
             <div class="adm-section-header">
                 <h3 class="adm-section-title">🎟️ Ticket Purchases</h3>
-                <button class="adm-refresh-btn" onclick="window.loadAdminTickets()">&#8635; Refresh</button>
+                <div style="display:flex;gap:0.5rem;">
+                    <button class="adm-refresh-btn" id="adm-send-campaign-btn" onclick="window.sendTicketCampaign()" style="background:#9A1A45;color:#fff;border-color:#9A1A45;">📧 Send Ticket Campaign Email</button>
+                    <button class="adm-refresh-btn" onclick="window.loadAdminTickets()">&#8635; Refresh</button>
+                </div>
             </div>
-            <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All ticket orders. Confirm payment after verifying the bank transfer in your Moniepoint app.</p>
+            <p style="font-size:0.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.5;">All ticket orders — payments verify and confirm automatically via Flutterwave. "Send Ticket Campaign Email" emails a PDF ticket + event reminder to every paid ticket holder in one go.</p>
+            <div id="adm-campaign-status" style="display:none;margin-bottom:1rem;font-size:0.82rem;"></div>
             <div id="adm-tickets-list"><p class="adm-empty">Click Refresh to load ticket orders.</p></div>
         </div>
 
@@ -3162,8 +3166,8 @@ var TEAM_WHATSAPP_LINKS = {
 var VOLUNTEER_GENERAL_LINK = 'https://chat.whatsapp.com/GxESsKpFCom7oERmblOQFl';
 var _sb = null;
 var _statUnit = 'cm';
-var _eventDate = new Date('2026-11-21T19:00:00+01:00');
-var _preEventDate = new Date('2026-08-01T19:00:00+01:00');
+var _eventDate = new Date('2026-08-01T18:00:00+01:00');
+var _preEventDate = new Date('2026-08-01T18:00:00+01:00');
 var _countdownTimer = null;
 var _walletTickets = [];
 
@@ -3749,6 +3753,31 @@ window.deleteTeamMember = async function(id) {
     if (!confirm('Delete this team member?')) return;
     await _sb.from('team_members').delete().eq('id',id);
     window.loadAdminTeam(); renderTeam();
+};
+
+window.sendTicketCampaign = async function() {
+    if (!_sb) return;
+    if (!confirm('This will email EVERY paid ticket holder a PDF ticket + event reminder, right now. This cannot be undone once sent. Continue?')) return;
+    var btn = document.getElementById('adm-send-campaign-btn');
+    var statusEl = document.getElementById('adm-campaign-status');
+    var showStatus = function(t, color) { if (statusEl) { statusEl.style.display = 'block'; statusEl.style.color = color; statusEl.textContent = t; } };
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+    showStatus('Sending campaign emails — this may take a little while for a large list…', '#9A1A45');
+    try {
+        var sess = await _sb.auth.getSession();
+        var token = sess.data.session ? sess.data.session.access_token : null;
+        if (!token) throw new Error('Please sign in again.');
+        var res = await fetch(SUPABASE_URL + '/functions/v1/send-ticket-campaign', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, 'apikey': SUPABASE_KEY },
+        });
+        var j = await res.json();
+        if (!res.ok || !j.ok) throw new Error(j.error || ('HTTP ' + res.status));
+        showStatus('✅ Sent ' + j.sent + ' of ' + j.total + ' ticket emails' + (j.failed ? ' — ' + j.failed + ' failed (check Edge Function logs for details)' : '') + '.', j.failed ? '#d97706' : '#16a34a');
+    } catch (e) {
+        showStatus('❌ Campaign failed: ' + e.message, '#dc2626');
+    }
+    if (btn) { btn.disabled = false; btn.textContent = '📧 Send Ticket Campaign Email'; }
 };
 
 window.loadAdminTickets = async function() {
