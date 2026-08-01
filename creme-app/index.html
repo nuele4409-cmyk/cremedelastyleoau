@@ -5332,7 +5332,17 @@ window.loadLiveRankings = async function() {
     if (!container) return;
     container.innerHTML = '<p style="color:var(--cream-60);font-size:0.88rem;">Loading…</p>';
     if (!_sb) return;
+    /* Re-check the live toggle instead of trusting the cached window.appSettings,
+       which only refreshes on page load — an admin flipping "Apply fan points"
+       mid-session would otherwise not show up here until a reload. */
     var applyFan = window.appSettings && window.appSettings.apply_fan_points === true;
+    try {
+        var ssRes = await _sb.from('system_settings').select('apply_fan_points').limit(1).single();
+        if (!ssRes.error && ssRes.data) {
+            applyFan = ssRes.data.apply_fan_points === true;
+            if (window.appSettings) window.appSettings.apply_fan_points = applyFan;
+        }
+    } catch(e) {}
     // Fetch scores and contestants separately — vote_count fetched only when fan points enabled
     var res  = await _sb.from('scores').select('contestant_id,look_category,look_total');
     var cRes = await _sb.from('contestants').select('id,full_name,headshot_url').eq('is_approved', true);
